@@ -149,7 +149,9 @@ ORDER BY 1
 
 ## Key Rotation [master]
 
-To manually rotate keys, add the new key to your model
+KMS supports [automatic key rotation](http://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
+
+To manually rotate keys, replace the old KMS key id with the new key id in your model. Your app does not need the old key id to perform rotation (however, the key must still be enabled in your AWS account).
 
 ```sh
 KMS_KEY_ID=arn:aws:kms:...
@@ -191,6 +193,12 @@ class User < ApplicationRecord
     # some hash
   end
 end
+```
+
+To rotate keys, use:
+
+```ruby
+user.rotate_kms_key_phone!
 ```
 
 ## History
