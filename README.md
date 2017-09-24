@@ -11,6 +11,14 @@ KMS addresses both of the issues and it’s easy to use them together.
 
 **Note:** This has not been battle-tested in a production environment, so use with caution
 
+## How It Works
+
+This approach uses KMS to manage encryption keys and attr_encrypted to do the encryption.
+
+To encrypt an attribute, we first generate a data key from our KMS master key. KMS sends both encrypted and unencrypted versions of the data key. We pass the unencrypted version to attr_encrypted and store the encrypted version in the `encrypted_kms_key` column. For each record, we store a different data key.
+
+To decrypt an attribute, we first decrypt the data key with KMS. Once we have the decrypted key, we pass it to attr_encrypted to descrypt the data. Since we use a different data key for each record, we can track decryptions for each record.
+
 ## Getting Started
 
 Add this line to your application’s Gemfile:
@@ -61,10 +69,6 @@ end
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt.
 
 Read more about [encryption context here](http://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
-
-## How It Works
-
-KMS allows you to generate data keys from your master key. Data keys are encrypted and stored with each record. Whenever you want to decrypt data, you need to first decrypt the data key with KMS. Once you have the decrypted key, you can then use it to decrypt the data with attr_encrypted.
 
 ## TODO
 
