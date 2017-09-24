@@ -159,7 +159,7 @@ KMS_KEY_ID=arn:aws:kms:...
 
 and run
 
-```sh
+```ruby
 User.find_each do |user|
   user.rotate_kms_key!
 end
