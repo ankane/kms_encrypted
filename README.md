@@ -110,10 +110,6 @@ class User < ApplicationRecord
 end
 ```
 
-## TODO
-
-- add support for multiple data keys per record
-
 ## History
 
 View the [changelog](https://github.com/ankane/kms_encrypted/blob/master/CHANGELOG.md)
