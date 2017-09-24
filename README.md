@@ -7,7 +7,7 @@ The attr_encrypted gem is great for encryption, but:
 1. Leaves you to manage the security of your keys
 2. Doesn’t provide a great audit trail to see how data has been accessed
 
-KMS addresses both of the issues and it’s easy to use them together.
+KMS addresses both issues and it’s easy to use them together.
 
 **Note:** This has not been battle-tested in a production environment, so use with caution
 
