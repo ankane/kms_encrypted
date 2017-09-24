@@ -167,7 +167,9 @@ end
 
 ## Multiple Keys Per Record [master]
 
-Add more columns
+You may want to protect different columns with different data keys (or even master keys).
+
+To do this, add more columns
 
 ```ruby
 add_column :users, :encrypted_kms_key_phone, :string
