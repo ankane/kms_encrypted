@@ -1,7 +1,7 @@
-## 0.1.1 [unreleased]
+## 0.1.1
 
 - Added key rotation
-- Added support for multiple data keys per record
+- Added support for multiple keys per record
 
 ## 0.1.0
 

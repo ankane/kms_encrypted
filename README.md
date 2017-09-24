@@ -147,7 +147,7 @@ WHERE
 ORDER BY 1
 ```
 
-## Key Rotation [master]
+## Key Rotation
 
 KMS supports [automatic key rotation](http://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
 
@@ -165,7 +165,7 @@ User.find_each do |user|
 end
 ```
 
-## Multiple Keys Per Record [master]
+## Multiple Keys Per Record
 
 You may want to protect different columns with different data keys (or even master keys).
 
