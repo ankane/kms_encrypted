@@ -33,7 +33,7 @@ Add a column to store encrypted KMS data keys
 add_column :users, :encrypted_kms_key, :string
 ```
 
-Create a [KMS master key](https://console.aws.amazon.com/iam/home#/encryptionKeys) and set it in your environment (we recommend [dotenv](https://github.com/bkeepers/dotenv))
+Create a [KMS master key](https://console.aws.amazon.com/iam/home#/encryptionKeys) and set it in your environment ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
 
 ```sh
 KMS_KEY_ID=arn:aws:kms:...
@@ -78,7 +78,7 @@ class User < ApplicationRecord
 end
 ```
 
-We recommend [Amazon Athena](https://aws.amazon.com/athena/) for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
+[Amazon Athena](https://aws.amazon.com/athena/) is great for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
 
 ```sql
 CREATE EXTERNAL TABLE cloudtrail_logs (
