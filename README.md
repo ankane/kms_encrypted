@@ -82,7 +82,7 @@ Read more about [encryption context here](http://docs.aws.amazon.com/kms/latest/
 
 ## CloudTrail Logs
 
-We recommend Amazon Athena for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
+We recommend [Amazon Athena](https://aws.amazon.com/athena/) for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
 
 ```sql
 CREATE EXTERNAL TABLE cloudtrail_logs (
