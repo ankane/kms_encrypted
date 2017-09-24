@@ -179,8 +179,8 @@ And update your model
 
 ```ruby
 class User < ApplicationRecord
-  has_kms_key key_id: ENV["KMS_KEY_ID"]
-  has_kms_key key_id: ENV["KMS_KEY_ID"], name: :phone
+  has_kms_key ENV["KMS_KEY_ID"]
+  has_kms_key ENV["KMS_KEY_ID"], name: :phone
 
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
