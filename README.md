@@ -15,7 +15,7 @@ KMS addresses both issues and it’s easy to use them together.
 
 This approach uses KMS to manage encryption keys and attr_encrypted to do the encryption.
 
-To encrypt an attribute, we first generate a data key from our KMS master key. KMS sends both encrypted and unencrypted versions of the data key. We pass the unencrypted version to attr_encrypted and store the encrypted version in the `encrypted_kms_key` column. For each record, we store a different data key.
+To encrypt an attribute, we first generate a [data key](http://docs.aws.amazon.com/kms/latest/developerguide/concepts.html) from our KMS master key. KMS sends both encrypted and unencrypted versions of the data key. We pass the unencrypted version to attr_encrypted and store the encrypted version in the `encrypted_kms_key` column. For each record, we store a different data key.
 
 To decrypt an attribute, we first decrypt the data key with KMS. Once we have the decrypted key, we pass it to attr_encrypted to descrypt the data. Since we use a different data key for each record, we can track decryptions for each record.
 
