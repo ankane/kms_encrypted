@@ -147,6 +147,22 @@ WHERE
 ORDER BY 1
 ```
 
+## Key Rotation [master]
+
+To manually rotate keys, add the new key to your model
+
+```sh
+KMS_KEY_ID=arn:aws:kms:...
+```
+
+and run
+
+```sh
+User.find_each do |user|
+  user.rotate_kms_key!
+end
+```
+
 ## Multiple Keys Per Record [master]
 
 Add more columns

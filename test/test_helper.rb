@@ -7,6 +7,8 @@ require "minitest/pride"
 
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
+# ActiveRecord::Base.logger = ActiveSupport::Logger.new(STDOUT)
+
 ActiveRecord::Migration.create_table :users do |t|
   t.string :name
   t.string :encrypted_email

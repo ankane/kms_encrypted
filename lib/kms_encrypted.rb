@@ -46,6 +46,26 @@ module KmsEncrypted
 
           instance_variable_get(instance_var)
         end
+
+        define_method("rotate_#{key_method}!") do
+          # decrypt
+          plaintext_attributes = {}
+          self.class.encrypted_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
+            plaintext_attributes[key] = send(key)
+          end
+
+          # reset key
+          instance_variable_set("@#{key_method}", nil)
+          send("encrypted_#{key_method}=", nil)
+
+          # encrypt again
+          plaintext_attributes.each do |attr, value|
+            send("#{attr}=", value)
+          end
+
+          # update atomically
+          save!
+        end
       end
     end
   end
