@@ -11,13 +11,20 @@ ActiveRecord::Migration.create_table :users do |t|
   t.string :name
   t.string :encrypted_email
   t.string :encrypted_email_iv
+  t.string :encrypted_phone
+  t.string :encrypted_phone_iv
+
+  # kms_encrypted
   t.string :encrypted_kms_key
+  t.string :encrypted_kms_key_phone
 end
 
 class User < ActiveRecord::Base
   has_kms_key ENV["KMS_KEY_ID"]
+  has_kms_key ENV["KMS_KEY_ID"], name: :phone
 
   attr_encrypted :email, key: :kms_key
+  attr_encrypted :phone, key: :kms_key_phone
 
   def kms_encryption_context
     {"Name" => name}

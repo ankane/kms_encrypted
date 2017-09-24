@@ -8,43 +8,43 @@ module KmsEncrypted
   end
 
   module Model
-    def has_kms_key(key_id)
+    def has_kms_key(key_id, name: nil)
       raise ArgumentError, "Missing key id" unless key_id
 
-      class_eval do
-        class << self
-          attr_accessor :kms_key_id
-        end
-        self.kms_key_id = key_id
+      key_method = name ? "kms_key_#{name}" : "kms_key"
 
-        def kms_key
-          unless @kms_key
-            key_id = self.class.kms_key_id
-            context = respond_to?(:kms_encryption_context) ? kms_encryption_context : {}
+      class_eval do
+        define_method(key_method) do
+          instance_var = "@#{key_method}"
+
+          unless instance_variable_get(instance_var)
+            key_column = "encrypted_#{key_method}"
+            context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
+            context = respond_to?(context_method) ? send(context_method) : {}
             default_encoding = "m"
 
-            unless encrypted_kms_key
+            unless send(key_column)
               resp = KmsEncrypted.kms.generate_data_key(
                 key_id: key_id,
                 encryption_context: context,
                 key_spec: "AES_256"
               )
-              @kms_key = resp.plaintext
               ciphertext = resp.ciphertext_blob
-              self.encrypted_kms_key = [resp.ciphertext_blob].pack(default_encoding)
+              instance_variable_set(instance_var, resp.plaintext)
+              self.send("#{key_column}=", [resp.ciphertext_blob].pack(default_encoding))
             end
 
-            unless @kms_key
-              ciphertext = encrypted_kms_key.unpack(default_encoding).first
+            unless instance_variable_get(instance_var)
+              ciphertext = send(key_column).unpack(default_encoding).first
               resp = KmsEncrypted.kms.decrypt(
                 ciphertext_blob: ciphertext,
                 encryption_context: context
               )
-              @kms_key = resp.plaintext
+              instance_variable_set(instance_var, resp.plaintext)
             end
           end
 
-          @kms_key
+          instance_variable_get(instance_var)
         end
       end
     end

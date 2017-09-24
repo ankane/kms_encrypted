@@ -80,6 +80,36 @@ end
 
 Read more about [encryption context here](http://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
 
+## Multiple Keys Per Record [master]
+
+Add more columns
+
+```ruby
+add_column :users, :encrypted_kms_key_phone, :string
+```
+
+And update your model
+
+```ruby
+class User < ApplicationRecord
+  has_kms_key key_id: ENV["KMS_KEY_ID"]
+  has_kms_key key_id: ENV["KMS_KEY_ID"], name: :phone
+
+  attr_encrypted :email, key: :kms_key
+  attr_encrypted :phone, key: :kms_key_phone
+end
+```
+
+For context, use:
+
+```ruby
+class User < ApplicationRecord
+  def kms_encryption_context_phone
+    # some hash
+  end
+end
+```
+
 ## TODO
 
 - add support for multiple data keys per record
