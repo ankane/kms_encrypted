@@ -36,7 +36,7 @@ add_column :users, :encrypted_kms_key, :string
 Create a [KMS master key](https://console.aws.amazon.com/iam/home#/encryptionKeys) and set it in your environment ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
 
 ```sh
-KMS_KEY_ID=arn:aws:kms:...
+KMS_KEY_ID=alias/my-key # or use ARN
 ```
 
 And update your model
@@ -154,7 +154,7 @@ KMS supports [automatic key rotation](http://docs.aws.amazon.com/kms/latest/deve
 To manually rotate keys, replace the old KMS key id with the new key id in your model. Your app does not need the old key id to perform rotation (however, the key must still be enabled in your AWS account).
 
 ```sh
-KMS_KEY_ID=arn:aws:kms:...
+KMS_KEY_ID=alias/new-key
 ```
 
 and run
