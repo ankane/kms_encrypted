@@ -1,3 +1,7 @@
+## 0.1.2 [unreleased]
+
+- Use `KMS_KEY_ID` env variable by default
+
 ## 0.1.1
 
 - Added key rotation

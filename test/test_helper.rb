@@ -22,8 +22,8 @@ ActiveRecord::Migration.create_table :users do |t|
 end
 
 class User < ActiveRecord::Base
-  has_kms_key ENV["KMS_KEY_ID"]
-  has_kms_key ENV["KMS_KEY_ID"], name: :phone
+  has_kms_key
+  has_kms_key name: :phone
 
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone

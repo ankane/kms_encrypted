@@ -8,7 +8,8 @@ module KmsEncrypted
   end
 
   module Model
-    def has_kms_key(key_id, name: nil)
+    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil)
+      key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
       raise ArgumentError, "Missing key id" unless key_id
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
