@@ -1,4 +1,4 @@
-## 0.1.2 [unreleased]
+## 0.1.2
 
 - Use `KMS_KEY_ID` env variable by default
 
