@@ -6,8 +6,9 @@ The attr_encrypted gem is great for encryption, but:
 
 1. Leaves you to manage the security of your keys
 2. Doesn’t provide a great audit trail to see how data has been accessed
+3. Doesn’t have an easy way to rotate your keys
 
-KMS addresses both issues and it’s easy to use them together.
+KMS addresses all of these issues and it’s easy to use them together.
 
 **Note:** This has not been battle-tested in a production environment, so use with caution
 
@@ -137,7 +138,6 @@ Change the last line to point to your CloudTrail log bucket and query away
 ```sql
 SELECT
     eventTime,
-    eventName,
     userIdentity.userName,
     requestParameters
 FROM
