@@ -5,8 +5,8 @@
 The attr_encrypted gem is great for encryption, but:
 
 1. Leaves you to manage the security of your keys
-2. Doesn’t provide a great audit trail to see how data has been accessed
-3. Doesn’t have an easy way to rotate your keys
+2. Doesn’t provide an easy way to rotate your keys
+3. Doesn’t have a great audit trail to see how data has been accessed
 
 KMS addresses all of these issues and it’s easy to use them together.
 
