@@ -31,7 +31,7 @@ gem 'kms_encrypted'
 Add a column to store encrypted KMS data keys
 
 ```ruby
-add_column :users, :encrypted_kms_key, :string
+add_column :users, :encrypted_kms_key, :text
 ```
 
 Create a [KMS master key](https://console.aws.amazon.com/iam/home#/encryptionKeys) and set it in your environment ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
@@ -172,7 +172,7 @@ You may want to protect different columns with different data keys (or even mast
 To do this, add more columns
 
 ```ruby
-add_column :users, :encrypted_kms_key_phone, :string
+add_column :users, :encrypted_kms_key_phone, :text
 ```
 
 And update your model
