@@ -41,6 +41,12 @@ Create a [KMS master key](https://console.aws.amazon.com/iam/home#/encryptionKey
 KMS_KEY_ID=arn:aws:kms:...
 ```
 
+You can also use the alias
+
+```sh
+KMS_KEY_ID=alias/my-alias
+```
+
 And update your model
 
 ```ruby
@@ -145,6 +151,7 @@ FROM
     cloudtrail_logs
 WHERE
     eventName = 'Decrypt'
+    AND resources[1].arn = 'arn:aws:kms:...'
 ORDER BY 1
 ```
 
