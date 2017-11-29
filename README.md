@@ -156,6 +156,8 @@ WHERE
 ORDER BY 1
 ```
 
+There will also be `GenerateDataKey` events.
+
 ## Key Rotation
 
 KMS supports [automatic key rotation](http://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
