@@ -21,7 +21,7 @@ module KmsEncrypted
           unless instance_variable_get(instance_var)
             key_column = "encrypted_#{key_method}"
             context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
-            context = respond_to?(context_method) ? send(context_method) : {}
+            context = respond_to?(context_method, true) ? send(context_method) : {}
             default_encoding = "m"
 
             unless send(key_column)

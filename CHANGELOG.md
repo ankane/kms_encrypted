@@ -1,3 +1,7 @@
+## 0.1.3 [unreleased]
+
+- Allow private or protected `kms_encryption_context` method
+
 ## 0.1.2
 
 - Use `KMS_KEY_ID` env variable by default
