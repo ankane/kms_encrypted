@@ -4,7 +4,7 @@ require "aws-sdk"
 
 module KmsEncrypted
   def self.kms
-    @kms ||= Aws::KMS::Client.new
+    @kms ||= Aws::KMS::Client.new(retry_limit: 2, http_open_timeout: 2, http_read_timeout: 2)
   end
 
   module Model
