@@ -32,6 +32,7 @@ Add columns for the encrypted data and the encrypted KMS data keys
 
 ```ruby
 add_column :users, :encrypted_email, :text
+add_column :users, :encrypted_email_iv, :text
 add_column :users, :encrypted_kms_key, :text
 ```
 
@@ -181,6 +182,7 @@ To do this, add more columns
 
 ```ruby
 add_column :users, :encrypted_phone, :text
+add_column :users, :encrypted_phone_iv, :text
 add_column :users, :encrypted_kms_key_phone, :text
 ```
 
