@@ -28,9 +28,10 @@ Add this line to your application’s Gemfile:
 gem 'kms_encrypted'
 ```
 
-Add a column to store encrypted KMS data keys
+Add columns for the encrypted data and the encrypted KMS data keys
 
 ```ruby
+add_column :users, :encrypted_email, :text
 add_column :users, :encrypted_kms_key, :text
 ```
 
@@ -172,6 +173,7 @@ You may want to protect different columns with different data keys (or even mast
 To do this, add more columns
 
 ```ruby
+add_column :users, :encrypted_phone, :text
 add_column :users, :encrypted_kms_key_phone, :text
 ```
 
