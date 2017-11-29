@@ -1,6 +1,6 @@
 require "kms_encrypted/version"
 require "active_support"
-require "aws-sdk-kms"
+require "aws-sdk"
 
 module KmsEncrypted
   def self.kms
