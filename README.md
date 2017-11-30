@@ -28,9 +28,11 @@ Add this line to your application’s Gemfile:
 gem 'kms_encrypted'
 ```
 
-Add a column to store encrypted KMS data keys
+Add columns for the encrypted data and the encrypted KMS data keys
 
 ```ruby
+add_column :users, :encrypted_email, :text
+add_column :users, :encrypted_email_iv, :text
 add_column :users, :encrypted_kms_key, :text
 ```
 
@@ -38,6 +40,12 @@ Create a [KMS master key](https://console.aws.amazon.com/iam/home#/encryptionKey
 
 ```sh
 KMS_KEY_ID=arn:aws:kms:...
+```
+
+You can also use the alias
+
+```sh
+KMS_KEY_ID=alias/my-alias
 ```
 
 And update your model
@@ -144,8 +152,11 @@ FROM
     cloudtrail_logs
 WHERE
     eventName = 'Decrypt'
+    AND resources[1].arn = 'arn:aws:kms:...'
 ORDER BY 1
 ```
+
+There will also be `GenerateDataKey` events.
 
 ## Key Rotation
 
@@ -165,6 +176,14 @@ User.find_each do |user|
 end
 ```
 
+## Testing [master]
+
+For testing, you can prevent calls to AWS by setting:
+
+```sh
+KMS_KEY_ID=insecure-test-key
+```
+
 ## Multiple Keys Per Record
 
 You may want to protect different columns with different data keys (or even master keys).
@@ -172,6 +191,8 @@ You may want to protect different columns with different data keys (or even mast
 To do this, add more columns
 
 ```ruby
+add_column :users, :encrypted_phone, :text
+add_column :users, :encrypted_phone_iv, :text
 add_column :users, :encrypted_kms_key_phone, :text
 ```
 

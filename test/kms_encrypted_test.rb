@@ -24,6 +24,7 @@ class KmsEncryptedTest < Minitest::Test
     user.rotate_kms_key!
 
     %w(encrypted_email encrypted_email_iv encrypted_kms_key).each do |attr|
+      next if attr == "encrypted_kms_key" && test_key?
       assert user.send(attr) != fields[attr], "#{attr} expected to change"
     end
 
@@ -37,6 +38,7 @@ class KmsEncryptedTest < Minitest::Test
     user.rotate_kms_key_phone!
 
     %w(encrypted_phone encrypted_phone_iv encrypted_kms_key_phone).each do |attr|
+      next if attr == "encrypted_kms_key_phone" && test_key?
       assert user.send(attr) != fields[attr], "#{attr} expected to change"
     end
 
@@ -51,5 +53,9 @@ class KmsEncryptedTest < Minitest::Test
     ActiveSupport::Deprecation.silence do
       User.create!(name: "Test", email: "test@example.org", phone: "555-555-5555")
     end
+  end
+
+  def test_key?
+    ENV["KMS_KEY_ID"] == "insecure-test-key"
   end
 end
