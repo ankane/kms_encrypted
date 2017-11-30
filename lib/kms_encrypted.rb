@@ -20,29 +20,33 @@ module KmsEncrypted
           instance_var = "@#{key_method}"
 
           unless instance_variable_get(instance_var)
-            key_column = "encrypted_#{key_method}"
-            context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
-            context = respond_to?(context_method, true) ? send(context_method) : {}
-            default_encoding = "m"
+            if key_id == "insecure-test-key"
+              instance_variable_set(instance_var, "00000000000000000000000000000000")
+            else
+              key_column = "encrypted_#{key_method}"
+              context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
+              context = respond_to?(context_method, true) ? send(context_method) : {}
+              default_encoding = "m"
 
-            unless send(key_column)
-              resp = KmsEncrypted.kms.generate_data_key(
-                key_id: key_id,
-                encryption_context: context,
-                key_spec: "AES_256"
-              )
-              ciphertext = resp.ciphertext_blob
-              instance_variable_set(instance_var, resp.plaintext)
-              self.send("#{key_column}=", [resp.ciphertext_blob].pack(default_encoding))
-            end
+              unless send(key_column)
+                resp = KmsEncrypted.kms.generate_data_key(
+                  key_id: key_id,
+                  encryption_context: context,
+                  key_spec: "AES_256"
+                )
+                ciphertext = resp.ciphertext_blob
+                instance_variable_set(instance_var, resp.plaintext)
+                self.send("#{key_column}=", [resp.ciphertext_blob].pack(default_encoding))
+              end
 
-            unless instance_variable_get(instance_var)
-              ciphertext = send(key_column).unpack(default_encoding).first
-              resp = KmsEncrypted.kms.decrypt(
-                ciphertext_blob: ciphertext,
-                encryption_context: context
-              )
-              instance_variable_set(instance_var, resp.plaintext)
+              unless instance_variable_get(instance_var)
+                ciphertext = send(key_column).unpack(default_encoding).first
+                resp = KmsEncrypted.kms.decrypt(
+                  ciphertext_blob: ciphertext,
+                  encryption_context: context
+                )
+                instance_variable_set(instance_var, resp.plaintext)
+              end
             end
           end
 

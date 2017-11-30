@@ -176,6 +176,14 @@ User.find_each do |user|
 end
 ```
 
+## Testing [master]
+
+For testing, you can prevent calls to AWS by setting:
+
+```sh
+KMS_KEY_ID=insecure-test-key
+```
+
 ## Multiple Keys Per Record
 
 You may want to protect different columns with different data keys (or even master keys).
