@@ -176,6 +176,40 @@ User.find_each do |user|
 end
 ```
 
+## IAM Permissions
+
+To encrypt the data, use a policy with:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "EncryptData",
+            "Effect": "Allow",
+            "Action": "kms:GenerateDataKey",
+            "Resource": "arn:aws:kms:..."
+        }
+    ]
+}
+```
+
+To decrypt the data, use a policy with:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DecryptData",
+            "Effect": "Allow",
+            "Action": "kms:Decrypt",
+            "Resource": "arn:aws:kms:..."
+        }
+    ]
+}
+```
+
 ## Testing [master]
 
 For testing, you can prevent calls to AWS by setting:
