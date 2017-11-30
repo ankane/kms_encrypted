@@ -10,12 +10,13 @@ module KmsEncrypted
   module Model
     def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil)
       key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
-      raise ArgumentError, "Missing key id" unless key_id
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
 
       class_eval do
         define_method(key_method) do
+          raise ArgumentError, "Missing key id" unless key_id
+
           instance_var = "@#{key_method}"
 
           unless instance_variable_get(instance_var)
