@@ -1,6 +1,7 @@
 ## 0.1.3 [unreleased]
 
 - Added test key
+- Added `client_options`
 - Allow private or protected `kms_encryption_context` method
 
 ## 0.1.2
