@@ -227,7 +227,7 @@ Be extremely selective of systems you allow to decrypt.
 
 ## Testing [master]
 
-For testing, you can prevent calls to AWS by setting:
+For testing, you can prevent calls to KMS by setting:
 
 ```sh
 KMS_KEY_ID=insecure-test-key
