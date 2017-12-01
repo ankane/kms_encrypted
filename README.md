@@ -11,7 +11,7 @@ The attr_encrypted gem is great for encryption, but:
 
 KMS addresses all of these issues and it’s easy to use them together.
 
-**Note:** This has not been battle-tested in a production environment, so use with caution
+[![Build Status](https://travis-ci.org/ankane/kms_encrypted.svg?branch=master)](https://travis-ci.org/ankane/kms_encrypted)
 
 ## How It Works
 
