@@ -7,6 +7,7 @@ The attr_encrypted gem is great for encryption, but:
 1. Leaves you to manage the security of your keys
 2. Doesn’t provide an easy way to rotate your keys
 3. Doesn’t have a great audit trail to see how data has been accessed
+4. Doesn’t let you grant encryption and decryption permission separately
 
 KMS addresses all of these issues and it’s easy to use them together.
 
@@ -158,6 +159,10 @@ ORDER BY 1
 
 There will also be `GenerateDataKey` events.
 
+## Alerting
+
+We recommend setting up alerts on suspicious behavior.
+
 ## Key Rotation
 
 KMS supports [automatic key rotation](http://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
@@ -178,6 +183,8 @@ end
 
 ## IAM Permissions
 
+A great feature of KMS is the ability to grant encryption and decryption permission separately.
+
 To encrypt the data, use a policy with:
 
 ```json
@@ -192,6 +199,12 @@ To encrypt the data, use a policy with:
         }
     ]
 }
+```
+
+If a system can only encrypt, you must clear out existing data keys before updates.
+
+```ruby
+user.encrypted_kms_key = nil # before user.save
 ```
 
 To decrypt the data, use a policy with:
@@ -209,6 +222,8 @@ To decrypt the data, use a policy with:
     ]
 }
 ```
+
+Be extremely selective of systems you allow to decrypt.
 
 ## Testing [master]
 
