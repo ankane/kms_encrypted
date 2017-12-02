@@ -2,6 +2,7 @@
 
 - Added `kms_keys` method to models
 - Reset data keys when record is reloaded
+- Added `kms_client`
 
 ## 0.1.3
 

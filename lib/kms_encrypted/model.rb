@@ -41,7 +41,7 @@ module KmsEncrypted
               default_encoding = "m"
 
               unless send(key_column)
-                resp = KmsEncrypted.kms.generate_data_key(
+                resp = KmsEncrypted.kms_client.generate_data_key(
                   key_id: key_id,
                   encryption_context: context,
                   key_spec: "AES_256"
@@ -53,7 +53,7 @@ module KmsEncrypted
 
               unless instance_variable_get(instance_var)
                 ciphertext = send(key_column).unpack(default_encoding).first
-                resp = KmsEncrypted.kms.decrypt(
+                resp = KmsEncrypted.kms_client.decrypt(
                   ciphertext_blob: ciphertext,
                   encryption_context: context
                 )

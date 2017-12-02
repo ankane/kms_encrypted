@@ -75,10 +75,10 @@ class KmsEncryptedTest < Minitest::Test
   private
 
   def assert_operations(expected)
-    client_options = KmsEncrypted.client_options
+    kms_client = KmsEncrypted.kms_client
     begin
       logger_io = StringIO.new
-      KmsEncrypted.client_options = {logger: ActiveSupport::Logger.new(logger_io)}
+      KmsEncrypted.kms_client = Aws::KMS::Client.new(logger: ActiveSupport::Logger.new(logger_io))
       yield
       str = logger_io.string
       actual = {
@@ -88,7 +88,7 @@ class KmsEncryptedTest < Minitest::Test
       skip if test_key?
       assert_equal expected, actual
     ensure
-      KmsEncrypted.client_options = client_options
+      KmsEncrypted.kms_client = kms_client
     end
   end
 
