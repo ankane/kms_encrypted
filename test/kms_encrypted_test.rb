@@ -30,7 +30,7 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_reload_clears_data_key_cache
-    assert_operations decrypt: 2 do
+    assert_operations decrypt_data_key: 2 do
       user = User.last
       user.email
       user.reload

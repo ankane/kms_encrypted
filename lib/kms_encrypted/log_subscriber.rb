@@ -1,9 +1,9 @@
 module KmsEncrypted
   class LogSubscriber < ActiveSupport::LogSubscriber
-    def decrypt(event)
+    def decrypt_data_key(event)
       return unless logger.debug?
 
-      name = "Decrypt (#{event.duration.round(1)}ms)"
+      name = "Decrypt Data Key (#{event.duration.round(1)}ms)"
       debug "  #{color(name, YELLOW, true)}  Context: #{event.payload[:context].inspect}"
     end
 
