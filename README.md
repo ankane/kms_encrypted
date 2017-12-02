@@ -227,9 +227,9 @@ To decrypt the data, use a policy with:
 
 Be extremely selective of systems you allow to decrypt.
 
-## Testing [master]
+## Testing
 
-For testing, you can prevent calls to KMS by setting:
+For testing, you can prevent network calls to KMS by setting:
 
 ```sh
 KMS_KEY_ID=insecure-test-key
