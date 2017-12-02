@@ -25,7 +25,9 @@ class KmsEncryptedTest < Minitest::Test
     assert_operations encrypt: 1, decrypt: 0 do
       user.encrypted_kms_key = nil
       user.encrypted_email = nil
-      user.update!(email: "test@example.org")
+      ActiveSupport::Deprecation.silence do
+        user.update!(email: "test@example.org")
+      end
     end
   end
 
