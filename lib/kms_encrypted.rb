@@ -23,6 +23,26 @@ module KmsEncrypted
       key_method = name ? "kms_key_#{name}" : "kms_key"
 
       class_eval do
+        class << self
+          def kms_keys
+            @kms_keys ||= {}
+          end unless respond_to?(:kms_keys)
+        end
+
+        if kms_keys.empty?
+          # same pattern as attr_encrypted reload
+          alias_method :reload_without_kms_encrypted, :reload
+          def reload(*args, &block)
+            result = reload_without_kms_encrypted(*args, &block)
+            self.class.kms_keys.keys.each do |key_method|
+              instance_variable_set("@#{key_method}", nil)
+            end
+            result
+          end
+        end
+
+        kms_keys[key_method.to_sym] = {key_id: key_id}
+
         define_method(key_method) do
           raise ArgumentError, "Missing key id" unless key_id
 

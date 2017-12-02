@@ -1,3 +1,8 @@
+## 0.1.4 [unreleased]
+
+- Added `kms_keys` method to models
+- Reset data keys when record is reloaded
+
 ## 0.1.3
 
 - Added test key

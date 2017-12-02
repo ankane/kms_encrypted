@@ -29,7 +29,6 @@ class KmsEncryptedTest < Minitest::Test
   # TODO remove cached key when reloaded
   # use for manual testing to confirm refetch decryption key
   def test_reload
-    puts "first"
     user = User.last
     user.phone
     user.reload
@@ -62,6 +61,11 @@ class KmsEncryptedTest < Minitest::Test
 
     user.reload
     assert_equal "555-555-5555", user.phone
+  end
+
+  def test_kms_keys
+    assert User.kms_keys[:kms_key]
+    assert User.kms_keys[:kms_key_phone]
   end
 
   private
