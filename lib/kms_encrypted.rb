@@ -4,17 +4,22 @@ require "aws-sdk-kms"
 
 module KmsEncrypted
   class << self
-    attr_accessor :client_options
+    attr_reader :client_options
+
+    def client_options=(value)
+      @client_options = value
+      @kms = nil
+    end
+
+    def kms
+      @kms ||= Aws::KMS::Client.new(client_options)
+    end
   end
   self.client_options = {
     retry_limit: 2,
     http_open_timeout: 2,
     http_read_timeout: 2
   }
-
-  def self.kms
-    @kms ||= Aws::KMS::Client.new(client_options)
-  end
 
   module Model
     def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil)

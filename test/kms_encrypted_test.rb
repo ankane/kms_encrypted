@@ -21,18 +21,22 @@ class KmsEncryptedTest < Minitest::Test
   # used for manual testing to confirm no decryption
   def test_update
     user = User.last
-    user.encrypted_kms_key = nil
-    user.encrypted_email = nil
-    user.update!(email: "test@example.org")
+
+    assert_operations encrypt: 1, decrypt: 0 do
+      user.encrypted_kms_key = nil
+      user.encrypted_email = nil
+      user.update!(email: "test@example.org")
+    end
   end
 
-  # TODO remove cached key when reloaded
   # use for manual testing to confirm refetch decryption key
   def test_reload
-    user = User.last
-    user.phone
-    user.reload
-    user.phone
+    assert_operations encrypt: 0, decrypt: 2 do
+      user = User.last
+      user.phone
+      user.reload
+      user.phone
+    end
   end
 
   def test_rotate
@@ -69,6 +73,24 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   private
+
+  def assert_operations(expected)
+    client_options = KmsEncrypted.client_options
+    begin
+      logger_io = StringIO.new
+      KmsEncrypted.client_options = {logger: ActiveSupport::Logger.new(logger_io)}
+      yield
+      str = logger_io.string
+      actual = {
+        encrypt: str.scan(/generate_data_key/).length,
+        decrypt: str.scan(/decrypt/).length
+      }
+      skip if test_key?
+      assert_equal expected, actual
+    ensure
+      KmsEncrypted.client_options = client_options
+    end
+  end
 
   def create_user
     # for now
