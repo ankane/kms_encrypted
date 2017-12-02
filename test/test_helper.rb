@@ -9,11 +9,12 @@ ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
 ENV["KMS_KEY_ID"] ||= "alias/test"
 
-# KmsEncrypted.client_options[:logger] = ActiveSupport::Logger.new(STDOUT)
-
-# ActiveRecord::Base.logger = ActiveSupport::Logger.new(STDOUT)
-
-ActiveSupport::LogSubscriber.logger = ActiveSupport::Logger.new(STDOUT)
+if ENV["VERBOSE"]
+  logger = ActiveSupport::Logger.new(STDOUT)
+  KmsEncrypted.client_options[:logger] = logger
+  ActiveRecord::Base.logger = logger
+  ActiveSupport::LogSubscriber.logger = logger
+end
 
 $events = Hash.new(0)
 ActiveSupport::Notifications.subscribe(/kms_encrypted/) do |name, start, finish, id, payload|
