@@ -32,47 +32,58 @@ module KmsEncrypted
           instance_var = "@#{key_method}"
 
           unless instance_variable_get(instance_var)
-            if key_id == "insecure-test-key"
-              instance_variable_set(instance_var, "00000000000000000000000000000000")
-            else
-              key_column = "encrypted_#{key_method}"
-              context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
-              context = respond_to?(context_method, true) ? send(context_method) : {}
-              default_encoding = "m"
+            key_column = "encrypted_#{key_method}"
+            context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
+            context = respond_to?(context_method, true) ? send(context_method) : {}
+            default_encoding = "m"
 
-              unless send(key_column)
-                resp = nil
-                event = {
-                  key_id: key_id,
-                  context: context
-                }
-                ActiveSupport::Notifications.instrument("generate_data_key.kms_encrypted", event) do
+            unless send(key_column)
+              plaintext_key = nil
+              encrypted_key = nil
+
+              event = {
+                key_id: key_id,
+                context: context
+              }
+              ActiveSupport::Notifications.instrument("generate_data_key.kms_encrypted", event) do
+                if key_id == "insecure-test-key"
+                  encrypted_key = "insecure-data-key-#{rand(1_000_000_000_000)}"
+                  plaintext_key = "00000000000000000000000000000000"
+                else
                   resp = KmsEncrypted.kms_client.generate_data_key(
                     key_id: key_id,
                     encryption_context: context,
                     key_spec: "AES_256"
                   )
+                  encrypted_key = [resp.ciphertext_blob].pack(default_encoding)
+                  plaintext_key = resp.plaintext
                 end
-                ciphertext = resp.ciphertext_blob
-                instance_variable_set(instance_var, resp.plaintext)
-                self.send("#{key_column}=", [resp.ciphertext_blob].pack(default_encoding))
               end
 
-              unless instance_variable_get(instance_var)
-                ciphertext = send(key_column).unpack(default_encoding).first
-                resp = nil
-                event = {
-                  key_id: key_id,
-                  context: context
-                }
-                ActiveSupport::Notifications.instrument("decrypt_data_key.kms_encrypted", event) do
-                  resp = KmsEncrypted.kms_client.decrypt(
-                    ciphertext_blob: ciphertext,
+              instance_variable_set(instance_var, plaintext_key)
+              self.send("#{key_column}=", encrypted_key)
+            end
+
+            unless instance_variable_get(instance_var)
+              encrypted_key = send(key_column)
+              plaintext_key = nil
+
+              event = {
+                key_id: key_id,
+                context: context
+              }
+              ActiveSupport::Notifications.instrument("decrypt_data_key.kms_encrypted", event) do
+                if key_id == "insecure-test-key"
+                  plaintext_key = "00000000000000000000000000000000"
+                else
+                  plaintext_key = KmsEncrypted.kms_client.decrypt(
+                    ciphertext_blob: encrypted_key.unpack(default_encoding).first,
                     encryption_context: context
-                  )
+                  ).plaintext
                 end
-                instance_variable_set(instance_var, resp.plaintext)
               end
+
+              instance_variable_set(instance_var, plaintext_key)
             end
           end
 
