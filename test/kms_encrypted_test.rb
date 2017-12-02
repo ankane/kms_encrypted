@@ -19,7 +19,7 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_update_does_not_decrypt
-    assert_operations encrypt: 1, decrypt: 0 do
+    assert_operations generate_data_key: 1 do
       user = User.last
       user.encrypted_kms_key = nil
       user.encrypted_email = nil
@@ -30,7 +30,7 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_reload_clears_data_key_cache
-    assert_operations encrypt: 0, decrypt: 2 do
+    assert_operations decrypt: 2 do
       user = User.last
       user.email
       user.reload
@@ -74,21 +74,10 @@ class KmsEncryptedTest < Minitest::Test
   private
 
   def assert_operations(expected)
-    kms_client = KmsEncrypted.kms_client
-    begin
-      logger_io = StringIO.new
-      KmsEncrypted.kms_client = Aws::KMS::Client.new(logger: ActiveSupport::Logger.new(logger_io))
-      yield
-      str = logger_io.string
-      actual = {
-        encrypt: str.scan(/generate_data_key/).length,
-        decrypt: str.scan(/decrypt/).length
-      }
-      skip if test_key?
-      assert_equal expected, actual
-    ensure
-      KmsEncrypted.kms_client = kms_client
-    end
+    $events.clear
+    yield
+    skip if test_key?
+    assert_equal expected, $events
   end
 
   def create_user

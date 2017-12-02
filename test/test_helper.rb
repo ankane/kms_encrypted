@@ -15,6 +15,11 @@ ENV["KMS_KEY_ID"] ||= "alias/test"
 
 ActiveSupport::LogSubscriber.logger = ActiveSupport::Logger.new(STDOUT)
 
+$events = Hash.new(0)
+ActiveSupport::Notifications.subscribe(/kms_encrypted/) do |name, start, finish, id, payload|
+  $events[name.sub(".kms_encrypted", "").to_sym] += 1
+end
+
 ActiveRecord::Migration.create_table :users do |t|
   t.string :name
   t.string :encrypted_email
