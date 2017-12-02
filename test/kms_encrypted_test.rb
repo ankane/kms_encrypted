@@ -18,11 +18,9 @@ class KmsEncryptedTest < Minitest::Test
     assert_equal "555-555-5555", user.phone
   end
 
-  # used for manual testing to confirm no decryption
-  def test_update
-    user = User.last
-
+  def test_update_does_not_decrypt
     assert_operations encrypt: 1, decrypt: 0 do
+      user = User.last
       user.encrypted_kms_key = nil
       user.encrypted_email = nil
       ActiveSupport::Deprecation.silence do
@@ -31,8 +29,7 @@ class KmsEncryptedTest < Minitest::Test
     end
   end
 
-  # use for manual testing to confirm refetch decryption key
-  def test_reload
+  def test_reload_clears_data_key_cache
     assert_operations encrypt: 0, decrypt: 2 do
       user = User.last
       user.phone
