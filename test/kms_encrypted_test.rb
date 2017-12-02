@@ -32,9 +32,9 @@ class KmsEncryptedTest < Minitest::Test
   def test_reload_clears_data_key_cache
     assert_operations encrypt: 0, decrypt: 2 do
       user = User.last
-      user.phone
+      user.email
       user.reload
-      user.phone
+      user.email
     end
   end
 

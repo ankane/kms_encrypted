@@ -13,6 +13,8 @@ ENV["KMS_KEY_ID"] ||= "alias/test"
 
 # ActiveRecord::Base.logger = ActiveSupport::Logger.new(STDOUT)
 
+ActiveSupport::LogSubscriber.logger = ActiveSupport::Logger.new(STDOUT)
+
 ActiveRecord::Migration.create_table :users do |t|
   t.string :name
   t.string :encrypted_email

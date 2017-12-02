@@ -3,6 +3,7 @@ require "active_support"
 require "aws-sdk-kms"
 
 # modules
+require "kms_encrypted/log_subscriber"
 require "kms_encrypted/model"
 require "kms_encrypted/version"
 
@@ -36,3 +37,5 @@ end
 ActiveSupport.on_load(:active_record) do
   extend KmsEncrypted::Model
 end
+
+KmsEncrypted::LogSubscriber.attach_to :kms_encrypted

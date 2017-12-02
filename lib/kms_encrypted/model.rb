@@ -41,11 +41,18 @@ module KmsEncrypted
               default_encoding = "m"
 
               unless send(key_column)
-                resp = KmsEncrypted.kms_client.generate_data_key(
+                resp = nil
+                event = {
                   key_id: key_id,
-                  encryption_context: context,
-                  key_spec: "AES_256"
-                )
+                  context: context
+                }
+                ActiveSupport::Notifications.instrument("generate_data_key.kms_encrypted", event) do
+                  resp = KmsEncrypted.kms_client.generate_data_key(
+                    key_id: key_id,
+                    encryption_context: context,
+                    key_spec: "AES_256"
+                  )
+                end
                 ciphertext = resp.ciphertext_blob
                 instance_variable_set(instance_var, resp.plaintext)
                 self.send("#{key_column}=", [resp.ciphertext_blob].pack(default_encoding))
@@ -53,10 +60,17 @@ module KmsEncrypted
 
               unless instance_variable_get(instance_var)
                 ciphertext = send(key_column).unpack(default_encoding).first
-                resp = KmsEncrypted.kms_client.decrypt(
-                  ciphertext_blob: ciphertext,
-                  encryption_context: context
-                )
+                resp = nil
+                event = {
+                  key_id: key_id,
+                  context: context
+                }
+                ActiveSupport::Notifications.instrument("decrypt.kms_encrypted", event) do
+                  resp = KmsEncrypted.kms_client.decrypt(
+                    ciphertext_blob: ciphertext,
+                    encryption_context: context
+                  )
+                end
                 instance_variable_set(instance_var, resp.plaintext)
               end
             end
