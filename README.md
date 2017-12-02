@@ -1,6 +1,6 @@
 # KMS Encrypted
 
-[KMS](https://aws.amazon.com/kms/) + [attr_encrypted](https://github.com/attr-encrypted/attr_encrypted)
+Simple, secure key management for [attr_encrypted](https://github.com/attr-encrypted/attr_encrypted)
 
 The attr_encrypted gem is great for encryption, but:
 
@@ -9,7 +9,7 @@ The attr_encrypted gem is great for encryption, but:
 3. Doesn’t have a great audit trail to see how data has been accessed
 4. Doesn’t let you grant encryption and decryption permission separately
 
-KMS addresses all of these issues and it’s easy to use them together.
+[KMS](https://aws.amazon.com/kms/) addresses all of these issues and it’s easy to use them together.
 
 [![Build Status](https://travis-ci.org/ankane/kms_encrypted.svg?branch=master)](https://travis-ci.org/ankane/kms_encrypted)
 

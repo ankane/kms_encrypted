@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Andrew Kane"]
   spec.email         = ["andrew@chartkick.com"]
 
-  spec.summary       = "KMS + attr_encrypted"
+  spec.summary       = "Simple, secure key management for attr_encrypted"
   spec.homepage      = "https://github.com/ankane/kms_encrypted"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
