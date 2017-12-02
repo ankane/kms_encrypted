@@ -203,10 +203,12 @@ To encrypt the data, use a policy with:
 }
 ```
 
-If a system can only encrypt, you must clear out existing data keys before updates.
+If a system can only encrypt, you must clear out existing data and data keys before updates.
 
 ```ruby
-user.encrypted_kms_key = nil # before user.save
+user.encrypted_email = nil
+user.encrypted_kms_key = nil
+# before user.save or user.update
 ```
 
 To decrypt the data, use a policy with:

@@ -9,6 +9,8 @@ ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
 ENV["KMS_KEY_ID"] ||= "alias/test"
 
+# KmsEncrypted.client_options[:logger] = ActiveSupport::Logger.new(STDOUT)
+
 # ActiveRecord::Base.logger = ActiveSupport::Logger.new(STDOUT)
 
 ActiveRecord::Migration.create_table :users do |t|

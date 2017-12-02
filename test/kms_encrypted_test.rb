@@ -18,6 +18,24 @@ class KmsEncryptedTest < Minitest::Test
     assert_equal "555-555-5555", user.phone
   end
 
+  # used for manual testing to confirm no decryption
+  def test_update
+    user = User.last
+    user.encrypted_kms_key = nil
+    user.encrypted_email = nil
+    user.update!(email: "test@example.org")
+  end
+
+  # TODO remove cached key when reloaded
+  # use for manual testing to confirm refetch decryption key
+  def test_reload
+    puts "first"
+    user = User.last
+    user.phone
+    user.reload
+    user.phone
+  end
+
   def test_rotate
     user = User.last
     fields = user.attributes
