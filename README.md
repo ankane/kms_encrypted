@@ -37,6 +37,8 @@ add_column :users, :encrypted_email_iv, :text
 add_column :users, :encrypted_kms_key, :text
 ```
 
+Create an [Amazon Web Services](https://aws.amazon.com/) account if you don’t have one. KMS works great whether or not you use other AWS services.
+
 Create a [KMS master key](https://console.aws.amazon.com/iam/home#/encryptionKeys) and set it in your environment ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
 
 ```sh
