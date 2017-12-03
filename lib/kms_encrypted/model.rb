@@ -11,9 +11,10 @@ module KmsEncrypted
             @kms_keys ||= {}
           end unless respond_to?(:kms_keys)
         end
+        kms_keys[key_method.to_sym] = {key_id: key_id}
 
-        if kms_keys.empty?
-          # same pattern as attr_encrypted reload
+        # same pattern as attr_encrypted reload
+        if method_defined?(:reload) && kms_keys.size == 1
           alias_method :reload_without_kms_encrypted, :reload
           def reload(*args, &block)
             result = reload_without_kms_encrypted(*args, &block)
@@ -23,8 +24,6 @@ module KmsEncrypted
             result
           end
         end
-
-        kms_keys[key_method.to_sym] = {key_id: key_id}
 
         define_method(key_method) do
           raise ArgumentError, "Missing key id" unless key_id
