@@ -1,6 +1,6 @@
 # dependencies
 require "active_support"
-require "aws-sdk-kms"
+require "aws-sdk"
 
 # modules
 require "kms_encrypted/log_subscriber"
