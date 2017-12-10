@@ -277,6 +277,10 @@ To rotate keys, use:
 user.rotate_kms_key_phone!
 ```
 
+## File Uploads
+
+While outside the scope of this gem, you can also use KMS for sensitive file uploads. Check out [this guide](https://github.com/ankane/shorts/blob/master/AWS-Client-Side-Encryption.md) to learn more.
+
 ## History
 
 View the [changelog](https://github.com/ankane/kms_encrypted/blob/master/CHANGELOG.md)
