@@ -50,7 +50,7 @@ module KmsEncrypted
                   encrypted_key = "insecure-data-key-#{rand(1_000_000_000_000)}"
                 elsif key_id.start_with?("projects/")
                   # generate random AES-256 key
-                  plaintext_key = OpenSSL::Cipher::AES256.new(:GCM).tap { |c| c.encrypt }.random_key
+                  plaintext_key = OpenSSL::Random.random_bytes(32)
 
                   # encrypt it
                   request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(
