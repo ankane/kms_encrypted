@@ -46,8 +46,8 @@ module KmsEncrypted
               }
               ActiveSupport::Notifications.instrument("generate_data_key.kms_encrypted", event) do
                 if key_id == "insecure-test-key"
-                  encrypted_key = "insecure-data-key-#{rand(1_000_000_000_000)}"
                   plaintext_key = "00000000000000000000000000000000"
+                  encrypted_key = "insecure-data-key-#{rand(1_000_000_000_000)}"
                 elsif key_id.start_with?("projects/")
                   # generate random AES-256 key
                   plaintext_key = OpenSSL::Cipher::AES256.new(:GCM).tap { |c| c.encrypt }.random_key
