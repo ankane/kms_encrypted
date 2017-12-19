@@ -1,7 +1,5 @@
 # Google KMS
 
-## Getting Started
-
 Add this line to your application’s Gemfile:
 
 ```ruby
