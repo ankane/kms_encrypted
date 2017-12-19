@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "aws-sdk-kms"
   spec.add_dependency "activesupport"
 
   spec.add_development_dependency "bundler"
@@ -29,4 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "attr_encrypted"
+  spec.add_development_dependency "aws-sdk-kms"
+  spec.add_development_dependency "google-api-client"
 end

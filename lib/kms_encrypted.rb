@@ -1,6 +1,23 @@
 # dependencies
 require "active_support"
-require "aws-sdk-kms"
+
+begin
+  # aws-sdk v3
+  require "aws-sdk-kms"
+rescue LoadError
+  begin
+    # aws-sdk v2
+    require "aws-sdk"
+  rescue LoadError
+    # do nothing
+  end
+end
+
+begin
+  require "google/apis/cloudkms_v1"
+rescue LoadError
+  # do nothing
+end
 
 # modules
 require "kms_encrypted/log_subscriber"
@@ -32,6 +49,22 @@ module KmsEncrypted
     http_open_timeout: 2,
     http_read_timeout: 2
   }
+
+  module Google
+    class << self
+      attr_writer :kms_client
+
+      def kms_client
+        @kms_client ||= begin
+          client = ::Google::Apis::CloudkmsV1::CloudKMSService.new
+          client.authorization = ::Google::Auth.get_application_default(
+            "https://www.googleapis.com/auth/cloud-platform"
+          )
+          client
+        end
+      end
+    end
+  end
 end
 
 ActiveSupport.on_load(:active_record) do

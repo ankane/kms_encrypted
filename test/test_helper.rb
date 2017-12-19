@@ -14,6 +14,7 @@ if ENV["VERBOSE"]
   KmsEncrypted.client_options[:logger] = logger
   ActiveRecord::Base.logger = logger
   ActiveSupport::LogSubscriber.logger = logger
+  Google::Apis.logger = logger
 end
 
 $events = Hash.new(0)

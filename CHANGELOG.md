@@ -1,3 +1,7 @@
+## 0.2.0 [unreleased]
+
+- Added support for Google KMS
+
 ## 0.1.4
 
 - Added `kms_keys` method to models
