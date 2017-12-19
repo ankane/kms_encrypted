@@ -48,36 +48,32 @@ module KmsEncrypted
                 if key_id == "insecure-test-key"
                   encrypted_key = "insecure-data-key-#{rand(1_000_000_000_000)}"
                   plaintext_key = "00000000000000000000000000000000"
+                elsif key_id.start_with?("projects/")
+                  # generate random AES-256 key
+                  plaintext_key = OpenSSL::Cipher::AES256.new(:GCM).tap { |c| c.encrypt }.random_key
+
+                  # encrypt it
+                  request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(
+                    plaintext: plaintext_key,
+                    additional_authenticated_data: context.to_json
+                  )
+                  response = KmsEncrypted::Google.kms_client.encrypt_crypto_key(key_id, request)
+
+                  # shorten key to save space
+                  short_key_id = Base64.encode64(key_id.split("/").select.with_index { |p, i| i.odd? }.join("/"))
+
+                  # build encrypted key
+                  # we reference the key in the field for easy rotation
+                  encrypted_key = "$gc$#{short_key_id}$#{[response.ciphertext].pack(default_encoding)}"
                 else
-                  if key_id.start_with?("projects/")
-                    # generate random AES-256 key
-                    plaintext = OpenSSL::Cipher::AES256.new(:GCM).tap { |c| c.encrypt }.random_key
-
-                    # encrypt it
-                    request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(
-                      plaintext: plaintext,
-                      additional_authenticated_data: context.to_json
-                    )
-                    response = KmsEncrypted::Google.kms_client.encrypt_crypto_key(key_id, request)
-
-                    # shorten key to save space
-                    short_key_id = Base64.encode64(key_id.split("/").select.with_index { |p, i| i.odd? }.join("/"))
-
-                    # build encrypted key
-                    # we reference the key in the field for easy rotation
-                    encrypted_key = "$gc$#{short_key_id}$#{[response.ciphertext].pack(default_encoding)}"
-                  else
-                    # generate data key from API
-                    resp = KmsEncrypted.kms_client.generate_data_key(
-                      key_id: key_id,
-                      encryption_context: context,
-                      key_spec: "AES_256"
-                    )
-                    plaintext = resp.plaintext
-                    encrypted_key = [resp.ciphertext_blob].pack(default_encoding)
-                  end
-
-                  plaintext_key = plaintext
+                  # generate data key from API
+                  resp = KmsEncrypted.kms_client.generate_data_key(
+                    key_id: key_id,
+                    encryption_context: context,
+                    key_spec: "AES_256"
+                  )
+                  plaintext_key = resp.plaintext
+                  encrypted_key = [resp.ciphertext_blob].pack(default_encoding)
                 end
               end
 
@@ -96,30 +92,28 @@ module KmsEncrypted
               ActiveSupport::Notifications.instrument("decrypt_data_key.kms_encrypted", event) do
                 if key_id == "insecure-test-key"
                   plaintext_key = "00000000000000000000000000000000"
+                elsif encrypted_key.start_with?("$gc$")
+                  _, _, short_key_id, ciphertext = encrypted_key.split("$", 4)
+
+                  # restore key
+                  stored_key_id = Base64.decode64(short_key_id).split("/")
+                  stored_key_id.insert(0, "projects")
+                  stored_key_id.insert(2, "locations")
+                  stored_key_id.insert(4, "keyRings")
+                  stored_key_id.insert(6, "cryptoKeys")
+                  stored_key_id.insert(8, "cryptoKeyVersions") if stored_key_id.size > 8
+                  stored_key_id = stored_key_id.join("/")
+
+                  request = ::Google::Apis::CloudkmsV1::DecryptRequest.new(
+                    ciphertext: ciphertext.unpack(default_encoding).first,
+                    additional_authenticated_data: context.to_json
+                  )
+                  plaintext_key = KmsEncrypted::Google.kms_client.decrypt_crypto_key(stored_key_id, request).plaintext
                 else
-                  if encrypted_key.start_with?("$gc$")
-                    _, _, short_key_id, ciphertext = encrypted_key.split("$", 4)
-
-                    # restore key
-                    stored_key_id = Base64.decode64(short_key_id).split("/")
-                    stored_key_id.insert(0, "projects")
-                    stored_key_id.insert(2, "locations")
-                    stored_key_id.insert(4, "keyRings")
-                    stored_key_id.insert(6, "cryptoKeys")
-                    stored_key_id.insert(8, "cryptoKeyVersions") if stored_key_id.size > 8
-                    stored_key_id = stored_key_id.join("/")
-
-                    request = ::Google::Apis::CloudkmsV1::DecryptRequest.new(
-                      ciphertext: ciphertext.unpack(default_encoding).first,
-                      additional_authenticated_data: context.to_json
-                    )
-                    plaintext_key = KmsEncrypted::Google.kms_client.decrypt_crypto_key(stored_key_id, request).plaintext
-                  else
-                    plaintext_key = KmsEncrypted.kms_client.decrypt(
-                      ciphertext_blob: encrypted_key.unpack(default_encoding).first,
-                      encryption_context: context
-                    ).plaintext
-                  end
+                  plaintext_key = KmsEncrypted.kms_client.decrypt(
+                    ciphertext_blob: encrypted_key.unpack(default_encoding).first,
+                    encryption_context: context
+                  ).plaintext
                 end
               end
 
