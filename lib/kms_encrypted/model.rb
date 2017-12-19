@@ -90,7 +90,7 @@ module KmsEncrypted
                 context: context
               }
               ActiveSupport::Notifications.instrument("decrypt_data_key.kms_encrypted", event) do
-                if key_id == "insecure-test-key"
+                if encrypted_key.start_with?("insecure-data-key-")
                   plaintext_key = "00000000000000000000000000000000"
                 elsif encrypted_key.start_with?("$gc$")
                   _, _, short_key_id, ciphertext = encrypted_key.split("$", 4)
