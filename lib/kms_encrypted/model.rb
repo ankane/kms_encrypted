@@ -58,9 +58,10 @@ module KmsEncrypted
                     additional_authenticated_data: context.to_json
                   )
                   response = KmsEncrypted::Google.kms_client.encrypt_crypto_key(key_id, request)
+                  key_version = response.name
 
                   # shorten key to save space
-                  short_key_id = Base64.encode64(key_id.split("/").select.with_index { |p, i| i.odd? }.join("/"))
+                  short_key_id = Base64.encode64(key_version.split("/").select.with_index { |p, i| i.odd? }.join("/"))
 
                   # build encrypted key
                   # we reference the key in the field for easy rotation
@@ -95,13 +96,12 @@ module KmsEncrypted
                 elsif encrypted_key.start_with?("$gc$")
                   _, _, short_key_id, ciphertext = encrypted_key.split("$", 4)
 
-                  # restore key
-                  stored_key_id = Base64.decode64(short_key_id).split("/")
+                  # restore key, except for cryptoKeyVersion
+                  stored_key_id = Base64.decode64(short_key_id).split("/")[0..3]
                   stored_key_id.insert(0, "projects")
                   stored_key_id.insert(2, "locations")
                   stored_key_id.insert(4, "keyRings")
                   stored_key_id.insert(6, "cryptoKeys")
-                  stored_key_id.insert(8, "cryptoKeyVersions") if stored_key_id.size > 8
                   stored_key_id = stored_key_id.join("/")
 
                   request = ::Google::Apis::CloudkmsV1::DecryptRequest.new(
