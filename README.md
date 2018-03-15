@@ -30,6 +30,10 @@ Follow the instructions for your key management service:
 - [Amazon KMS](guides/Amazon.md)
 - [Google KMS](guides/Google.md)
 
+## Related Projects
+
+To securely search encrypted data, check out [Blind Index](https://github.com/ankane/blind_index).
+
 ## History
 
 View the [changelog](CHANGELOG.md)
