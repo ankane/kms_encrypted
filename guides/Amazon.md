@@ -57,7 +57,7 @@ class User < ApplicationRecord
 end
 ```
 
-The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](http://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
+The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
 
 The primary key is a good choice, but auto-generated ids aren’t available until a record is created, and we need to encrypt before this. One solution is to preload the primary key. Here’s what it looks like with Postgres:
 
@@ -147,7 +147,7 @@ We recommend setting up alerts on suspicious behavior.
 
 ## Key Rotation
 
-KMS supports [automatic key rotation](http://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
+KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
 
 To manually rotate keys, replace the old KMS key id with the new key id in your model. Your app does not need the old key id to perform rotation (however, the key must still be enabled in your AWS account).
 
