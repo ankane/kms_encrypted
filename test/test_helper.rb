@@ -18,7 +18,7 @@ if ENV["VERBOSE"]
 end
 
 $events = Hash.new(0)
-ActiveSupport::Notifications.subscribe(/kms_encrypted/) do |name, start, finish, id, payload|
+ActiveSupport::Notifications.subscribe(/kms_encrypted/) do |name, _start, _finish, _id, _payload|
   $events[name.sub(".kms_encrypted", "").to_sym] += 1
 end
 

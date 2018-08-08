@@ -61,7 +61,7 @@ module KmsEncrypted
                   key_version = response.name
 
                   # shorten key to save space
-                  short_key_id = Base64.encode64(key_version.split("/").select.with_index { |p, i| i.odd? }.join("/"))
+                  short_key_id = Base64.encode64(key_version.split("/").select.with_index { |_, i| i.odd? }.join("/"))
 
                   # build encrypted key
                   # we reference the key in the field for easy rotation
