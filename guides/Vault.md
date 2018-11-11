@@ -15,7 +15,7 @@ add_column :users, :encrypted_email_iv, :text
 add_column :users, :encrypted_kms_key, :text
 ```
 
-Enable the [transit](https://www.vaultproject.io/docs/secrets/transit/index.html) backend
+Enable the [transit](https://www.vaultproject.io/docs/secrets/transit/index.html) secrets engine
 
 ```sh
 vault secrets enable transit
