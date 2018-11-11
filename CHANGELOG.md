@@ -1,3 +1,7 @@
+## 0.2.1 [unreleased]
+
+- Added support for Vault
+
 ## 0.2.0
 
 - Added support for Google KMS

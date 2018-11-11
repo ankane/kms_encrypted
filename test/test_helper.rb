@@ -4,10 +4,11 @@ require "attr_encrypted"
 Bundler.require(:default)
 require "minitest/autorun"
 require "minitest/pride"
+require "vault"
 
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
-ENV["KMS_KEY_ID"] ||= "alias/test"
+ENV["KMS_KEY_ID"] ||= "insecure-test-key"
 
 if ENV["VERBOSE"]
   logger = ActiveSupport::Logger.new(STDOUT)

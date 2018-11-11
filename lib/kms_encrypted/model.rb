@@ -66,6 +66,18 @@ module KmsEncrypted
                   # build encrypted key
                   # we reference the key in the field for easy rotation
                   encrypted_key = "$gc$#{short_key_id}$#{[response.ciphertext].pack(default_encoding)}"
+                elsif key_id.start_with?("vault/")
+                  # generate random AES-256 key
+                  plaintext_key = OpenSSL::Random.random_bytes(32)
+
+                  # encrypt it
+                  response = Vault.logical.write(
+                    "transit/encrypt/#{key_id.sub("vault/", "")}",
+                    plaintext: Base64.encode64(plaintext_key),
+                    context: Base64.encode64(context.to_json)
+                  )
+
+                  encrypted_key = response.data[:ciphertext]
                 else
                   # generate data key from API
                   resp = KmsEncrypted.kms_client.generate_data_key(
@@ -109,6 +121,14 @@ module KmsEncrypted
                     additional_authenticated_data: context.to_json
                   )
                   plaintext_key = KmsEncrypted::Google.kms_client.decrypt_crypto_key(stored_key_id, request).plaintext
+                elsif encrypted_key.start_with?("vault:")
+                  response = Vault.logical.write(
+                    "transit/decrypt/#{key_id.sub("vault/", "")}",
+                    ciphertext: encrypted_key,
+                    context: Base64.encode64(context.to_json)
+                  )
+
+                  plaintext_key = Base64.decode64(response.data[:plaintext])
                 else
                   plaintext_key = KmsEncrypted.kms_client.decrypt(
                     ciphertext_blob: encrypted_key.unpack(default_encoding).first,
