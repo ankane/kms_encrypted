@@ -53,12 +53,13 @@ module KmsEncrypted
                   plaintext_key = OpenSSL::Random.random_bytes(32)
 
                   # encrypt it
-                  require "google/apis/cloudkms_v1"
+                  # load client first to ensure namespace is loaded
+                  client = KmsEncrypted.google_client
                   request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(
                     plaintext: plaintext_key,
                     additional_authenticated_data: context.to_json
                   )
-                  response = KmsEncrypted.google_client.encrypt_crypto_key(key_id, request)
+                  response = client.encrypt_crypto_key(key_id, request)
                   key_version = response.name
 
                   # shorten key to save space
@@ -117,12 +118,13 @@ module KmsEncrypted
                   stored_key_id.insert(6, "cryptoKeys")
                   stored_key_id = stored_key_id.join("/")
 
-                  require "google/apis/cloudkms_v1"
+                  # load client first to ensure namespace is loaded
+                  client = KmsEncrypted.google_client
                   request = ::Google::Apis::CloudkmsV1::DecryptRequest.new(
                     ciphertext: ciphertext.unpack(default_encoding).first,
                     additional_authenticated_data: context.to_json
                   )
-                  plaintext_key = KmsEncrypted.google_client.decrypt_crypto_key(stored_key_id, request).plaintext
+                  plaintext_key = client.decrypt_crypto_key(stored_key_id, request).plaintext
                 elsif encrypted_key.start_with?("vault:")
                   response = KmsEncrypted.vault_client.logical.write(
                     "transit/decrypt/#{key_id.sub("vault/", "")}",

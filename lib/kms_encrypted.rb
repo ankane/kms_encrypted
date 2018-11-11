@@ -22,6 +22,7 @@ module KmsEncrypted
 
     def google_client
       @google_client ||= begin
+        require "google/apis/cloudkms_v1"
         client = ::Google::Apis::CloudkmsV1::CloudKMSService.new
         client.authorization = ::Google::Auth.get_application_default(
           "https://www.googleapis.com/auth/cloud-platform"
