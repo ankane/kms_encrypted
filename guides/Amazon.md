@@ -70,7 +70,7 @@ class User < ApplicationRecord
 end
 ```
 
-[Amazon Athena](https://aws.amazon.com/athena/) is great for querying CloudTrail logs. Create a table (thanks to [this post](https://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
+[Amazon Athena](https://aws.amazon.com/athena/) is great for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
 
 ```sql
 CREATE EXTERNAL TABLE cloudtrail_logs (
