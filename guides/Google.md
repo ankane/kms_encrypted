@@ -4,7 +4,7 @@ Add this line to your application’s Gemfile:
 
 ```ruby
 gem 'google-api-client'
-gem 'kms_encrypted', github: 'ankane/kms_encrypted'
+gem 'kms_encrypted'
 ```
 
 Add columns for the encrypted data and the encrypted KMS data keys
