@@ -1,6 +1,8 @@
-## 0.2.1 [unreleased]
+## 0.3.0 [unreleased]
 
 - Added support for Vault
+- Removed `KmsEncrypted.kms_client` and `KmsEncrypted.client_options` in favor of `KmsEncrypted.aws_client`
+- Removed `KmsEncrypted::Google.kms_client` in favor of `KmsEncrypted.google_client`
 
 ## 0.2.0
 

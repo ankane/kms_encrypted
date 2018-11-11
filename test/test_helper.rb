@@ -4,6 +4,8 @@ require "attr_encrypted"
 Bundler.require(:default)
 require "minitest/autorun"
 require "minitest/pride"
+require "aws-sdk-kms"
+require "google/apis/cloudkms_v1"
 require "vault"
 
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
@@ -12,7 +14,7 @@ ENV["KMS_KEY_ID"] ||= "insecure-test-key"
 
 if ENV["VERBOSE"]
   logger = ActiveSupport::Logger.new(STDOUT)
-  KmsEncrypted.client_options[:logger] = logger
+  Aws.config[:logger] = logger
   ActiveRecord::Base.logger = logger
   ActiveSupport::LogSubscriber.logger = logger
   Google::Apis.logger = logger
