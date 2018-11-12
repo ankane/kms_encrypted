@@ -80,10 +80,10 @@ We recommend setting up alerts on suspicious behavior.
 
 ## Key Rotation
 
-To manually rotate keys, replace the old key id with the new key id in your model.
+To manually rotate keys, use:
 
 ```sh
-KMS_KEY_ID=...
+vault write -f transit/keys/my-key/rotate
 ```
 
 and run
