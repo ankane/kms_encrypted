@@ -61,7 +61,7 @@ class User < ApplicationRecord
 end
 ```
 
-The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
+The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt.
 
 The primary key is a good choice, but auto-generated ids aren’t available until a record is created, and we need to encrypt before this. One solution is to preload the primary key. Here’s what it looks like with Postgres:
 
