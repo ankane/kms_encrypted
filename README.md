@@ -17,7 +17,7 @@ Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://clou
 
 ## How It Works
 
-This approach uses KMS to manage encryption keys and attr_encrypted to do the encryption.
+This approach uses a key management service (KMS) to manage encryption keys and attr_encrypted to do the encryption.
 
 To encrypt an attribute, we first generate a data key and encrypt it with KMS. This is known as [envelope encryption](https://cloud.google.com/kms/docs/envelope-encryption). We pass the unencrypted version to attr_encrypted and store the encrypted version in the `encrypted_kms_key` column. For each record, we generate a different data key.
 
