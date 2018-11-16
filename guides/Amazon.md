@@ -1,4 +1,4 @@
-# Amazon KMS
+# AWS KMS
 
 Add this line to your application’s Gemfile:
 

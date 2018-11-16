@@ -11,7 +11,7 @@ The attr_encrypted gem is great for encryption, but:
 
 Key management services address all of these issues and it’s easy to use them together.
 
-Supports [Amazon KMS](https://aws.amazon.com/kms/), [Google KMS](https://cloud.google.com/kms/), and [Vault](https://www.vaultproject.io/)
+Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://www.vaultproject.io/)
 
 [![Build Status](https://travis-ci.org/ankane/kms_encrypted.svg?branch=master)](https://travis-ci.org/ankane/kms_encrypted)
 
@@ -27,8 +27,8 @@ To decrypt an attribute, we first decrypt the data key with KMS. Once we have th
 
 Follow the instructions for your key management service:
 
-- [Amazon KMS](guides/Amazon.md)
-- [Google KMS](guides/Google.md)
+- [AWS KMS](guides/Amazon.md)
+- [Google Cloud KMS](guides/Google.md)
 - [Vault](guides/Vault.md)
 
 ## Related Projects
