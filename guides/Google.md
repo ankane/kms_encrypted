@@ -37,30 +37,7 @@ For each encrypted attribute, use the `kms_key` method for its key.
 
 ## Auditing
 
-Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set up data access logging. To know what data is being decrypted, you’ll need to add context.
-
-Add a `kms_encryption_context` method to your model.
-
-```ruby
-class User < ApplicationRecord
-  def kms_encryption_context
-    # some hash
-  end
-end
-```
-
-The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt.
-
-The primary key is a good choice, but auto-generated ids aren’t available until a record is created, and we need to encrypt before this. One solution is to preload the primary key. Here’s what it looks like with Postgres:
-
-```ruby
-class User < ApplicationRecord
-  def kms_encryption_context
-    self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
-    {"Record" => "#{model_name}/#{id}"}
-  end
-end
-```
+Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set up data access logging. There is not currently a way to see what data is being decrypted, since the additional authenticated data is not logged.
 
 ## Alerting
 
