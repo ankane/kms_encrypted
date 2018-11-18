@@ -74,6 +74,14 @@ class User < ApplicationRecord
 end
 ```
 
+Context will show up hashed in the audit logs. To get the hash for a record, use: [master]
+
+```ruby
+KmsEncrypted.context_hash(record, path: "file")
+```
+
+The `path` option should point to your audit device. Common paths are `file`, `syslog`, and `socket`.
+
 ## Alerting
 
 We recommend setting up alerts on suspicious behavior.

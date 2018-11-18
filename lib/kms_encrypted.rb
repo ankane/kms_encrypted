@@ -1,5 +1,6 @@
 # dependencies
 require "active_support"
+require "base64"
 
 # modules
 require "kms_encrypted/log_subscriber"
@@ -33,6 +34,11 @@ module KmsEncrypted
 
     def vault_client
       @vault_client ||= ::Vault
+    end
+
+    def context_hash(record, path:)
+      context = Base64.encode64(record.kms_encryption_context.to_json)
+      vault_client.logical.write("sys/audit-hash/#{path}", input: context).data[:hash]
     end
   end
 end

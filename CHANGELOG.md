@@ -1,3 +1,7 @@
+## 0.3.1 [unreleased]
+
+- Added `context_hash`
+
 ## 0.3.0
 
 - Added support for Vault
