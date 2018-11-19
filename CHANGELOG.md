@@ -1,6 +1,7 @@
 ## 0.3.1 [unreleased]
 
 - Added `context_hash`
+- Added `prefix` option
 
 ## 0.3.0
 

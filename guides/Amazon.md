@@ -226,7 +226,7 @@ To do this, add more columns
 ```ruby
 add_column :users, :encrypted_phone, :text
 add_column :users, :encrypted_phone_iv, :text
-add_column :users, :encrypted_kms_key_phone, :text
+add_column :users, :encrypted_phone_kms_key, :text
 ```
 
 And update your model
@@ -234,10 +234,10 @@ And update your model
 ```ruby
 class User < ApplicationRecord
   has_kms_key
-  has_kms_key name: :phone, key_id: "..."
+  has_kms_key prefix: :phone, key_id: "..."
 
   attr_encrypted :email, key: :kms_key
-  attr_encrypted :phone, key: :kms_key_phone
+  attr_encrypted :phone, key: :phone_kms_key
 end
 ```
 
@@ -245,7 +245,7 @@ For context, use:
 
 ```ruby
 class User < ApplicationRecord
-  def kms_encryption_context_phone
+  def phone_kms_encryption_context
     # some hash
   end
 end
@@ -254,7 +254,7 @@ end
 To rotate keys, use:
 
 ```ruby
-user.rotate_kms_key_phone!
+user.rotate_phone_kms_key!
 ```
 
 ## File Uploads

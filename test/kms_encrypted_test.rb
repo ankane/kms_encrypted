@@ -54,9 +54,9 @@ class KmsEncryptedTest < Minitest::Test
   def test_rotate_phone
     user = User.last
     fields = user.attributes
-    user.rotate_kms_key_phone!
+    user.rotate_phone_kms_key!
 
-    %w(encrypted_phone encrypted_phone_iv encrypted_kms_key_phone).each do |attr|
+    %w(encrypted_phone encrypted_phone_iv encrypted_phone_kms_key).each do |attr|
       assert user.send(attr) != fields[attr], "#{attr} expected to change"
     end
 
@@ -66,7 +66,7 @@ class KmsEncryptedTest < Minitest::Test
 
   def test_kms_keys
     assert User.kms_keys[:kms_key]
-    assert User.kms_keys[:kms_key_phone]
+    assert User.kms_keys[:phone_kms_key]
   end
 
   def test_context_hash

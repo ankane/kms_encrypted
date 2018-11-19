@@ -1,9 +1,16 @@
 module KmsEncrypted
   module Model
-    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil)
+    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, prefix: nil)
       key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
 
-      key_method = name ? "kms_key_#{name}" : "kms_key"
+      key_method =
+        if name
+          "kms_key_#{name}"
+        elsif prefix
+          "#{prefix}_kms_key"
+        else
+          "kms_key"
+        end
 
       class_eval do
         class << self
@@ -32,7 +39,15 @@ module KmsEncrypted
 
           unless instance_variable_get(instance_var)
             key_column = "encrypted_#{key_method}"
-            context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
+            context_method =
+              if name
+                "kms_encryption_context_#{name}"
+              elsif prefix
+                "#{prefix}_kms_encryption_context"
+              else
+                "kms_encryption_context"
+              end
+
             context = respond_to?(context_method, true) ? send(context_method) : {}
             default_encoding = "m"
 

@@ -34,15 +34,15 @@ ActiveRecord::Migration.create_table :users do |t|
 
   # kms_encrypted
   t.string :encrypted_kms_key
-  t.string :encrypted_kms_key_phone
+  t.string :encrypted_phone_kms_key
 end
 
 class User < ActiveRecord::Base
   has_kms_key
-  has_kms_key name: :phone
+  has_kms_key prefix: :phone
 
   attr_encrypted :email, key: :kms_key
-  attr_encrypted :phone, key: :kms_key_phone
+  attr_encrypted :phone, key: :phone_kms_key
 
   def kms_encryption_context
     {"Name" => name}
