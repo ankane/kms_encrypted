@@ -70,6 +70,8 @@ class User < ApplicationRecord
 end
 ```
 
+Another solution is to first save the record without the encrypted data, then update it.
+
 [Amazon Athena](https://aws.amazon.com/athena/) is great for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
 
 ```sql

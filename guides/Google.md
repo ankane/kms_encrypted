@@ -37,7 +37,7 @@ For each encrypted attribute, use the `kms_key` method for its key.
 
 ## Auditing
 
-Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set up data access logging. There is not currently a way to see what data is being decrypted, since the additional authenticated data is not logged.
+Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set up data access logging. There is not currently a way to see what data is being decrypted, since the additional authenticated data is not logged. For this reason, we recommend another KMS provider.
 
 ## Alerting
 

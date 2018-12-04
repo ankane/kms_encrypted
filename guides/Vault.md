@@ -74,6 +74,8 @@ class User < ApplicationRecord
 end
 ```
 
+Another solution is to first save the record without the encrypted data, then update it.
+
 Context will show up hashed in the audit logs. To get the hash for a record, use: [master]
 
 ```ruby
