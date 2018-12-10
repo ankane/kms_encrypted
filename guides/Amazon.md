@@ -72,7 +72,13 @@ end
 
 Another solution is to first save the record without the encrypted data, then update it.
 
-[Amazon Athena](https://aws.amazon.com/athena/) is great for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
+Confirm it worked in the [CloudTrail console](https://console.aws.amazon.com/cloudtrail/home#/events?EventName=Decrypt). Note that it can take 20 minutes for events to show up. Use “View Event” to see the encryption context. You can also use the AWS CLI.
+
+```sh
+aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=Decrypt
+```
+
+If you haven’t already, enable CloudTrail storage to S3. [Amazon Athena](https://aws.amazon.com/athena/) is great for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
 
 ```sql
 CREATE EXTERNAL TABLE cloudtrail_logs (
@@ -145,7 +151,13 @@ There will also be `GenerateDataKey` events.
 
 ## Alerting
 
-We recommend setting up alerts on suspicious behavior.
+We recommend setting up alerts on suspicious behavior. To get near real-time alerts (20-30 second delay), use [CloudWatch Events](https://console.aws.amazon.com/cloudwatch/home#rules:).
+
+Create a rule to match “Events by Service”. Choose “Key Management Service (KMS)” as the service name and “AWS API Call via CloudTrail” as the event type. For operations, select “Specific Operations” and enter “Decrypt”.
+
+Since a target is required, create an SNS topic with no subscriptions to use as the target. You can also use this to post events to an external source if desired.
+
+Give the rule a name like “Decryptions”. Once it’s created, select it and click “Show metrics for the rule”. Check “Invocations”. On the “Graphed Metrics” tab, change the statistic to “Sum” and the period to “1 minute”. Finally, click the bell icon to create an alarm.
 
 ## Key Rotation
 
