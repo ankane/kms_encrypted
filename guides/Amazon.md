@@ -149,6 +149,29 @@ ORDER BY 1
 
 There will also be `GenerateDataKey` events.
 
+### Ensuring Context
+
+You can require everything to have a context by editing the key policy.
+
+```json
+{
+    "Effect": "Allow",
+    "Principal": {
+        "AWS": "arn:aws:iam::..."
+    },
+    "Action": [
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+    ],
+    "Resource": "*",
+    "Condition": {
+        "Null": {
+            "kms:EncryptionContextKeys": false
+        }
+    }
+}
+```
+
 ## Alerting
 
 We recommend setting up alerts on suspicious behavior. To get near real-time alerts (20-30 second delay), use [CloudWatch Events](https://console.aws.amazon.com/cloudwatch/home#rules:).
