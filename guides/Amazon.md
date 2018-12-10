@@ -157,7 +157,7 @@ Create a rule to match “Events by Service”. Choose “Key Management Service
 
 Since a target is required, create an SNS topic with no subscriptions to use as the target. You can also use this to post events to an external source if desired.
 
-Give the rule a name like “Decryptions”. Once it’s created, select it and click “Show metrics for the rule”. Check “Invocations”. On the “Graphed Metrics” tab, change the statistic to “Sum” and the period to “1 minute”. Finally, click the bell icon to create an alarm.
+Give the rule a name like “Decryptions”. Once it’s created, open it and click “Show metrics for the rule”. Check “Invocations”. On the “Graphed Metrics” tab, change the statistic to “Sum” and the period to “1 minute”. Finally, click the bell icon to create an alarm.
 
 ## Key Rotation
 
