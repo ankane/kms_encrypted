@@ -151,7 +151,7 @@ There will also be `GenerateDataKey` events.
 
 ### Ensuring Context
 
-You can require everything to have a context by editing the key policy.
+You can require everything to have context by editing the key policy.
 
 ```json
 {
