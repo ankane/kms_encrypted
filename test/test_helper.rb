@@ -6,6 +6,9 @@ require "minitest/autorun"
 require "minitest/pride"
 require "aws-sdk-kms"
 require "google/apis/cloudkms_v1"
+
+# must come before vault
+ENV["VAULT_ADDR"] ||= "http://127.0.0.1:8200"
 require "vault"
 
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"

@@ -54,39 +54,13 @@ module KmsEncrypted
       ActiveSupport::Notifications.instrument("generate_data_key.kms_encrypted", event) do
         if key_id == "insecure-test-key"
           plaintext_key = "00000000000000000000000000000000"
-          encrypted_key = "insecure-data-key-#{rand(1_000_000_000_000)}"
+          encrypted_key = encrypt(plaintext_key, key_id: key_id, context: context)
         elsif key_id.start_with?("projects/")
-          # generate random AES-256 key
-          plaintext_key = SecureRandom.random_bytes(32)
-
-          # encrypt it
-          # load client first to ensure namespace is loaded
-          client = KmsEncrypted.google_client
-          request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(
-            plaintext: plaintext_key,
-            additional_authenticated_data: context.to_json
-          )
-          response = client.encrypt_crypto_key(key_id, request)
-          key_version = response.name
-
-          # shorten key to save space
-          short_key_id = Base64.encode64(key_version.split("/").select.with_index { |_, i| i.odd? }.join("/"))
-
-          # build encrypted key
-          # we reference the key in the field for easy rotation
-          encrypted_key = "$gc$#{short_key_id}$#{[response.ciphertext].pack(default_encoding)}"
+          plaintext_key = random_key
+          encrypted_key = encrypt(plaintext_key, key_id: key_id, context: context)
         elsif key_id.start_with?("vault/")
-          # generate random AES-256 key
-          plaintext_key = SecureRandom.random_bytes(32)
-
-          # encrypt it
-          response = KmsEncrypted.vault_client.logical.write(
-            "transit/encrypt/#{key_id.sub("vault/", "")}",
-            plaintext: Base64.encode64(plaintext_key),
-            context: Base64.encode64(context.to_json)
-          )
-
-          encrypted_key = response.data[:ciphertext]
+          plaintext_key = random_key
+          encrypted_key = encrypt(plaintext_key, key_id: key_id, context: context)
         else
           # generate data key from API
           resp = KmsEncrypted.aws_client.generate_data_key(
@@ -100,6 +74,51 @@ module KmsEncrypted
       end
 
       [plaintext_key, encrypted_key]
+    end
+
+    def encrypt(plaintext, key_id:, context:)
+      default_encoding = "m"
+
+      if key_id == "insecure-test-key"
+        "insecure-data-key-#{rand(1_000_000_000_000)}"
+      elsif key_id.start_with?("projects/")
+        # encrypt it
+        # load client first to ensure namespace is loaded
+        client = KmsEncrypted.google_client
+        request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(
+          plaintext: plaintext,
+          additional_authenticated_data: context.to_json
+        )
+        response = client.encrypt_crypto_key(key_id, request)
+        key_version = response.name
+
+        # shorten key to save space
+        short_key_id = Base64.encode64(key_version.split("/").select.with_index { |_, i| i.odd? }.join("/"))
+
+        # build encrypted key
+        # we reference the key in the field for easy rotation
+        encrypted_key = "$gc$#{short_key_id}$#{[response.ciphertext].pack(default_encoding)}"
+      elsif key_id.start_with?("vault/")
+        # encrypt it
+        response = KmsEncrypted.vault_client.logical.write(
+          "transit/encrypt/#{key_id.sub("vault/", "")}",
+          plaintext: Base64.encode64(plaintext),
+          context: Base64.encode64(context.to_json)
+        )
+
+        response.data[:ciphertext]
+      else
+        resp = KmsEncrypted.aws_client.encrypt(
+          key_id: key_id,
+          plaintext: plaintext,
+          encryption_context: context
+        )
+        [resp.ciphertext_blob].pack(default_encoding)
+      end
+    end
+
+    def random_key
+      SecureRandom.random_bytes(32)
     end
 
     def decrypt(ciphertext, key_id:, context:)
