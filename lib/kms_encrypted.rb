@@ -42,6 +42,7 @@ module KmsEncrypted
       vault_client.logical.write("sys/audit-hash/#{path}", input: context).data[:hash]
     end
 
+    # private for now
     def generate_data_key(key_id:, context:)
       plaintext_key = nil
       encrypted_key = nil
@@ -76,6 +77,7 @@ module KmsEncrypted
       [plaintext_key, encrypted_key]
     end
 
+    # private for now
     def encrypt(plaintext, key_id:, context:)
       default_encoding = "m"
 
@@ -117,10 +119,12 @@ module KmsEncrypted
       end
     end
 
+    # private for now
     def random_key
       SecureRandom.random_bytes(32)
     end
 
+    # private for now
     def decrypt(ciphertext, key_id:, context:)
       default_encoding = "m"
 
