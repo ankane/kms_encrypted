@@ -178,9 +178,9 @@ We recommend setting up alerts on suspicious behavior. To get near real-time ale
 
 Create a rule to match “Events by Service”. Choose “Key Management Service (KMS)” as the service name and “AWS API Call via CloudTrail” as the event type. For operations, select “Specific Operations” and enter “Decrypt”.
 
-Since a target is required, create an SNS topic with no subscriptions to use as the target. You can also use this to post events to an external source if desired.
+Create an SNS topic to use as the target. You don’t need to create any SNS subscriptions, but you can if you want to post events to an external source.
 
-Give the rule a name like “Decryptions”. Once it’s created, open it and click “Show metrics for the rule”. Check “Invocations”. On the “Graphed Metrics” tab, change the statistic to “Sum” and the period to “1 minute”. Finally, click the bell icon to create an alarm.
+Give the rule a name like “Decryptions”. Once it’s created, open it and click “Show metrics for the rule”. Check “Invocations”. On the “Graphed Metrics” tab, change the statistic to “Sum” and the period to “1 minute”. Finally, click the bell icon to create an alarm for high number of decryptions.
 
 ## Key Rotation
 
