@@ -34,16 +34,17 @@ module KmsEncrypted
             key_column = "encrypted_#{key_method}"
             context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
             context = respond_to?(context_method, true) ? send(context_method) : {}
+            client = KmsEncrypted::Client.new(key_id: key_id)
 
             unless send(key_column)
-              plaintext_key, encrypted_key = KmsEncrypted.generate_data_key(key_id: key_id, context: context)
+              plaintext_key, encrypted_key = client.generate_data_key(context: context)
               instance_variable_set(instance_var, plaintext_key)
               self.send("#{key_column}=", encrypted_key)
             end
 
             unless instance_variable_get(instance_var)
               encrypted_key = send(key_column)
-              plaintext_key = KmsEncrypted.decrypt(encrypted_key, key_id: key_id, context: context)
+              plaintext_key = client.decrypt(encrypted_key, context: context)
               instance_variable_set(instance_var, plaintext_key)
             end
           end
