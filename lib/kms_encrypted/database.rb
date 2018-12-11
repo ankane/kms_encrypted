@@ -19,12 +19,12 @@ module KmsEncrypted
 
           # build encrypted key
           # we reference the key in the field for easy rotation
-          [plaintext, "$gc$#{Base64.strict_encode64(short_key_id)}$#{Base64.strict_encode64(ciphertext)}"]
+          [plaintext, "$gc$#{Base64.encode64(short_key_id)}$#{Base64.encode64(ciphertext)}"]
         elsif key_id.start_with?("vault/")
           KmsEncrypted::Clients::Vault.new(key_id: key_id).generate_data_key(context: context.to_json)
         else
           plaintext, ciphertext = KmsEncrypted::Clients::Aws.new(key_id: key_id).generate_data_key(context: context)
-          [plaintext, Base64.strict_encode64(ciphertext)]
+          [plaintext, Base64.encode64(ciphertext)]
         end
       end
     end
