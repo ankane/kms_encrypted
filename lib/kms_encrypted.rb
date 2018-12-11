@@ -9,6 +9,7 @@ require "kms_encrypted/model"
 require "kms_encrypted/version"
 
 # clients
+require "kms_encrypted/client"
 require "kms_encrypted/clients/base"
 require "kms_encrypted/clients/aws"
 require "kms_encrypted/clients/google"
