@@ -3,10 +3,11 @@ module KmsEncrypted
     attr_reader :key_id
 
     def initialize(key_id: nil)
-      @key_id = key_id
+      @key_id = key_id || ENV["KMS_KEY_ID"]
+      raise ArgumentError, "Missing key id" unless @key_id
     end
 
-    def generate_data_key(context:)
+    def generate_data_key(context: nil)
       plaintext_key = nil
       encrypted_key = nil
       default_encoding = "m"
@@ -40,19 +41,23 @@ module KmsEncrypted
       [plaintext_key, encrypted_key]
     end
 
-    def encrypt(plaintext, context:)
+    def encrypt(plaintext, context: nil)
       default_encoding = "m"
 
       if key_id == "insecure-test-key"
+        # TODO incorporate plaintext and context
         "insecure-data-key-#{rand(1_000_000_000_000)}"
       elsif key_id.start_with?("projects/")
         # encrypt it
         # load client first to ensure namespace is loaded
         client = KmsEncrypted.google_client
-        request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(
-          plaintext: plaintext,
-          additional_authenticated_data: context.to_json
-        )
+        options = {
+          plaintext: plaintext
+        }
+        # TODO breaking: don't force context to be hash
+        options[:additional_authenticated_data] = context.to_json if context
+
+        request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(options)
         response = client.encrypt_crypto_key(key_id, request)
         key_version = response.name
 
@@ -63,20 +68,25 @@ module KmsEncrypted
         # we reference the key in the field for easy rotation
         encrypted_key = "$gc$#{short_key_id}$#{[response.ciphertext].pack(default_encoding)}"
       elsif key_id.start_with?("vault/")
-        # encrypt it
+        options = {
+          plaintext: Base64.encode64(plaintext)
+        }
+        # TODO breaking: don't force context to be hash
+        options[:context] = Base64.encode64(context.to_json) if context
+
         response = KmsEncrypted.vault_client.logical.write(
           "transit/encrypt/#{key_id.sub("vault/", "")}",
-          plaintext: Base64.encode64(plaintext),
-          context: Base64.encode64(context.to_json)
+          options
         )
 
         response.data[:ciphertext]
       else
-        resp = KmsEncrypted.aws_client.encrypt(
+        options = {
           key_id: key_id,
-          plaintext: plaintext,
-          encryption_context: context
-        )
+          plaintext: plaintext
+        }
+        options[:encryption_context] = context if context
+        resp = KmsEncrypted.aws_client.encrypt(options)
         [resp.ciphertext_blob].pack(default_encoding)
       end
     end
@@ -85,7 +95,7 @@ module KmsEncrypted
       SecureRandom.random_bytes(32)
     end
 
-    def decrypt(ciphertext, context:)
+    def decrypt(ciphertext, context: nil)
       default_encoding = "m"
 
       event = {
