@@ -1,17 +1,21 @@
 # dependencies
 require "active_support"
 require "base64"
-require "securerandom"
 
 # modules
-require "kms_encrypted/client"
+require "kms_encrypted/database"
 require "kms_encrypted/log_subscriber"
 require "kms_encrypted/model"
 require "kms_encrypted/version"
 
+# clients
+require "kms_encrypted/clients/base"
+require "kms_encrypted/clients/aws"
+require "kms_encrypted/clients/google"
+require "kms_encrypted/clients/vault"
+
 module KmsEncrypted
   class << self
-    # TODO move all this into Client class
     attr_writer :aws_client
     attr_writer :google_client
     attr_writer :vault_client
