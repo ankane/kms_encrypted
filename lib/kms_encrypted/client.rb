@@ -92,7 +92,6 @@ module KmsEncrypted
         key_id: key_id,
         context: context
       }
-
       ActiveSupport::Notifications.instrument("decrypt_data_key.kms_encrypted", event) do
         if ciphertext.start_with?("insecure-data-key-")
           "00000000000000000000000000000000".encode("BINARY")
