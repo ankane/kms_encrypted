@@ -7,11 +7,9 @@ gem 'vault'
 gem 'kms_encrypted'
 ```
 
-Add columns for the encrypted data and the encrypted KMS data keys
+Add a column for the encrypted KMS data keys
 
 ```ruby
-add_column :users, :encrypted_email, :text
-add_column :users, :encrypted_email_iv, :text
 add_column :users, :encrypted_kms_key, :text
 ```
 
@@ -116,11 +114,9 @@ KMS_KEY_ID=insecure-test-key
 
 You may want to protect different columns with different data keys (or even master keys).
 
-To do this, add more columns
+To do this, add another column
 
 ```ruby
-add_column :users, :encrypted_phone, :text
-add_column :users, :encrypted_phone_iv, :text
 add_column :users, :encrypted_kms_key_phone, :text
 ```
 
