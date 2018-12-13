@@ -38,6 +38,8 @@ ActiveRecord::Migration.create_table :users do |t|
   # kms_encrypted
   t.string :encrypted_kms_key
   t.string :encrypted_kms_key_phone
+
+  t.timestamps
 end
 
 class User < ActiveRecord::Base

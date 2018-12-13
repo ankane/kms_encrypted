@@ -44,7 +44,10 @@ module KmsEncrypted
               end
             end
             if updates.any?
-              updates[:updated_at] = Time.now # TODO confirm updated_at
+              current_time = current_time_from_proper_timezone
+              timestamp_attributes_for_update_in_model.each do |attr|
+                updates[attr] = current_time
+              end
               update_columns(updates)
             end
           end
@@ -63,6 +66,10 @@ module KmsEncrypted
                 context = respond_to?(context_method, true) ? send(context_method) : {}
                 KmsEncrypted::Database.decrypt_data_key(encrypted_key, key_id: key_id, context: context)
               else
+                # TODO can encrypt here if preload option set
+                # maybe also have option to preload
+                # prefetch_key: true/false/:when_possible ()
+                # prefetch_id: true/false (default false)
                 SecureRandom.random_bytes(32)
               end
             instance_variable_set(instance_var, plaintext_key)

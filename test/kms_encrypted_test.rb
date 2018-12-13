@@ -87,6 +87,11 @@ class KmsEncryptedTest < Minitest::Test
     end
   end
 
+  def test_updated_at
+    user = User.last
+    refute_equal user.updated_at, user.created_at
+  end
+
   private
 
   def assert_operations(expected)
