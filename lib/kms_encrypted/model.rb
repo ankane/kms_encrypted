@@ -69,7 +69,13 @@ module KmsEncrypted
                 )
               else
                 key = SecureRandom.random_bytes(32)
-                if prefetch_key == true || (prefetch_key == :try && id)
+
+                if prefetch_key == :try_with_id
+                  raise ArgumentError, ":try_with_id only works with Postgres" unless self.class.connection.adapter_name =~ /postg/i
+                  self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
+                end
+
+                if prefetch_key == true || ([:try, :try_with_id].include?(prefetch_key) && id)
                   encrypted_key =
                     KmsEncrypted::Database.encrypt_data_key(key,
                       key_id: key_id,
@@ -86,12 +92,6 @@ module KmsEncrypted
         end
 
         define_method(context_method) do
-          # TODO add behind flag
-          if self.class.connection.adapter_name =~ /postg/i
-            # preload for postgres
-            self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
-          end
-
           raise "id needed for encryption context" unless id
 
           {
