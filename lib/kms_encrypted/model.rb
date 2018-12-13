@@ -1,9 +1,10 @@
 module KmsEncrypted
   module Model
-    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil)
+    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, prefetch_key: false)
       key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
+      key_column = "encrypted_#{key_method}"
       context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
 
       class_eval do
@@ -40,8 +41,7 @@ module KmsEncrypted
               if !send(key_column) && plaintext_key
                 name = key[:name]
                 context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
-                context = respond_to?(context_method, true) ? send(context_method) : {}
-                updates[key_column] = KmsEncrypted::Database.encrypt_data_key(plaintext_key, key_id: key[:key_id], context: context)
+                updates[key_column] = KmsEncrypted::Database.encrypt_data_key(plaintext_key, key_id: key[:key_id], context: send(context_method))
               end
             end
             if updates.any?
@@ -60,17 +60,24 @@ module KmsEncrypted
           instance_var = "@#{key_method}"
 
           unless instance_variable_get(instance_var)
-            encrypted_key = send("encrypted_#{key_method}")
+            encrypted_key = send(key_column)
             plaintext_key =
               if encrypted_key
-                context = respond_to?(context_method, true) ? send(context_method) : {}
-                KmsEncrypted::Database.decrypt_data_key(encrypted_key, key_id: key_id, context: context)
+                KmsEncrypted::Database.decrypt_data_key(encrypted_key,
+                  key_id: key_id,
+                  context: send(context_method)
+                )
               else
-                # TODO can encrypt here if preload option set
-                # maybe also have option to preload
-                # prefetch_key: true/false/:when_possible ()
-                # prefetch_id: true/false (default false)
-                SecureRandom.random_bytes(32)
+                key = SecureRandom.random_bytes(32)
+                if prefetch_key == true || (prefetch_key == :try && id)
+                  encrypted_key =
+                    KmsEncrypted::Database.encrypt_data_key(key,
+                      key_id: key_id,
+                      context: send(context_method)
+                    )
+                  send("#{key_column}=", encrypted_key)
+                end
+                key
               end
             instance_variable_set(instance_var, plaintext_key)
           end
@@ -79,6 +86,14 @@ module KmsEncrypted
         end
 
         define_method(context_method) do
+          # TODO add behind flag
+          if self.class.connection.adapter_name =~ /postg/i
+            # preload for postgres
+            self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
+          end
+
+          raise "id needed for encryption context" unless id
+
           {
             model_name: model_name.to_s,
             model_id: id.to_s

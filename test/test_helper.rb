@@ -44,7 +44,7 @@ end
 
 class User < ActiveRecord::Base
   has_kms_key
-  has_kms_key name: :phone
+  has_kms_key name: :phone, prefetch_key: :try
 
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
