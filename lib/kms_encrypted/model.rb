@@ -1,6 +1,6 @@
 module KmsEncrypted
   module Model
-    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, prefetch_key: false)
+    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, eager_encrypt: false)
       key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
@@ -70,12 +70,12 @@ module KmsEncrypted
               else
                 key = SecureRandom.random_bytes(32)
 
-                if prefetch_key == :try_with_id
-                  raise ArgumentError, ":try_with_id only works with Postgres" unless self.class.connection.adapter_name =~ /postg/i
+                if eager_encrypt == :fetch_id
+                  raise ArgumentError, ":fetch_id only works with Postgres" unless self.class.connection.adapter_name =~ /postg/i
                   self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
                 end
 
-                if prefetch_key == true || ([:try, :try_with_id].include?(prefetch_key) && id)
+                if eager_encrypt == true || ([:try, :fetch_id].include?(eager_encrypt) && id)
                   encrypted_key =
                     KmsEncrypted::Database.encrypt_data_key(key,
                       key_id: key_id,
@@ -83,6 +83,7 @@ module KmsEncrypted
                     )
                   send("#{key_column}=", encrypted_key)
                 end
+
                 key
               end
             instance_variable_set(instance_var, plaintext_key)

@@ -92,7 +92,7 @@ class KmsEncryptedTest < Minitest::Test
     refute_equal user.updated_at, user.created_at
   end
 
-  def test_prefetch_key_try
+  def test_eager_encrypt_try
     user = User.create!
     assert_operations encrypt: 1 do
       user.phone = "test@example.org"

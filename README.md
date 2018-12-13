@@ -35,6 +35,30 @@ Follow the instructions for your key management service:
 
 To securely search encrypted data, check out [Blind Index](https://github.com/ankane/blind_index).
 
+## Upgrading
+
+### 1.0
+
+KMS Encrypted 1.0 brings a number of improvements. Here are a few breaking changes to be aware of:
+
+- There's now a default encryption context with the model name and id
+- ActiveSupport notifications were changed from `generate_data_key` and `decrypt_data_key` to `encrypt` and `decrypt`
+- AWS KMS uses the `Encrypt` operation instead of `GenerateDataKey`
+
+For the previous behavior, use:
+
+```ruby
+class User < ApplicationRecord
+  has_kms_key eager_encrypt: true
+
+  def kms_encryption_context
+    {}
+  end
+end
+```
+
+There’s not a way to use `GenerateDataKey` anymore with AWS KMS.
+
 ## History
 
 View the [changelog](CHANGELOG.md)
