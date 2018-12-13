@@ -11,7 +11,7 @@ module KmsEncrypted
             @kms_keys ||= {}
           end unless respond_to?(:kms_keys)
         end
-        kms_keys[key_method.to_sym] = {key_id: key_id}
+        kms_keys[key_method.to_sym] = {key_id: key_id, name: name}
 
         # same pattern as attr_encrypted reload
         if method_defined?(:reload) && kms_keys.size == 1
@@ -25,6 +25,28 @@ module KmsEncrypted
           end
         end
 
+        if kms_keys.size == 1
+          after_save :encrypt_kms_keys
+
+          # fetch all keys together so only need to update database once
+          def encrypt_kms_keys
+            updates = {}
+            self.class.kms_keys.each do |key_method, key|
+              instance_var = "@#{key_method}"
+              key_column = "encrypted_#{key_method}"
+              plaintext_key = instance_variable_get(instance_var)
+
+              if !send(key_column) && plaintext_key
+                name = key[:name]
+                context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
+                context = respond_to?(context_method, true) ? send(context_method) : {}
+                updates[key_column] = KmsEncrypted::Database.encrypt(plaintext_key, key_id: key[:key_id], context: context)
+              end
+            end
+            update_columns(updates) if updates.any?
+          end
+        end
+
         define_method(key_method) do
           raise ArgumentError, "Missing key id" unless key_id
 
@@ -35,15 +57,14 @@ module KmsEncrypted
             context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
             context = respond_to?(context_method, true) ? send(context_method) : {}
 
-            unless send(key_column)
-              plaintext_key, encrypted_key = KmsEncrypted::Database.generate_data_key(key_id: key_id, context: context)
-              instance_variable_set(instance_var, plaintext_key)
-              self.send("#{key_column}=", encrypted_key)
-            end
-
             unless instance_variable_get(instance_var)
               encrypted_key = send(key_column)
-              plaintext_key = KmsEncrypted::Database.decrypt_data_key(encrypted_key, key_id: key_id, context: context)
+              plaintext_key =
+                if encrypted_key
+                  KmsEncrypted::Database.decrypt_data_key(encrypted_key, key_id: key_id, context: context)
+                else
+                  SecureRandom.random_bytes(32)
+                end
               instance_variable_set(instance_var, plaintext_key)
             end
           end
