@@ -49,6 +49,12 @@ For each encrypted attribute, use the `kms_key` method for its key.
 
 Follow the [instructions here](https://www.vaultproject.io/docs/audit/) to set up data access logging. To know what data is being decrypted, you’ll need to add context.
 
+**Note:** You need to set `derived` to true when creating the key for Vault to verify this value. If this is not done, the context cannot be trusted.
+
+```sh
+vault write transit/keys/my-key derived=true
+```
+
 Add a `kms_encryption_context` method to your model.
 
 ```ruby

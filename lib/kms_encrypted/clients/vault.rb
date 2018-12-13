@@ -21,10 +21,16 @@ module KmsEncrypted
         }
         options[:context] = Base64.encode64(context) if context
 
-        response = KmsEncrypted.vault_client.logical.write(
-          "transit/decrypt/#{key_id.sub("vault/", "")}",
-          options
-        )
+        response =
+          begin
+            KmsEncrypted.vault_client.logical.write(
+              "transit/decrypt/#{key_id.sub("vault/", "")}",
+              options
+            )
+          rescue ::Vault::HTTPClientError => e
+            decryption_failed! if e.message.include?("unable to decrypt")
+            raise e
+          end
 
         Base64.decode64(response.data[:plaintext])
       end
