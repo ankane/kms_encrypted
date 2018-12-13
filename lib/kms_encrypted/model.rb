@@ -41,7 +41,7 @@ module KmsEncrypted
                 name = key[:name]
                 context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
                 context = respond_to?(context_method, true) ? send(context_method) : {}
-                updates[key_column] = KmsEncrypted::Database.encrypt(plaintext_key, key_id: key[:key_id], context: context)
+                updates[key_column] = KmsEncrypted::Database.encrypt_data_key(plaintext_key, key_id: key[:key_id], context: context)
               end
             end
             if updates.any?

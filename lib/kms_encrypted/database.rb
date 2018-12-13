@@ -1,11 +1,12 @@
 module KmsEncrypted
   module Database
-    def self.encrypt(plaintext, key_id:, context:)
+    def self.encrypt_data_key(plaintext, key_id:, context:)
       event = {
         key_id: key_id,
-        context: context
+        context: context,
+        data_key: true
       }
-      ActiveSupport::Notifications.instrument("generate_data_key.kms_encrypted", event) do
+      ActiveSupport::Notifications.instrument("encrypt.kms_encrypted", event) do
         if key_id == "insecure-test-key"
           "insecure-data-key-#{Base64.strict_encode64(plaintext)}"
         elsif key_id.start_with?("projects/")
@@ -29,9 +30,10 @@ module KmsEncrypted
     def self.decrypt_data_key(ciphertext, key_id:, context:)
       event = {
         key_id: key_id,
-        context: context
+        context: context,
+        data_key: true
       }
-      ActiveSupport::Notifications.instrument("decrypt_data_key.kms_encrypted", event) do
+      ActiveSupport::Notifications.instrument("decrypt.kms_encrypted", event) do
         if ciphertext.start_with?("insecure-data-key-")
           Base64.decode64(ciphertext.remove("insecure-data-key-"))
         elsif ciphertext.start_with?("$gc$")
