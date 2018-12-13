@@ -4,6 +4,7 @@ module KmsEncrypted
       key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
+      context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
 
       class_eval do
         class << self
@@ -62,7 +63,6 @@ module KmsEncrypted
             encrypted_key = send("encrypted_#{key_method}")
             plaintext_key =
               if encrypted_key
-                context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
                 context = respond_to?(context_method, true) ? send(context_method) : {}
                 KmsEncrypted::Database.decrypt_data_key(encrypted_key, key_id: key_id, context: context)
               else
@@ -76,6 +76,13 @@ module KmsEncrypted
           end
 
           instance_variable_get(instance_var)
+        end
+
+        define_method(context_method) do
+          {
+            model_name: model_name.to_s,
+            model_id: id.to_s
+          }
         end
 
         define_method("rotate_#{key_method}!") do
