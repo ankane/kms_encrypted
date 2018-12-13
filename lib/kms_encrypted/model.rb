@@ -43,7 +43,10 @@ module KmsEncrypted
                 updates[key_column] = KmsEncrypted::Database.encrypt(plaintext_key, key_id: key[:key_id], context: context)
               end
             end
-            update_columns(updates) if updates.any?
+            if updates.any?
+              updates[:updated_at] = Time.now # TODO confirm updated_at
+              update_columns(updates)
+            end
           end
         end
 
@@ -53,20 +56,16 @@ module KmsEncrypted
           instance_var = "@#{key_method}"
 
           unless instance_variable_get(instance_var)
-            key_column = "encrypted_#{key_method}"
-            context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
-            context = respond_to?(context_method, true) ? send(context_method) : {}
-
-            unless instance_variable_get(instance_var)
-              encrypted_key = send(key_column)
-              plaintext_key =
-                if encrypted_key
-                  KmsEncrypted::Database.decrypt_data_key(encrypted_key, key_id: key_id, context: context)
-                else
-                  SecureRandom.random_bytes(32)
-                end
-              instance_variable_set(instance_var, plaintext_key)
-            end
+            encrypted_key = send("encrypted_#{key_method}")
+            plaintext_key =
+              if encrypted_key
+                context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
+                context = respond_to?(context_method, true) ? send(context_method) : {}
+                KmsEncrypted::Database.decrypt_data_key(encrypted_key, key_id: key_id, context: context)
+              else
+                SecureRandom.random_bytes(32)
+              end
+            instance_variable_set(instance_var, plaintext_key)
           end
 
           instance_variable_get(instance_var)
