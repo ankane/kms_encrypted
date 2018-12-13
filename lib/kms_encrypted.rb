@@ -16,6 +16,8 @@ require "kms_encrypted/clients/google"
 require "kms_encrypted/clients/vault"
 
 module KmsEncrypted
+  class DecryptionError < StandardError; end
+
   class << self
     attr_writer :aws_client
     attr_writer :google_client

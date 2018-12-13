@@ -13,6 +13,10 @@ module KmsEncrypted
         key = SecureRandom.random_bytes(32)
         [key, encrypt(key, context: context)]
       end
+
+      def decryption_failed!
+        raise DecryptionError, "Decryption failed"
+      end
     end
   end
 end

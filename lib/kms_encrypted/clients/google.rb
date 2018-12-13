@@ -26,7 +26,12 @@ module KmsEncrypted
         options[:additional_authenticated_data] = context if context
 
         request = ::Google::Apis::CloudkmsV1::DecryptRequest.new(options)
-        client.decrypt_crypto_key(key_id, request).plaintext
+        begin
+          client.decrypt_crypto_key(key_id, request).plaintext
+        rescue ::Google::Apis::ClientError => e
+          decryption_failed! if e.message.include?("Decryption failed")
+          raise e
+        end
       end
     end
   end

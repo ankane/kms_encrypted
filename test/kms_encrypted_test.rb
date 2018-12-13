@@ -76,6 +76,17 @@ class KmsEncryptedTest < Minitest::Test
     assert context_hash.start_with?("hmac-sha256:")
   end
 
+  def test_bad_context
+    skip if ENV["KMS_KEY_ID"] == "insecure-test-key"
+
+    user = User.last
+    user.name = "updated"
+    user.save!
+    assert_raises(KmsEncrypted::DecryptionError) do
+      user.email
+    end
+  end
+
   private
 
   def assert_operations(expected)
