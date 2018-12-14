@@ -24,12 +24,10 @@ module KmsEncrypted
     attr_writer :vault_client
 
     def aws_client
-      # use backoff, so takes 1.3 sec for 2 failures
-      # may use custom retry logic to prevent this
       @aws_client ||= Aws::KMS::Client.new(
         retry_limit: 1,
-        http_open_timeout: 0.5,
-        http_read_timeout: 0.5
+        http_open_timeout: 1,
+        http_read_timeout: 1
       )
     end
 
