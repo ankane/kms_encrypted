@@ -51,6 +51,7 @@ For the previous behavior, use:
 class User < ApplicationRecord
   has_kms_key eager_encrypt: true
 
+  # if not already defined
   def kms_encryption_context
     {}
   end
