@@ -46,6 +46,7 @@ module KmsEncrypted
       @vault_client ||= ::Vault
     end
 
+    # hash is independent of key, but specific to audit device
     def context_hash(context, path:)
       context = Base64.encode64(context.to_json)
       vault_client.logical.write("sys/audit-hash/#{path}", input: context).data[:hash]
