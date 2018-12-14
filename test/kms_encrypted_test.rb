@@ -72,7 +72,8 @@ class KmsEncryptedTest < Minitest::Test
   def test_context_hash
     skip unless ENV["KMS_KEY_ID"].start_with?("vault/")
 
-    context_hash = KmsEncrypted.context_hash(User.last, path: "file")
+    context = User.last.kms_encryption_context
+    context_hash = KmsEncrypted.context_hash(context, path: "file")
     assert context_hash.start_with?("hmac-sha256:")
   end
 

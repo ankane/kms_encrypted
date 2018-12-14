@@ -46,8 +46,8 @@ module KmsEncrypted
       @vault_client ||= ::Vault
     end
 
-    def context_hash(record, path:)
-      context = Base64.encode64(record.kms_encryption_context.to_json)
+    def context_hash(context, path:)
+      context = Base64.encode64(context.to_json)
       vault_client.logical.write("sys/audit-hash/#{path}", input: context).data[:hash]
     end
   end

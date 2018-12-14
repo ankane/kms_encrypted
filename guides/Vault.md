@@ -70,7 +70,7 @@ vault write transit/keys/my-key derived=true
 Context will show up hashed in the audit logs. To get the hash for a record, use:
 
 ```ruby
-KmsEncrypted.context_hash(record, path: "file")
+KmsEncrypted.context_hash(record.kms_encryption_context, path: "file")
 ```
 
 The `path` option should point to your audit device. Common paths are `file`, `syslog`, and `socket`.
