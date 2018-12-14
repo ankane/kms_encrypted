@@ -47,15 +47,9 @@ For each encrypted attribute, use the `kms_key` method for its key.
 
 ## Auditing
 
-Follow the [instructions here](https://www.vaultproject.io/docs/audit/) to set up data access logging. To know what data is being decrypted, you’ll need to add context.
+Follow the [instructions here](https://www.vaultproject.io/docs/audit/) to set up data access logging.
 
-**Note:** You need to set `derived` to true when creating the key for Vault to verify this value. If this is not done, the context cannot be trusted.
-
-```sh
-vault write transit/keys/my-key derived=true
-```
-
-Add a `kms_encryption_context` method to your model.
+Context is used to identify the data being decrypted. This is the model name and id by default. You can customize this with:
 
 ```ruby
 class User < ApplicationRecord
@@ -67,20 +61,13 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt.
 
-The primary key is a good choice, but auto-generated ids aren’t available until a record is created, and we need to encrypt before this. One solution is to preload the primary key. Here’s what it looks like with Postgres:
+**Note:** You need to set `derived` to true when creating the key for Vault to verify this value. If this is not done, the context cannot be trusted.
 
-```ruby
-class User < ApplicationRecord
-  def kms_encryption_context
-    self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
-    {"Record" => "#{model_name}/#{id}"}
-  end
-end
+```sh
+vault write transit/keys/my-key derived=true
 ```
 
-Another solution is to first save the record without the encrypted data, then update it.
-
-Context will show up hashed in the audit logs. To get the hash for a record, use: [master]
+Context will show up hashed in the audit logs. To get the hash for a record, use:
 
 ```ruby
 KmsEncrypted.context_hash(record, path: "file")
