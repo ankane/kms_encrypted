@@ -73,8 +73,7 @@ module KmsEncrypted
           when :test
             "insecure-data-key-#{Base64.strict_encode64(plaintext)}"
           when :google
-            client = KmsEncrypted::Clients::Google.new(key_id: key_id)
-            encode64(client.encrypt(plaintext, context: context.to_json))
+            encode64(KmsEncrypted::Clients::Google.new(key_id: key_id).encrypt(plaintext, context: context.to_json))
           when :vault
             KmsEncrypted::Clients::Vault.new(key_id: key_id).encrypt(plaintext, context: context.to_json)
           else
