@@ -71,7 +71,7 @@ module KmsEncrypted
         ActiveSupport::Notifications.instrument("encrypt.kms_encrypted", event) do
           case key_provider(key_id)
           when :test
-            "insecure-data-key-#{Base64.strict_encode64(plaintext)}"
+            "insecure-data-key-#{encode64(plaintext)}"
           when :vault
             KmsEncrypted::Clients::Vault.new(key_id: key_id).encrypt(plaintext, context: context.to_json)
           when :google
@@ -81,15 +81,16 @@ module KmsEncrypted
           end
         end
 
-      "kms:v#{current_version}:#{encoded_ciphertext}"
+      "v#{current_version}:#{encoded_ciphertext}"
     end
 
     def decrypt
-      # TODO better validation
-      if ciphertext.start_with?("kms:")
-        parts = ciphertext.split(":", 3)
-        version = parts[1][1..-1].to_i
-        ciphertext = parts[2].to_s
+      ciphertext = self.ciphertext
+
+      m = /\Av(\d+):/.match(ciphertext)
+      if m
+        version = m[1].to_i
+        ciphertext = ciphertext.sub("v#{version}:", "")
       else
         version = 1
       end

@@ -101,12 +101,12 @@ class KmsEncryptedTest < Minitest::Test
 
   def test_versions
     user = User.create!(street: "123 Main St")
-    assert_match /\Akms:v1:/, user.encrypted_kms_key_street
+    assert_start_with "v1:", user.encrypted_kms_key_street
     $current_version = 2
     user = User.last
     assert user.street # can decrypt
     user.rotate_kms_key_street!
-    assert_match /\Akms:v2:/, user.encrypted_kms_key_street
+    assert_start_with "v2:", user.encrypted_kms_key_street
   end
 
   private
@@ -115,6 +115,10 @@ class KmsEncryptedTest < Minitest::Test
     $events.clear
     yield
     assert_equal expected, $events
+  end
+
+  def assert_start_with(start, str)
+    assert str.start_with?(str), "Expected to start with #{start}"
   end
 
   def create_user
