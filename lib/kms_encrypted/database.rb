@@ -72,10 +72,10 @@ module KmsEncrypted
           case key_provider(key_id)
           when :test
             "insecure-data-key-#{Base64.strict_encode64(plaintext)}"
-          when :google
-            encode64(KmsEncrypted::Clients::Google.new(key_id: key_id).encrypt(plaintext, context: context.to_json))
           when :vault
             KmsEncrypted::Clients::Vault.new(key_id: key_id).encrypt(plaintext, context: context.to_json)
+          when :google
+            encode64(KmsEncrypted::Clients::Google.new(key_id: key_id).encrypt(plaintext, context: context.to_json))
           else
             encode64(KmsEncrypted::Clients::Aws.new(key_id: key_id).encrypt(plaintext, context: context))
           end
@@ -121,11 +121,11 @@ module KmsEncrypted
           case key_provider(key_id)
           when :test
             Base64.decode64(ciphertext.remove("insecure-data-key-"))
+          when :vault
+            KmsEncrypted::Clients::Vault.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
           when :google
             ciphertext = Base64.decode64(ciphertext)
             KmsEncrypted::Clients::Google.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
-          when :vault
-            KmsEncrypted::Clients::Vault.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
           else
             ciphertext = Base64.decode64(ciphertext)
             KmsEncrypted::Clients::Aws.new(key_id: key_id).decrypt(ciphertext, context: context)
