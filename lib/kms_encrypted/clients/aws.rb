@@ -6,7 +6,7 @@ module KmsEncrypted
           key_id: key_id,
           plaintext: plaintext
         }
-        options[:encryption_context] = context if context
+        options[:encryption_context] = generate_context(context) if context
 
         KmsEncrypted.aws_client.encrypt(options).ciphertext_blob
       end
@@ -15,7 +15,7 @@ module KmsEncrypted
         options = {
           ciphertext_blob: ciphertext
         }
-        options[:encryption_context] = context if context
+        options[:encryption_context] = generate_context(context) if context
 
         begin
           KmsEncrypted.aws_client.decrypt(options).plaintext
@@ -29,10 +29,17 @@ module KmsEncrypted
           key_id: key_id,
           key_spec: "AES_256"
         }
-        options[:encryption_context] = context if context
+        options[:encryption_context] = generate_context(context) if context
 
         resp = KmsEncrypted.aws_client.generate_data_key(options)
         [resp.plaintext, resp.ciphertext_blob]
+      end
+
+      private
+
+      # make integers strings for convenience
+      def generate_context(context)
+        Hash[context.map { |k, v| [k, v.is_a?(Integer) ? v.to_s : v] }]
       end
     end
   end
