@@ -1,7 +1,13 @@
 module KmsEncrypted
   module Model
-    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, eager_encrypt: false)
-      key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
+    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, eager_encrypt: false, current_version: 1, versions: nil)
+      key_id ||= legacy_key_id
+
+      if key_id && versions
+        raise ArgumentError, "Cannot use both key_id and versions"
+      end
+
+      key_id ||= ENV["KMS_KEY_ID"]
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
       key_column = "encrypted_#{key_method}"
@@ -13,19 +19,12 @@ module KmsEncrypted
             @kms_keys ||= {}
           end unless respond_to?(:kms_keys)
         end
-        kms_keys[key_method.to_sym] = {key_id: key_id, name: name}
-
-        # same pattern as attr_encrypted reload
-        if method_defined?(:reload) && kms_keys.size == 1
-          alias_method :reload_without_kms_encrypted, :reload
-          def reload(*args, &block)
-            result = reload_without_kms_encrypted(*args, &block)
-            self.class.kms_keys.keys.each do |key_method|
-              instance_variable_set("@#{key_method}", nil)
-            end
-            result
-          end
-        end
+        kms_keys[key_method.to_sym] = {
+          key_id: key_id,
+          name: name,
+          current_version: current_version,
+          versions: versions
+        }
 
         if kms_keys.size == 1
           after_save :encrypt_kms_keys
@@ -39,9 +38,7 @@ module KmsEncrypted
               plaintext_key = instance_variable_get(instance_var)
 
               if !send(key_column) && plaintext_key
-                name = key[:name]
-                context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
-                updates[key_column] = KmsEncrypted::Database.encrypt_data_key(plaintext_key, key_id: key[:key_id], context: send(context_method))
+                updates[key_column] = KmsEncrypted::Database.new(self, key_method).encrypt
               end
             end
             if updates.any?
@@ -52,21 +49,28 @@ module KmsEncrypted
               update_columns(updates)
             end
           end
+
+          # same pattern as attr_encrypted reload
+          if method_defined?(:reload)
+            alias_method :reload_without_kms_encrypted, :reload
+            def reload(*args, &block)
+              result = reload_without_kms_encrypted(*args, &block)
+              self.class.kms_keys.keys.each do |key_method|
+                instance_variable_set("@#{key_method}", nil)
+              end
+              result
+            end
+          end
         end
 
         define_method(key_method) do
-          raise ArgumentError, "Missing key id" unless key_id
-
           instance_var = "@#{key_method}"
 
           unless instance_variable_get(instance_var)
             encrypted_key = send(key_column)
             plaintext_key =
               if encrypted_key
-                KmsEncrypted::Database.decrypt_data_key(encrypted_key,
-                  key_id: key_id,
-                  context: send(context_method)
-                )
+                KmsEncrypted::Database.new(self, key_method).decrypt
               else
                 key = SecureRandom.random_bytes(32)
 
@@ -76,11 +80,7 @@ module KmsEncrypted
                 end
 
                 if eager_encrypt == true || ([:try, :fetch_id].include?(eager_encrypt) && id)
-                  encrypted_key =
-                    KmsEncrypted::Database.encrypt_data_key(key,
-                      key_id: key_id,
-                      context: send(context_method)
-                    )
+                  encrypted_key = KmsEncrypted::Database.new(self, key_method).encrypt(key)
                   send("#{key_column}=", encrypted_key)
                 end
 

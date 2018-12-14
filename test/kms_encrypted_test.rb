@@ -99,6 +99,16 @@ class KmsEncryptedTest < Minitest::Test
     end
   end
 
+  def test_versions
+    user = User.create!(street: "123 Main St")
+    assert_match /\Akms:v1:/, user.encrypted_kms_key_street
+    $current_version = 2
+    user = User.last
+    assert user.street # can decrypt
+    user.rotate_kms_key_street!
+    assert_match /\Akms:v2:/, user.encrypted_kms_key_street
+  end
+
   private
 
   def assert_operations(expected)
