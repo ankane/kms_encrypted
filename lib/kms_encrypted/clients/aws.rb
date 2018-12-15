@@ -24,17 +24,6 @@ module KmsEncrypted
         end
       end
 
-      def generate_data_key(context: nil)
-        options = {
-          key_id: key_id,
-          key_spec: "AES_256"
-        }
-        options[:encryption_context] = generate_context(context) if context
-
-        resp = KmsEncrypted.aws_client.generate_data_key(options)
-        [resp.plaintext, resp.ciphertext_blob]
-      end
-
       private
 
       # make integers strings for convenience

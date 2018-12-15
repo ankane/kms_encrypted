@@ -1,6 +1,7 @@
 # dependencies
 require "active_support"
 require "base64"
+require "securerandom"
 
 # modules
 require "kms_encrypted/database"

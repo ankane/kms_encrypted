@@ -1,5 +1,3 @@
-require "securerandom"
-
 module KmsEncrypted
   module Clients
     class Base
@@ -7,11 +5,6 @@ module KmsEncrypted
 
       def initialize(key_id: nil)
         @key_id = key_id
-      end
-
-      def generate_data_key(context: nil)
-        key = SecureRandom.random_bytes(32)
-        [key, encrypt(key, context: context)]
       end
 
       def decryption_failed!
