@@ -102,10 +102,10 @@ module KmsEncrypted
       ActiveSupport::Notifications.instrument("decrypt.kms_encrypted", event) do
         if ciphertext.start_with?("$gc$")
           _, _, short_key_id, ciphertext = ciphertext.split("$", 4)
-          ciphertext = Base64.decode64(ciphertext)
+          ciphertext = decode64(ciphertext)
 
           # restore key, except for cryptoKeyVersion
-          stored_key_id = Base64.decode64(short_key_id).split("/")[0..3]
+          stored_key_id = decode64(short_key_id).split("/")[0..3]
           stored_key_id.insert(0, "projects")
           stored_key_id.insert(2, "locations")
           stored_key_id.insert(4, "keyRings")
@@ -116,14 +116,14 @@ module KmsEncrypted
         else
           case key_provider(key_id)
           when :test
-            Base64.decode64(ciphertext.remove("insecure-data-key-"))
+            decode64(ciphertext.remove("insecure-data-key-"))
           when :vault
             KmsEncrypted::Clients::Vault.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
           when :google
-            ciphertext = Base64.decode64(ciphertext)
+            ciphertext = decode64(ciphertext)
             KmsEncrypted::Clients::Google.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
           else
-            ciphertext = Base64.decode64(ciphertext)
+            ciphertext = decode64(ciphertext)
             KmsEncrypted::Clients::Aws.new(key_id: key_id).decrypt(ciphertext, context: context)
           end
         end
@@ -132,6 +132,10 @@ module KmsEncrypted
 
     def encode64(bytes)
       Base64.encode64(bytes).delete("\n=")
+    end
+
+    def decode64(bytes)
+       Base64.decode64(bytes)
     end
 
     def key_provider(key_id)
