@@ -42,7 +42,7 @@ ActiveRecord::Migration.create_table :users do |t|
   t.string :encrypted_kms_key_phone
   t.string :encrypted_kms_key_street
 
-  t.timestamps
+  t.timestamps null: false
 end
 
 $version = 1
