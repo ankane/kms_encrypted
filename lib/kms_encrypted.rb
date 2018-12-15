@@ -44,7 +44,7 @@ module KmsEncrypted
     end
 
     def vault_client
-      @vault_client ||= ::Vault
+      @vault_client ||= ::Vault::Client.new
     end
 
     # hash is independent of key, but specific to audit device
