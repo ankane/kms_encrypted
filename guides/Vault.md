@@ -59,7 +59,7 @@ class User < ApplicationRecord
 end
 ```
 
-The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Use [Advanced Rotation](Advanced-Rotation.md) if you need to change the encryption context.
+The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Use [Easy Rotation](Easy-Rotation.md) if you need to change the encryption context.
 
 **Note:** You need to set `derived` to true when creating the key for Vault to verify this value. If this is not done, the context cannot be trusted.
 
@@ -87,7 +87,7 @@ To manually rotate keys, use:
 vault write -f transit/keys/my-key/rotate
 ```
 
-and run
+New data will be encrypted with the new key version. To encrypt existing data with new key version, run:
 
 ```ruby
 User.find_each do |user|
@@ -95,7 +95,7 @@ User.find_each do |user|
 end
 ```
 
-Use [Advanced Rotation](Advanced-Rotation.md) if you want to switch keys.
+Use [Easy Rotation](Easy-Rotation.md) if you want to switch keys.
 
 ## Testing
 

@@ -41,26 +41,21 @@ To securely search encrypted data, check out [Blind Index](https://github.com/an
 
 KMS Encrypted 1.0 brings a number of improvements. Here are a few breaking changes to be aware of:
 
-- There's now a default encryption context with the model name and id
+- There’s now a default encryption context with the model name and id
 - ActiveSupport notifications were changed from `generate_data_key` and `decrypt_data_key` to `encrypt` and `decrypt`
 - AWS KMS uses the `Encrypt` operation instead of `GenerateDataKey`
 
-For the previous behavior, use:
+If you didn’t previously use encryption context, add to your models:
 
 ```ruby
 class User < ApplicationRecord
-  has_kms_key eager_encrypt: true
-
-  # if not already defined
   def kms_encryption_context
     {}
   end
 end
 ```
 
-If you didn’t previously use encryption context, we recommend using [Advanced Rotation](Advanced-Rotation.md) to add it.
-
-There’s not a way to use `GenerateDataKey` anymore with AWS KMS.
+We highly recommend using [Easy Rotation](Easy-Rotation.md) to add it.
 
 ## History
 

@@ -63,7 +63,7 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
 
-Use [Advanced Rotation](Advanced-Rotation.md) if you need to change the encryption context.
+Use [Easy Rotation](Easy-Rotation.md) if you need to change the encryption context.
 
 ## Alerting
 
@@ -83,21 +83,17 @@ You can use the SNS topic or another target to send events to a log provider or 
 
 ## Key Rotation
 
-KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
+KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html).
 
-To manually rotate keys, replace the old KMS key id with the new key id in your model. Your app does not need the old key id to perform rotation (however, the key must still be enabled in your AWS account).
-
-```sh
-KMS_KEY_ID=arn:aws:kms:...
-```
-
-and run
+When this happens, new data will be encrypted with the new key. To encrypt existing data with new key, run:
 
 ```ruby
 User.find_each do |user|
   user.rotate_kms_key!
 end
 ```
+
+Use [Easy Rotation](Easy-Rotation.md) if you want to manually switch keys.
 
 ## IAM Permissions
 

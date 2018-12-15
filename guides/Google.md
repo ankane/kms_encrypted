@@ -43,19 +43,17 @@ We recommend setting up alerts on suspicious behavior.
 
 ## Key Rotation
 
-To manually rotate keys, replace the old key id with the new key id in your model. Your app does not need the old key id to perform rotation (however, the key must still be enabled in your GCP account).
+To rotate keys, use the Google Cloud Console or API.
 
-```sh
-KMS_KEY_ID=...
-```
-
-and run
+New data will be encrypted with the new key version. To encrypt existing data with new key version, run:
 
 ```ruby
 User.find_each do |user|
   user.rotate_kms_key!
 end
 ```
+
+Use [Easy Rotation](Easy-Rotation.md) if you want to switch keys.
 
 ## Testing
 
