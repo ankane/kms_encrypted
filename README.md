@@ -55,7 +55,7 @@ class User < ApplicationRecord
 end
 ```
 
-We highly recommend using [Easy Rotation](Easy-Rotation.md) to add it.
+We highly recommend using [Easy Rotation](guides/Easy-Rotation.md) to add it.
 
 ## History
 
