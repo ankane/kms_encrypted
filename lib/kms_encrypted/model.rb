@@ -92,7 +92,7 @@ module KmsEncrypted
 
           {
             model_name: model_name.to_s,
-            model_id: id.to_s
+            model_id: id
           }
         end
 
