@@ -21,7 +21,9 @@ if ENV["VERBOSE"]
   ActiveRecord::Base.logger = logger
   ActiveSupport::LogSubscriber.logger = logger
   Google::Apis.logger = logger
-  KmsEncrypted.google_client.client_options.log_http_requests = true
+  if ENV["KMS_KEY_ID"].start_with?("projects/")
+    KmsEncrypted.google_client.client_options.log_http_requests = true
+  end
 end
 
 $events = Hash.new(0)
