@@ -21,10 +21,17 @@ module KmsEncrypted
         if @legacy_context
           context.to_json
         elsif context.is_a?(Hash)
-          Hash[context.sort_by { |k| k.to_s }.map { |k, v| [k.to_s, context_value(v)] }].to_json
+          Hash[context.sort_by { |k| k.to_s }.map { |k, v| [context_key(k), context_value(v)] }].to_json
         else
           context
         end
+      end
+
+      def context_key(k)
+        unless k.is_a?(String) || k.is_a?(Symbol)
+          raise ArgumentError, "Context keys must be a string or symbol"
+        end
+        k.to_s
       end
 
       def context_value(v)
