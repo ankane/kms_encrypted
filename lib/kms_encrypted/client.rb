@@ -4,8 +4,9 @@ module KmsEncrypted
 
     attr_reader :key_id
 
-    def initialize(key_id: nil)
+    def initialize(key_id: nil, legacy_context: false)
       @key_id = key_id || ENV["KMS_KEY_ID"]
+      @legacy_context = legacy_context
     end
 
     private
@@ -36,7 +37,7 @@ module KmsEncrypted
             KmsEncrypted::Clients::Aws
           end
 
-        klass.new(key_id: key_id)
+        klass.new(key_id: key_id, legacy_context: @legacy_context)
       end
     end
   end

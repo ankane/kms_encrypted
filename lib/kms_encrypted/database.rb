@@ -80,6 +80,7 @@ module KmsEncrypted
       else
         version = 1
         context = {} if options[:upgrade_context]
+        legacy_context = true
 
         # legacy
         if ciphertext.start_with?("$gc$")
@@ -107,7 +108,7 @@ module KmsEncrypted
         data_key: true
       }
       ActiveSupport::Notifications.instrument("decrypt.kms_encrypted", event) do
-        KmsEncrypted::Client.new(key_id: key_id).decrypt(ciphertext, context: context)
+        KmsEncrypted::Client.new(key_id: key_id, legacy_context: legacy_context).decrypt(ciphertext, context: context)
       end
     end
 
