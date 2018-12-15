@@ -21,45 +21,40 @@ module KmsEncrypted
     end
 
     def current_version
-      @current_version ||= begin
-        version = options[:current_version]
+      @version ||= begin
+        version = options[:version]
         version = record.instance_exec(&version) if version.respond_to?(:call)
         version.to_i
       end
     end
 
-    def versions
-      @versions ||= begin
-        versions = options[:versions] || {}
-        versions[current_version] ||= options[:key_id] || ENV["KMS_KEY_ID"]
-        versions
-      end
+    def key_version(version)
+      versions = (options[:previous_versions] || {}).dup
+      versions[current_version] ||= options.slice(:key_id)
+
+      raise "Version not active: #{version}" unless versions[version]
+
+      key_id = versions[version][:key_id]
+
+      raise ArgumentError, "Missing key id" unless key_id
+
+      key_id
     end
 
-    def context
-      @context ||= begin
-        context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
-        if record.method(context_method).arity == 0
-          record.send(context_method)
-        else
-          record.send(context_method, version: current_version)
-        end
-      end
-    end
-
-    def key_id
-      @key_id ||= begin
-        raise ArgumentError, "current_version must be an integer" unless current_version.is_a?(Integer)
-
-        key_id = versions[current_version]
-        raise ArgumentError, "Missing key id" unless key_id
-
-        key_id
+    def context(version)
+      context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
+      if record.method(context_method).arity == 0
+        record.send(context_method)
+      else
+        record.send(context_method, version: version)
       end
     end
 
     def encrypt(plaintext = nil)
       plaintext ||= self.plaintext
+
+      key_id = key_version(current_version)
+      context = context(current_version)
 
       event = {
         key_id: key_id,
@@ -95,8 +90,8 @@ module KmsEncrypted
         version = 1
       end
 
-      key_id = versions[version]
-      raise ArgumentError, "Missing key id" unless key_id
+      key_id = key_version(version)
+      context = context(version)
 
       event = {
         key_id: key_id,

@@ -63,6 +63,8 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
 
+Use [Advanced Rotation](Advanced-Rotation.md) if you need to change the encryption context.
+
 ## Alerting
 
 Set up alerts for suspicious behavior. To get near real-time alerts (20-30 second delay), use CloudWatch Events.

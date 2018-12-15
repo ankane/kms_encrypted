@@ -58,6 +58,8 @@ class User < ApplicationRecord
 end
 ```
 
+If you didn’t previously use encryption context, we recommend using [Advanced Rotation](Advanced-Rotation.md) to add it.
+
 There’s not a way to use `GenerateDataKey` anymore with AWS KMS.
 
 ## History

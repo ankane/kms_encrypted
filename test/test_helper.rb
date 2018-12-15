@@ -45,16 +45,14 @@ ActiveRecord::Migration.create_table :users do |t|
   t.timestamps
 end
 
-$current_version = 1
+$version = 1
 
 class User < ActiveRecord::Base
   has_kms_key
   has_kms_key name: :phone, eager_encrypt: :try
-  has_kms_key name: :street,
-    current_version: -> { $current_version },
-    versions: {
-      1 => "insecure-test-key",
-      2 => ENV["KMS_KEY_ID"]
+  has_kms_key name: :street, version: -> { $version },
+    previous_versions: {
+      1 => {key_id: "insecure-test-key"}
     }
 
   attr_encrypted :email, key: :kms_key

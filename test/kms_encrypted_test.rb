@@ -103,11 +103,24 @@ class KmsEncryptedTest < Minitest::Test
   def test_versions
     user = User.create!(street: "123 Main St")
     assert_start_with "v1:", user.encrypted_kms_key_street
-    $current_version = 2
+
+    with_version(2) do
+      user = User.last
+      assert user.street # can decrypt
+      user.rotate_kms_key_street!
+      assert_start_with "v2:", user.encrypted_kms_key_street
+    end
+  end
+
+  def test_bad_version
+    user = User.create!(street: "123 Main St")
+    user.encrypted_kms_key_street = user.encrypted_kms_key_street.sub("v1:", "v3:")
+    user.save!
+
     user = User.last
-    assert user.street # can decrypt
-    user.rotate_kms_key_street!
-    assert_start_with "v2:", user.encrypted_kms_key_street
+    assert_raises "bad" do
+      user.street
+    end
   end
 
   private
@@ -120,6 +133,16 @@ class KmsEncryptedTest < Minitest::Test
 
   def assert_start_with(start, str)
     assert str.start_with?(str), "Expected to start with #{start}"
+  end
+
+  def with_version(version)
+    previous_version = $version
+    begin
+      $version = version
+      yield
+    ensure
+      $version = previous_version
+    end
   end
 
   def create_user

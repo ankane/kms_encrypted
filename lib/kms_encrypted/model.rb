@@ -1,13 +1,7 @@
 module KmsEncrypted
   module Model
-    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, eager_encrypt: false, current_version: 1, versions: nil)
-      key_id ||= legacy_key_id
-
-      if key_id && versions
-        raise ArgumentError, "Cannot use both key_id and versions"
-      end
-
-      key_id ||= ENV["KMS_KEY_ID"]
+    def has_kms_key(legacy_key_id = nil, name: nil, key_id: nil, eager_encrypt: false, version: 1, previous_versions: nil)
+      key_id ||= legacy_key_id || ENV["KMS_KEY_ID"]
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
       key_column = "encrypted_#{key_method}"
@@ -22,8 +16,8 @@ module KmsEncrypted
         kms_keys[key_method.to_sym] = {
           key_id: key_id,
           name: name,
-          current_version: current_version,
-          versions: versions
+          version: version,
+          previous_versions: previous_versions
         }
 
         if kms_keys.size == 1
