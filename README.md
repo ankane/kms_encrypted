@@ -4,7 +4,7 @@ Simple, secure key management for [attr_encrypted](https://github.com/attr-encry
 
 With KMS Encrypted:
 
-- Encryption keys are not on application servers
+- Master encryption keys are not on application servers
 - There’s an immutable audit log of all activity
 - Decryption can be disabled if an attack is detected
 - Encrypt and decrypt permissions can be granted separately
