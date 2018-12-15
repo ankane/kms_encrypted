@@ -39,11 +39,15 @@ ActiveRecord::Migration.create_table :users do |t|
   t.string :encrypted_phone_iv
   t.string :encrypted_street
   t.string :encrypted_street_iv
+  t.string :encrypted_token
+  t.string :encrypted_token_iv
 
   # kms_encrypted
   t.string :encrypted_kms_key
   t.string :encrypted_kms_key_phone
   t.string :encrypted_kms_key_street
+  t.binary :encrypted_kms_key_token
+  t.integer :encrypted_kms_key_token_version
 
   t.timestamps null: false
 end
@@ -57,10 +61,12 @@ class User < ActiveRecord::Base
     previous_versions: {
       1 => {key_id: "insecure-test-key"}
     }
+  has_kms_key name: :token, version_column: true
 
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
   attr_encrypted :street, key: :kms_key_street
+  attr_encrypted :token, key: :kms_key_token
 
   def kms_encryption_context
     {"Name" => name}

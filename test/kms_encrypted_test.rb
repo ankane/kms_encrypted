@@ -121,6 +121,13 @@ class KmsEncryptedTest < Minitest::Test
     end
   end
 
+  def test_version_column
+    user = User.create!(token: "secret")
+    assert user.encrypted_kms_key_token
+    assert 1, user.encrypted_kms_key_token_version
+    assert User.last.kms_key_token # can decrypt
+  end
+
   private
 
   def assert_operations(expected)

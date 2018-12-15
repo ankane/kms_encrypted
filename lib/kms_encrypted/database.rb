@@ -28,6 +28,11 @@ module KmsEncrypted
       end
     end
 
+    # TODO read this from previous version settings as well
+    def version_column?
+      options[:version_column]
+    end
+
     def key_version(version)
       versions = (options[:previous_versions] || {}).dup
       versions[current_version] ||= options.slice(:key_id)
@@ -50,9 +55,7 @@ module KmsEncrypted
       end
     end
 
-    def encrypt(plaintext = nil)
-      plaintext ||= self.plaintext
-
+    def encrypt(plaintext)
       key_id = key_version(current_version)
       context = context(current_version)
 
@@ -67,34 +70,44 @@ module KmsEncrypted
           KmsEncrypted::Client.new(key_id: key_id).encrypt(plaintext, context: context)
         end
 
-      "v#{current_version}:#{encode64(ciphertext)}"
+      updates = {}
+      if version_column?
+        updates["encrypted_#{key_method}_version"] = current_version
+        updates["encrypted_#{key_method}"] = encode64(ciphertext)
+      else
+        updates["encrypted_#{key_method}"] = "v#{current_version}:#{encode64(ciphertext)}"
+      end
+      updates
     end
 
-    def decrypt
-      ciphertext = self.ciphertext
-
-      m = /\Av(\d+):/.match(ciphertext)
-      if m
-        version = m[1].to_i
-        ciphertext = ciphertext.sub("v#{version}:", "")
+    def decrypt(ciphertext)
+      if version_column?
+        version = record.send("encrypted_#{key_method}_version")
+        raise "No version" unless version
       else
-        version = 1
-        context = {} if options[:upgrade_context]
-        legacy_context = true
+        m = /\Av(\d+):/.match(ciphertext)
+        if m
+          version = m[1].to_i
+          ciphertext = ciphertext.sub("v#{version}:", "")
+        else
+          version = 1
+          context = {} if options[:upgrade_context]
+          legacy_context = true
 
-        # legacy
-        if ciphertext.start_with?("$gc$")
-          _, _, short_key_id, ciphertext = ciphertext.split("$", 4)
+          # legacy
+          if ciphertext.start_with?("$gc$")
+            _, _, short_key_id, ciphertext = ciphertext.split("$", 4)
 
-          # restore key, except for cryptoKeyVersion
-          stored_key_id = decode64(short_key_id).split("/")[0..3]
-          stored_key_id.insert(0, "projects")
-          stored_key_id.insert(2, "locations")
-          stored_key_id.insert(4, "keyRings")
-          stored_key_id.insert(6, "cryptoKeys")
-          key_id = stored_key_id.join("/")
-        elsif ciphertext.start_with?("vault:")
-          ciphertext = Base64.encode64(ciphertext)
+            # restore key, except for cryptoKeyVersion
+            stored_key_id = decode64(short_key_id).split("/")[0..3]
+            stored_key_id.insert(0, "projects")
+            stored_key_id.insert(2, "locations")
+            stored_key_id.insert(4, "keyRings")
+            stored_key_id.insert(6, "cryptoKeys")
+            key_id = stored_key_id.join("/")
+          elsif ciphertext.start_with?("vault:")
+            ciphertext = Base64.encode64(ciphertext)
+          end
         end
       end
 

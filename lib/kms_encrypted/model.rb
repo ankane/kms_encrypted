@@ -1,6 +1,6 @@
 module KmsEncrypted
   module Model
-    def has_kms_key(name: nil, key_id: nil, eager_encrypt: false, version: 1, previous_versions: nil, upgrade_context: false)
+    def has_kms_key(name: nil, key_id: nil, eager_encrypt: false, version: 1, previous_versions: nil, upgrade_context: false, version_column: false)
       key_id ||= ENV["KMS_KEY_ID"]
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
@@ -18,7 +18,8 @@ module KmsEncrypted
           name: name,
           version: version,
           previous_versions: previous_versions,
-          upgrade_context: upgrade_context
+          upgrade_context: upgrade_context,
+          version_column: version_column
         }
 
         if kms_keys.size == 1
@@ -33,7 +34,7 @@ module KmsEncrypted
               plaintext_key = instance_variable_get(instance_var)
 
               if !send(key_column) && plaintext_key
-                updates[key_column] = KmsEncrypted::Database.new(self, key_method).encrypt
+                updates.merge!(KmsEncrypted::Database.new(self, key_method).encrypt(plaintext_key))
               end
             end
             if updates.any?
@@ -65,7 +66,7 @@ module KmsEncrypted
             encrypted_key = send(key_column)
             plaintext_key =
               if encrypted_key
-                KmsEncrypted::Database.new(self, key_method).decrypt
+                KmsEncrypted::Database.new(self, key_method).decrypt(encrypted_key)
               else
                 key = SecureRandom.random_bytes(32)
 
@@ -75,8 +76,10 @@ module KmsEncrypted
                 end
 
                 if eager_encrypt == true || ([:try, :fetch_id].include?(eager_encrypt) && id)
-                  encrypted_key = KmsEncrypted::Database.new(self, key_method).encrypt(key)
-                  send("#{key_column}=", encrypted_key)
+                  updates = KmsEncrypted::Database.new(self, key_method).encrypt(key)
+                  updates.each do |k, v|
+                    send("#{k}=", v)
+                  end
                 end
 
                 key
