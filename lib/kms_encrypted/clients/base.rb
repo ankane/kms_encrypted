@@ -11,8 +11,16 @@ module KmsEncrypted
         raise DecryptionError, "Decryption failed"
       end
 
-      def hash_to_context(v)
-        v.to_json
+      # keys must be ordered consistently
+      def hash_to_context(h)
+        Hash[h.sort_by { |k| k.to_s }.map { |k, v| [k.to_s, hash_value(v)] }].to_json
+      end
+
+      def hash_value(v)
+        unless v.is_a?(String) || v.is_a?(Integer)
+          raise ArgumentError, "Context values must be a string or integer"
+        end
+        v
       end
     end
   end

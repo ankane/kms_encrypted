@@ -28,6 +28,7 @@ module KmsEncrypted
 
       # make integers strings for convenience
       def generate_context(context)
+        raise ArgumentError, "Context must be a hash" unless context.is_a?(Hash)
         Hash[context.map { |k, v| [k, v.is_a?(Integer) ? v.to_s : v] }]
       end
     end
