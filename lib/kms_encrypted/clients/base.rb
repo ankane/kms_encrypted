@@ -21,13 +21,13 @@ module KmsEncrypted
         if @legacy_context
           context.to_json
         elsif context.is_a?(Hash)
-          Hash[context.sort_by { |k| k.to_s }.map { |k, v| [k.to_s, hash_value(v)] }].to_json
+          Hash[context.sort_by { |k| k.to_s }.map { |k, v| [k.to_s, context_value(v)] }].to_json
         else
           context
         end
       end
 
-      def hash_value(v)
+      def context_value(v)
         unless v.is_a?(String) || v.is_a?(Integer)
           raise ArgumentError, "Context values must be a string or integer"
         end
