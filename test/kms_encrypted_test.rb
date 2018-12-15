@@ -78,8 +78,6 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_bad_context
-    skip if ENV["KMS_KEY_ID"] == "insecure-test-key"
-
     user = User.last
     user.name = "updated"
     user.save!
