@@ -27,8 +27,8 @@ module KmsEncrypted
     def aws_client
       @aws_client ||= Aws::KMS::Client.new(
         retry_limit: 1,
-        http_open_timeout: 1,
-        http_read_timeout: 1
+        http_open_timeout: 2,
+        http_read_timeout: 2
       )
     end
 
