@@ -2,14 +2,13 @@
 
 Simple, secure key management for [attr_encrypted](https://github.com/attr-encrypted/attr_encrypted)
 
-The attr_encrypted gem is great for encryption, but:
+With KMS Encrypted:
 
-1. Leaves you to manage the security of your keys
-2. Doesn’t provide an easy way to rotate your keys
-3. Doesn’t have a great audit trail to see how data has been accessed
-4. Doesn’t let you grant encryption and decryption permission separately
-
-Key management services address all of these issues and it’s easy to use them together.
+- Encryption keys are not on application servers
+- There’s an immutable audit log of all activity
+- Decryption can be disabled if an attack is detected
+- Encrypt and decrypt permissions can be granted separately
+- It’s easy to rotate keys
 
 Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://www.vaultproject.io/)
 
