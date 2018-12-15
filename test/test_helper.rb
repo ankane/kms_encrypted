@@ -67,8 +67,6 @@ class User < ActiveRecord::Base
   end
 
   def kms_encryption_context_street(version:)
-    {
-      version: version
-    }
+    {version: version}
   end
 end
