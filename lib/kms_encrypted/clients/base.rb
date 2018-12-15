@@ -7,6 +7,8 @@ module KmsEncrypted
         @key_id = key_id
       end
 
+      protected
+
       def decryption_failed!
         raise DecryptionError, "Decryption failed"
       end
