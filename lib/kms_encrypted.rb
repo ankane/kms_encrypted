@@ -39,6 +39,9 @@ module KmsEncrypted
         client.authorization = ::Google::Auth.get_application_default(
           "https://www.googleapis.com/auth/cloud-platform"
         )
+        client.client_options.log_http_requests = false
+        client.client_options.open_timeout_sec = 2
+        client.client_options.read_timeout_sec = 2
         client
       end
     end
