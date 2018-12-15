@@ -114,7 +114,7 @@ module KmsEncrypted
     end
 
     def decode64(bytes)
-       Base64.decode64(bytes)
+      Base64.decode64(bytes)
     end
   end
 end
