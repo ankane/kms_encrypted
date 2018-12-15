@@ -53,7 +53,7 @@ User.find_each do |user|
 end
 ```
 
-Use [Easy Rotation](Easy-Rotation.md) if you want to switch keys.
+Use [easy rotation](Easy-Rotation.md) if you want to switch keys.
 
 ## Testing
 

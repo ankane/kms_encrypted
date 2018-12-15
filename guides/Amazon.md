@@ -63,7 +63,7 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
 
-Use [Easy Rotation](Easy-Rotation.md) if you need to change the encryption context.
+Use [easy rotation](Easy-Rotation.md) if you need to change the encryption context.
 
 ## Alerting
 
@@ -93,7 +93,7 @@ User.find_each do |user|
 end
 ```
 
-Use [Easy Rotation](Easy-Rotation.md) if you want to manually switch keys.
+Use [easy rotation](Easy-Rotation.md) if you want to manually switch keys.
 
 ## IAM Permissions
 

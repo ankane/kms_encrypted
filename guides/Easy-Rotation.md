@@ -1,6 +1,6 @@
 # Easy Rotation
 
-Easy Rotation can be used to:
+Easy rotation can be used to:
 
 1. Move to a different KMS
 2. Change keys within your current KMS
