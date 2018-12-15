@@ -43,9 +43,9 @@ We recommend setting up alerts on suspicious behavior.
 
 ## Key Rotation
 
-To rotate keys, use the Google Cloud Console or API.
+To rotate master keys, use the Google Cloud Console or API.
 
-New data will be encrypted with the new key version. To encrypt existing data with new key version, run:
+New data will be encrypted with the new master key version. To encrypt existing data with new master key version, run:
 
 ```ruby
 User.find_each do |user|

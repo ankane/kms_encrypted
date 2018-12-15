@@ -85,7 +85,7 @@ You can use the SNS topic or another target to send events to a log provider or 
 
 KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html).
 
-When this happens, new data will be encrypted with the new key. To encrypt existing data with new key, run:
+When this happens, new data will be encrypted with the new master key. To encrypt existing data with new master key, run:
 
 ```ruby
 User.find_each do |user|
