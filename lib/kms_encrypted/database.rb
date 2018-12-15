@@ -88,10 +88,11 @@ module KmsEncrypted
         ciphertext = ciphertext.sub("v#{version}:", "")
       else
         version = 1
+        context = {} if options[:upgrade_context]
       end
 
       key_id = key_version(version)
-      context = context(version)
+      context ||= context(version)
 
       event = {
         key_id: key_id,

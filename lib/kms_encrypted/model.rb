@@ -1,6 +1,6 @@
 module KmsEncrypted
   module Model
-    def has_kms_key(name: nil, key_id: nil, eager_encrypt: false, version: 1, previous_versions: nil)
+    def has_kms_key(name: nil, key_id: nil, eager_encrypt: false, version: 1, previous_versions: nil, upgrade_context: false)
       key_id ||= ENV["KMS_KEY_ID"]
 
       key_method = name ? "kms_key_#{name}" : "kms_key"
@@ -17,7 +17,8 @@ module KmsEncrypted
           key_id: key_id,
           name: name,
           version: version,
-          previous_versions: previous_versions
+          previous_versions: previous_versions,
+          upgrade_context: upgrade_context
         }
 
         if kms_keys.size == 1

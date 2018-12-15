@@ -44,17 +44,23 @@ KMS Encrypted 1.0 brings a number of improvements. Here are a few breaking chang
 - ActiveSupport notifications were changed from `generate_data_key` and `decrypt_data_key` to `encrypt` and `decrypt`
 - AWS KMS uses the `Encrypt` operation instead of `GenerateDataKey`
 
-If you didn’t previously use encryption context, add to your models:
+If you didn’t previously use encryption context, add the `upgrade_context` option to your models:
 
 ```ruby
 class User < ApplicationRecord
-  def kms_encryption_context
-    {}
-  end
+  has_kms_key upgrade_context: true
 end
 ```
 
-We highly recommend using [easy rotation](guides/Easy-Rotation.md) to add it.
+Then run:
+
+```ruby
+User.where("encrypted_kms_key NOT LIKE 'v1:%'").find_each do |user|
+  user.rotate_kms_key!
+end
+```
+
+And remove the `upgrade_context` option.
 
 ## History
 
