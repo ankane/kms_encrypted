@@ -5,7 +5,7 @@ module KmsEncrypted
         options = {
           plaintext: Base64.encode64(plaintext)
         }
-        options[:context] = Base64.encode64(context) if context
+        options[:context] = generate_context(context) if context
 
         response = KmsEncrypted.vault_client.logical.write(
           "transit/encrypt/#{key_id.sub("vault/", "")}",
@@ -19,7 +19,7 @@ module KmsEncrypted
         options = {
           ciphertext: ciphertext
         }
-        options[:context] = Base64.encode64(context) if context
+        options[:context] = generate_context(context) if context
 
         response =
           begin
@@ -33,6 +33,14 @@ module KmsEncrypted
           end
 
         Base64.decode64(response.data[:plaintext])
+      end
+
+      private
+
+      # turn hash into json
+      def generate_context(context)
+        context = context.to_json if context.is_a?(Hash)
+        Base64.encode64(context)
       end
     end
   end

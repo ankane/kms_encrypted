@@ -64,16 +64,7 @@ module KmsEncrypted
 
       ciphertext =
         ActiveSupport::Notifications.instrument("encrypt.kms_encrypted", event) do
-          case key_provider(key_id)
-          when :test
-            KmsEncrypted::Clients::Test.new(key_id: key_id).encrypt(plaintext, context: context)
-          when :vault
-            KmsEncrypted::Clients::Vault.new(key_id: key_id).encrypt(plaintext, context: context.to_json)
-          when :google
-            KmsEncrypted::Clients::Google.new(key_id: key_id).encrypt(plaintext, context: context.to_json)
-          else
-            KmsEncrypted::Clients::Aws.new(key_id: key_id).encrypt(plaintext, context: context)
-          end
+          KmsEncrypted::Client.new(key_id: key_id).encrypt(plaintext, context: context)
         end
 
       "v#{current_version}:#{encode64(ciphertext)}"
@@ -89,21 +80,10 @@ module KmsEncrypted
       else
         version = 1
         context = {} if options[:upgrade_context]
-      end
 
-      key_id = key_version(version)
-      context ||= context(version)
-
-      event = {
-        key_id: key_id,
-        context: context,
-        data_key: true
-      }
-
-      ActiveSupport::Notifications.instrument("decrypt.kms_encrypted", event) do
+        # legacy
         if ciphertext.start_with?("$gc$")
           _, _, short_key_id, ciphertext = ciphertext.split("$", 4)
-          ciphertext = decode64(ciphertext)
 
           # restore key, except for cryptoKeyVersion
           stored_key_id = decode64(short_key_id).split("/")[0..3]
@@ -112,21 +92,20 @@ module KmsEncrypted
           stored_key_id.insert(4, "keyRings")
           stored_key_id.insert(6, "cryptoKeys")
           key_id = stored_key_id.join("/")
-
-          KmsEncrypted::Clients::Google.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
-        else
-          ciphertext = decode64(ciphertext)
-          case key_provider(key_id)
-          when :test
-            KmsEncrypted::Clients::Test.new(key_id: key_id).decrypt(ciphertext, context: context)
-          when :vault
-            KmsEncrypted::Clients::Vault.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
-          when :google
-            KmsEncrypted::Clients::Google.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
-          else
-            KmsEncrypted::Clients::Aws.new(key_id: key_id).decrypt(ciphertext, context: context)
-          end
         end
+      end
+
+      key_id ||= key_version(version)
+      context ||= context(version)
+      ciphertext = decode64(ciphertext)
+
+      event = {
+        key_id: key_id,
+        context: context,
+        data_key: true
+      }
+      ActiveSupport::Notifications.instrument("decrypt.kms_encrypted", event) do
+        KmsEncrypted::Client.new(key_id: key_id).decrypt(ciphertext, context: context)
       end
     end
 
@@ -136,18 +115,6 @@ module KmsEncrypted
 
     def decode64(bytes)
        Base64.decode64(bytes)
-    end
-
-    def key_provider(key_id)
-      if key_id == "insecure-test-key"
-        :test
-      elsif key_id.start_with?("projects/")
-        :google
-      elsif key_id.start_with?("vault/")
-        :vault
-      else
-        :aws
-      end
     end
   end
 end

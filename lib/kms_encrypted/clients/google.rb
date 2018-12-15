@@ -8,7 +8,7 @@ module KmsEncrypted
         options = {
           plaintext: plaintext
         }
-        options[:additional_authenticated_data] = context if context
+        options[:additional_authenticated_data] = generate_context(context) if context
 
         request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(options)
         response = client.encrypt_crypto_key(key_id, request)
@@ -23,7 +23,7 @@ module KmsEncrypted
         options = {
           ciphertext: ciphertext
         }
-        options[:additional_authenticated_data] = context if context
+        options[:additional_authenticated_data] = generate_context(context) if context
 
         request = ::Google::Apis::CloudkmsV1::DecryptRequest.new(options)
         begin
@@ -32,6 +32,14 @@ module KmsEncrypted
           decryption_failed! if e.message.include?("Decryption failed")
           raise e
         end
+      end
+
+      private
+
+      # turn hash into json
+      def generate_context(context)
+        context = context.to_json if context.is_a?(Hash)
+        context
       end
     end
   end
