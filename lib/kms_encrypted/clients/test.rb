@@ -1,7 +1,7 @@
 module KmsEncrypted
   module Clients
     class Test < Base
-      PREFIX = Base64.decode64("insecure+data+key+A")
+      PREFIX = Base64.decode64("insecure+data+A")
 
       def encrypt(plaintext, context: nil)
         # TODO check context
