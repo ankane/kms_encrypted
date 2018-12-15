@@ -4,15 +4,26 @@ module KmsEncrypted
       PREFIX = Base64.decode64("insecure+data+A")
 
       def encrypt(plaintext, context: nil)
-        [PREFIX, Base64.strict_encode64(plaintext), Base64.strict_encode64(context.to_json)].join(":")
+        parts = [PREFIX, Base64.strict_encode64(plaintext)]
+        parts << generate_context(context) if context
+        parts.join(":")
       end
 
       def decrypt(ciphertext, context: nil)
         prefix, plaintext, stored_context = ciphertext.split(":")
 
-        decryption_failed! if context.to_json != Base64.decode64(stored_context)
+        context = generate_context(context) if context
+        decryption_failed! if context != stored_context
 
         Base64.decode64(plaintext)
+      end
+
+      private
+
+      # turn hash into json
+      def generate_context(context)
+        context = hash_to_context(context) if context.is_a?(Hash)
+        Base64.encode64(context)
       end
     end
   end

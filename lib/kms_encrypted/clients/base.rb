@@ -10,6 +10,10 @@ module KmsEncrypted
       def decryption_failed!
         raise DecryptionError, "Decryption failed"
       end
+
+      def hash_to_context(v)
+        v.to_json
+      end
     end
   end
 end
