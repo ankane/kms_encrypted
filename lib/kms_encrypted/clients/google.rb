@@ -35,14 +35,6 @@ module KmsEncrypted
           raise e
         end
       end
-
-      private
-
-      # turn hash into json
-      def generate_context(context)
-        context = hash_to_context(context) if context.is_a?(Hash)
-        context
-      end
     end
   end
 end

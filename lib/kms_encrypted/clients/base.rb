@@ -15,11 +15,15 @@ module KmsEncrypted
       end
 
       # keys must be ordered consistently
-      def hash_to_context(h)
+      # values are checked for validity
+      # then converted to strings
+      def generate_context(context)
         if @legacy_context
-          h.to_json
+          context.to_json
+        elsif context.is_a?(Hash)
+          Hash[context.sort_by { |k| k.to_s }.map { |k, v| [k.to_s, hash_value(v)] }].to_json
         else
-          Hash[h.sort_by { |k| k.to_s }.map { |k, v| [k.to_s, hash_value(v)] }].to_json
+          context
         end
       end
 

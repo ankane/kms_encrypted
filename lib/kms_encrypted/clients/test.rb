@@ -22,8 +22,7 @@ module KmsEncrypted
 
       # turn hash into json
       def generate_context(context)
-        context = hash_to_context(context) if context.is_a?(Hash)
-        Base64.encode64(context)
+        Base64.encode64(super)
       end
     end
   end
