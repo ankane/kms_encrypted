@@ -14,7 +14,7 @@ To rotate keys, update your model:
 
 ```ruby
 class User < ApplicationRecord
-  has_kms_key key_id: ENV["KMS_KEY_ID_V2"], version: 2
+  has_kms_key version: 2, key_id: ENV["KMS_KEY_ID_V2"],
     previous_versions: {
       1 => {key_id: ENV["KMS_KEY_ID"]}
     }
