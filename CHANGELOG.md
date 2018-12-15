@@ -1,6 +1,13 @@
-## 0.3.1 [unreleased]
+## 1.0.0 [unreleased]
 
-- Added `context_hash`
+- Added versioning
+- Added `context_hash` method
+
+Breaking changes
+
+- There’s now a default encryption context with the model name and id
+- ActiveSupport notifications were changed from `generate_data_key` and `decrypt_data_key` to `encrypt` and `decrypt`
+- AWS KMS uses the `Encrypt` operation instead of `GenerateDataKey`
 
 ## 0.3.0
 
