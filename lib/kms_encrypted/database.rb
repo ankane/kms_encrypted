@@ -62,21 +62,21 @@ module KmsEncrypted
         data_key: true
       }
 
-      encoded_ciphertext =
+      ciphertext =
         ActiveSupport::Notifications.instrument("encrypt.kms_encrypted", event) do
           case key_provider(key_id)
           when :test
-            "insecure-data-key-#{encode64(plaintext)}"
+            KmsEncrypted::Clients::Test.new(key_id: key_id).encrypt(plaintext, context: context)
           when :vault
             KmsEncrypted::Clients::Vault.new(key_id: key_id).encrypt(plaintext, context: context.to_json)
           when :google
-            encode64(KmsEncrypted::Clients::Google.new(key_id: key_id).encrypt(plaintext, context: context.to_json))
+            KmsEncrypted::Clients::Google.new(key_id: key_id).encrypt(plaintext, context: context.to_json)
           else
-            encode64(KmsEncrypted::Clients::Aws.new(key_id: key_id).encrypt(plaintext, context: context))
+            KmsEncrypted::Clients::Aws.new(key_id: key_id).encrypt(plaintext, context: context)
           end
         end
 
-      "v#{current_version}:#{encoded_ciphertext}"
+      "v#{current_version}:#{encode64(ciphertext)}"
     end
 
     def decrypt
@@ -115,16 +115,15 @@ module KmsEncrypted
 
           KmsEncrypted::Clients::Google.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
         else
+          ciphertext = decode64(ciphertext)
           case key_provider(key_id)
           when :test
-            decode64(ciphertext.remove("insecure-data-key-"))
+            KmsEncrypted::Clients::Test.new(key_id: key_id).decrypt(ciphertext, context: context)
           when :vault
             KmsEncrypted::Clients::Vault.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
           when :google
-            ciphertext = decode64(ciphertext)
             KmsEncrypted::Clients::Google.new(key_id: key_id).decrypt(ciphertext, context: context.to_json)
           else
-            ciphertext = decode64(ciphertext)
             KmsEncrypted::Clients::Aws.new(key_id: key_id).decrypt(ciphertext, context: context)
           end
         end

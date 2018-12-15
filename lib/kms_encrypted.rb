@@ -1,6 +1,7 @@
 # dependencies
 require "active_support"
 require "base64"
+require "json"
 require "securerandom"
 
 # modules
@@ -14,6 +15,7 @@ require "kms_encrypted/client"
 require "kms_encrypted/clients/base"
 require "kms_encrypted/clients/aws"
 require "kms_encrypted/clients/google"
+require "kms_encrypted/clients/test"
 require "kms_encrypted/clients/vault"
 
 module KmsEncrypted
