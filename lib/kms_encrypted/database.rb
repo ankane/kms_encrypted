@@ -92,6 +92,8 @@ module KmsEncrypted
           stored_key_id.insert(4, "keyRings")
           stored_key_id.insert(6, "cryptoKeys")
           key_id = stored_key_id.join("/")
+        elsif ciphertext.start_with?("vault:")
+          ciphertext = Base64.encode64(ciphertext)
         end
       end
 
