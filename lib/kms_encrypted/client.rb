@@ -24,16 +24,19 @@ module KmsEncrypted
 
     def client
       @client ||= begin
-        case provider
-        when :test
-          KmsEncrypted::Clients::Test.new(key_id: key_id)
-        when :vault
-          KmsEncrypted::Clients::Vault.new(key_id: key_id)
-        when :google
-          KmsEncrypted::Clients::Google.new(key_id: key_id)
-        else
-          KmsEncrypted::Clients::Aws.new(key_id: key_id)
-        end
+        klass =
+          case provider
+          when :test
+            KmsEncrypted::Clients::Test
+          when :vault
+            KmsEncrypted::Clients::Vault
+          when :google
+            KmsEncrypted::Clients::Google
+          else
+            KmsEncrypted::Clients::Aws
+          end
+
+        klass.new(key_id: key_id)
       end
     end
   end
