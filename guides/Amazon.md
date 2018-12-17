@@ -81,6 +81,8 @@ While the alarm we created isn’t super sophisticated, this setup provides a gr
 
 You can use the SNS topic or another target to send events to a log provider or [SIEM](https://en.wikipedia.org/wiki/Security_information_and_event_management), where can you do more advanced anomaly detection.
 
+You should also use other tools to detect breaches, like an [IDS](https://www.alienvault.com/blogs/security-essentials/open-source-intrusion-detection-tools-a-quick-overview). You can use [Amazon GuardDuty](https://aws.amazon.com/guardduty/) if you run infrastructure on AWS.
+
 ## Key Rotation
 
 KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html).
