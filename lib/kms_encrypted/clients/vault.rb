@@ -5,7 +5,7 @@ module KmsEncrypted
         options = {
           plaintext: Base64.encode64(plaintext)
         }
-        options[:context] = Base64.encode64(context) if context
+        options[:context] = generate_context(context) if context
 
         response = KmsEncrypted.vault_client.logical.write(
           "transit/encrypt/#{key_id.sub("vault/", "")}",
@@ -19,7 +19,7 @@ module KmsEncrypted
         options = {
           ciphertext: ciphertext
         }
-        options[:context] = Base64.encode64(context) if context
+        options[:context] = generate_context(context) if context
 
         response =
           begin
@@ -30,9 +30,18 @@ module KmsEncrypted
           rescue ::Vault::HTTPClientError => e
             decryption_failed! if e.message.include?("unable to decrypt")
             raise e
+          rescue Encoding::UndefinedConversionError
+            decryption_failed!
           end
 
         Base64.decode64(response.data[:plaintext])
+      end
+
+      private
+
+      # turn hash into json
+      def generate_context(context)
+        Base64.encode64(super)
       end
     end
   end

@@ -21,6 +21,9 @@ if ENV["VERBOSE"]
   ActiveRecord::Base.logger = logger
   ActiveSupport::LogSubscriber.logger = logger
   Google::Apis.logger = logger
+  if ENV["KMS_KEY_ID"].start_with?("projects/")
+    KmsEncrypted.google_client.client_options.log_http_requests = true
+  end
 end
 
 $events = Hash.new(0)
@@ -34,20 +37,36 @@ ActiveRecord::Migration.create_table :users do |t|
   t.string :encrypted_email_iv
   t.string :encrypted_phone
   t.string :encrypted_phone_iv
+  t.string :encrypted_street
+  t.string :encrypted_street_iv
 
   # kms_encrypted
   t.string :encrypted_kms_key
   t.string :encrypted_kms_key_phone
+  t.string :encrypted_kms_key_street
+
+  t.timestamps null: false
 end
+
+$version = 1
 
 class User < ActiveRecord::Base
   has_kms_key
-  has_kms_key name: :phone
+  has_kms_key name: :phone, eager_encrypt: :try
+  has_kms_key name: :street, version: -> { $version },
+    previous_versions: {
+      1 => {key_id: "insecure-test-key"}
+    }
 
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
+  attr_encrypted :street, key: :kms_key_street
 
   def kms_encryption_context
     {"Name" => name}
+  end
+
+  def kms_encryption_context_street(version:)
+    {version: version}
   end
 end

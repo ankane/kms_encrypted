@@ -33,6 +33,14 @@ end
 
 For each encrypted attribute, use the `kms_key` method for its key.
 
+## Logging
+
+The Google API client logs requests by default. Be sure to turn off the logger in production or it will leak the plaintext.
+
+```ruby
+Google::Apis.logger = Logger.new(nil)
+```
+
 ## Auditing
 
 Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set up data access logging. There is not currently a way to see what data is being decrypted, since the additional authenticated data is not logged. For this reason, we recommend another KMS provider.
@@ -43,19 +51,17 @@ We recommend setting up alerts on suspicious behavior.
 
 ## Key Rotation
 
-To manually rotate keys, replace the old key id with the new key id in your model. Your app does not need the old key id to perform rotation (however, the key must still be enabled in your GCP account).
+To rotate master keys, use the Google Cloud Console or API.
 
-```sh
-KMS_KEY_ID=...
-```
-
-and run
+New data will be encrypted with the new master key version. To encrypt existing data with new master key version, run:
 
 ```ruby
 User.find_each do |user|
   user.rotate_kms_key!
 end
 ```
+
+Use [easy rotation](Easy-Rotation.md) if you want to switch keys.
 
 ## Testing
 

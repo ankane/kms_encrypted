@@ -1,6 +1,8 @@
 # dependencies
 require "active_support"
 require "base64"
+require "json"
+require "securerandom"
 
 # modules
 require "kms_encrypted/database"
@@ -13,10 +15,12 @@ require "kms_encrypted/client"
 require "kms_encrypted/clients/base"
 require "kms_encrypted/clients/aws"
 require "kms_encrypted/clients/google"
+require "kms_encrypted/clients/test"
 require "kms_encrypted/clients/vault"
 
 module KmsEncrypted
-  class DecryptionError < StandardError; end
+  class Error < StandardError; end
+  class DecryptionError < Error; end
 
   class << self
     attr_writer :aws_client
@@ -25,7 +29,7 @@ module KmsEncrypted
 
     def aws_client
       @aws_client ||= Aws::KMS::Client.new(
-        retry_limit: 2,
+        retry_limit: 1,
         http_open_timeout: 2,
         http_read_timeout: 2
       )
@@ -38,16 +42,20 @@ module KmsEncrypted
         client.authorization = ::Google::Auth.get_application_default(
           "https://www.googleapis.com/auth/cloud-platform"
         )
+        client.client_options.log_http_requests = false
+        client.client_options.open_timeout_sec = 2
+        client.client_options.read_timeout_sec = 2
         client
       end
     end
 
     def vault_client
-      @vault_client ||= ::Vault
+      @vault_client ||= ::Vault::Client.new
     end
 
-    def context_hash(record, path:)
-      context = Base64.encode64(record.kms_encryption_context.to_json)
+    # hash is independent of key, but specific to audit device
+    def context_hash(context, path:)
+      context = Base64.encode64(context.to_json)
       vault_client.logical.write("sys/audit-hash/#{path}", input: context).data[:hash]
     end
   end

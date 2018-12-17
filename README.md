@@ -2,14 +2,13 @@
 
 Simple, secure key management for [attr_encrypted](https://github.com/attr-encrypted/attr_encrypted)
 
-The attr_encrypted gem is great for encryption, but:
+With KMS Encrypted:
 
-1. Leaves you to manage the security of your keys
-2. Doesn’t provide an easy way to rotate your keys
-3. Doesn’t have a great audit trail to see how data has been accessed
-4. Doesn’t let you grant encryption and decryption permission separately
-
-Key management services address all of these issues and it’s easy to use them together.
+- Master encryption keys are not on application servers
+- There’s an immutable audit log of all activity
+- Decryption can be disabled if an attack is detected
+- Encrypt and decrypt permissions can be granted separately
+- It’s easy to rotate keys
 
 Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://www.vaultproject.io/)
 
@@ -34,6 +33,34 @@ Follow the instructions for your key management service:
 ## Related Projects
 
 To securely search encrypted data, check out [Blind Index](https://github.com/ankane/blind_index).
+
+## Upgrading
+
+### 1.0
+
+KMS Encrypted 1.0 brings a number of improvements. Here are a few breaking changes to be aware of:
+
+- There’s now a default encryption context with the model name and id
+- ActiveSupport notifications were changed from `generate_data_key` and `decrypt_data_key` to `encrypt` and `decrypt`
+- AWS KMS uses the `Encrypt` operation instead of `GenerateDataKey`
+
+If you didn’t previously use encryption context, add the `upgrade_context` option to your models:
+
+```ruby
+class User < ApplicationRecord
+  has_kms_key upgrade_context: true
+end
+```
+
+Then run:
+
+```ruby
+User.where("encrypted_kms_key NOT LIKE 'v1:%'").find_each do |user|
+  user.rotate_kms_key!
+end
+```
+
+And remove the `upgrade_context` option.
 
 ## History
 

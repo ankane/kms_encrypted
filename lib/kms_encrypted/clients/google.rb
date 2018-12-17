@@ -4,12 +4,13 @@ module KmsEncrypted
       attr_reader :last_key_version
 
       def encrypt(plaintext, context: nil)
-        client = KmsEncrypted.google_client
         options = {
           plaintext: plaintext
         }
-        options[:additional_authenticated_data] = context if context
+        options[:additional_authenticated_data] = generate_context(context) if context
 
+        # ensure namespace gets loaded
+        client = KmsEncrypted.google_client
         request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(options)
         response = client.encrypt_crypto_key(key_id, request)
 
@@ -19,12 +20,13 @@ module KmsEncrypted
       end
 
       def decrypt(ciphertext, context: nil)
-        client = KmsEncrypted.google_client
         options = {
           ciphertext: ciphertext
         }
-        options[:additional_authenticated_data] = context if context
+        options[:additional_authenticated_data] = generate_context(context) if context
 
+        # ensure namespace gets loaded
+        client = KmsEncrypted.google_client
         request = ::Google::Apis::CloudkmsV1::DecryptRequest.new(options)
         begin
           client.decrypt_crypto_key(key_id, request).plaintext

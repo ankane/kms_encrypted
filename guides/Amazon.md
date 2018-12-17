@@ -43,9 +43,15 @@ For each encrypted attribute, use the `kms_key` method for its key.
 
 ## Auditing
 
-[AWS CloudTrail](https://aws.amazon.com/cloudtrail/) logs all decryption calls. However, to know what data is being decrypted, you’ll need to add context.
+[AWS CloudTrail](https://aws.amazon.com/cloudtrail/) logs all decryption calls. You can view them in the [CloudTrail console](https://console.aws.amazon.com/cloudtrail/home#/events?EventName=Decrypt). Note that it can take 20 minutes for events to show up. You can also use the AWS CLI.
 
-Add a `kms_encryption_context` method to your model.
+```sh
+aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=Decrypt
+```
+
+If you haven’t already, enable CloudTrail storage to S3 to ensure events are accessible after 90 days. Later, you can use Amazon Athena and this [table structure](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) to query them.
+
+Encryption context is used to identify the data being decrypted. This is the model name and id by default. You can customize this with:
 
 ```ruby
 class User < ApplicationRecord
@@ -57,146 +63,37 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
 
-The primary key is a good choice, but auto-generated ids aren’t available until a record is created, and we need to encrypt before this. One solution is to preload the primary key. Here’s what it looks like with Postgres:
-
-```ruby
-class User < ApplicationRecord
-  def kms_encryption_context
-    self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
-    {"Record" => "#{model_name}/#{id}"}
-  end
-end
-```
-
-Another solution is to first save the record without the encrypted data, then update it.
-
-Confirm it worked in the [CloudTrail console](https://console.aws.amazon.com/cloudtrail/home#/events?EventName=Decrypt). Note that it can take 20 minutes for events to show up. Use “View Event” to see the encryption context. You can also use the AWS CLI.
-
-```sh
-aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=Decrypt
-```
-
-If you haven’t already, enable CloudTrail storage to S3. [Amazon Athena](https://aws.amazon.com/athena/) is great for querying CloudTrail logs. Create a table (thanks to [this post](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) for the table structure) with:
-
-```sql
-CREATE EXTERNAL TABLE cloudtrail_logs (
-    eventversion STRING,
-    userIdentity STRUCT<
-        type:STRING,
-        principalid:STRING,
-        arn:STRING,
-        accountid:STRING,
-        invokedby:STRING,
-        accesskeyid:STRING,
-        userName:String,
-        sessioncontext:STRUCT<
-            attributes:STRUCT<
-                mfaauthenticated:STRING,
-                creationdate:STRING>,
-            sessionIssuer:STRUCT<
-                type:STRING,
-                principalId:STRING,
-                arn:STRING,
-                accountId:STRING,
-                userName:STRING>>>,
-    eventTime STRING,
-    eventSource STRING,
-    eventName STRING,
-    awsRegion STRING,
-    sourceIpAddress STRING,
-    userAgent STRING,
-    errorCode STRING,
-    errorMessage STRING,
-    requestId  STRING,
-    eventId  STRING,
-    resources ARRAY<STRUCT<
-        ARN:STRING,
-        accountId:STRING,
-        type:STRING>>,
-    eventType STRING,
-    apiVersion  STRING,
-    readOnly BOOLEAN,
-    recipientAccountId STRING,
-    sharedEventID STRING,
-    vpcEndpointId STRING,
-    requestParameters STRING,
-    responseElements STRING,
-    additionalEventData STRING,
-    serviceEventDetails STRING
-)
-ROW FORMAT SERDE 'com.amazon.emr.hive.serde.CloudTrailSerde'
-STORED  AS INPUTFORMAT 'com.amazon.emr.cloudtrail.CloudTrailInputFormat'
-OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-LOCATION  's3://my-cloudtrail-logs/'
-```
-
-Change the last line to point to your CloudTrail log bucket and query away
-
-```sql
-SELECT
-    eventTime,
-    userIdentity.userName,
-    requestParameters
-FROM
-    cloudtrail_logs
-WHERE
-    eventName = 'Decrypt'
-    AND resources[1].arn = 'arn:aws:kms:...'
-ORDER BY 1
-```
-
-There will also be `GenerateDataKey` events.
-
-### Ensuring Context
-
-You can require everything to have context by editing the key policy.
-
-```json
-{
-    "Effect": "Allow",
-    "Principal": {
-        "AWS": "arn:aws:iam::..."
-    },
-    "Action": [
-        "kms:Encrypt",
-        "kms:GenerateDataKey"
-    ],
-    "Resource": "*",
-    "Condition": {
-        "Null": {
-            "kms:EncryptionContextKeys": false
-        }
-    }
-}
-```
+Use [easy rotation](Easy-Rotation.md) if you need to change the encryption context.
 
 ## Alerting
 
-We recommend setting up alerts on suspicious behavior. To get near real-time alerts (20-30 second delay), use [CloudWatch Events](https://console.aws.amazon.com/cloudwatch/home#rules:).
+Set up alerts for suspicious behavior. To get near real-time alerts (20-30 second delay), use CloudWatch Events.
 
-Create a rule to match “Events by Service”. Choose “Key Management Service (KMS)” as the service name and “AWS API Call via CloudTrail” as the event type. For operations, select “Specific Operations” and enter “Decrypt”.
+First, create a new SNS topic with a name like "decryptions". We’ll use this shortly.
 
-Create an SNS topic to use as the target. You don’t need to create any SNS subscriptions, but you can if you want to post events to an external source.
+Next, open [CloudWatch Events](https://console.aws.amazon.com/cloudwatch/home#rules:) and create a rule to match “Events by Service”. Choose “Key Management Service (KMS)” as the service name and “AWS API Call via CloudTrail” as the event type. For operations, select “Specific Operations” and enter “Decrypt”.
 
-Give the rule a name like “Decryptions”. Once it’s created, open it and click “Show metrics for the rule”. Check “Invocations”. On the “Graphed Metrics” tab, change the statistic to “Sum” and the period to “1 minute”. Finally, click the bell icon to create an alarm for high number of decryptions.
+Select the SNS topic created earlier as the target and save the rule.
+
+To set up an alarm, go to [this page](https://console.aws.amazon.com/cloudwatch/home?#metricsV2:graph=%7E();namespace=AWS/Events;dimensions=RuleName) in CloudWatch Metrics. Find the rule and check “Invocations”. On the “Graphed Metrics” tab, change the statistic to “Sum” and the period to “1 minute”. Finally, click the bell icon to create an alarm for high number of decryptions.
+
+While the alarm we created isn’t super sophisticated, this setup provides a great foundation for alerting as your organization grows.
+
+You can use the SNS topic or another target to send events to a log provider or [SIEM](https://en.wikipedia.org/wiki/Security_information_and_event_management), where can you do more advanced anomaly detection.
 
 ## Key Rotation
 
-KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html). No action is required in this case.
+KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html).
 
-To manually rotate keys, replace the old KMS key id with the new key id in your model. Your app does not need the old key id to perform rotation (however, the key must still be enabled in your AWS account).
-
-```sh
-KMS_KEY_ID=arn:aws:kms:...
-```
-
-and run
+When this happens, new data will be encrypted with the new master key. To encrypt existing data with new master key, run:
 
 ```ruby
 User.find_each do |user|
   user.rotate_kms_key!
 end
 ```
+
+Use [easy rotation](Easy-Rotation.md) if you want to manually switch keys.
 
 ## IAM Permissions
 
@@ -274,7 +171,13 @@ class User < ApplicationRecord
 end
 ```
 
-For context, use:
+To rotate keys, use:
+
+```ruby
+user.rotate_kms_key_phone!
+```
+
+For custom context, use:
 
 ```ruby
 class User < ApplicationRecord
@@ -282,12 +185,6 @@ class User < ApplicationRecord
     # some hash
   end
 end
-```
-
-To rotate keys, use:
-
-```ruby
-user.rotate_kms_key_phone!
 ```
 
 ## File Uploads
