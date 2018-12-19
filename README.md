@@ -5,9 +5,9 @@ Simple, secure key management for [attr_encrypted](https://github.com/attr-encry
 With KMS Encrypted:
 
 - Master encryption keys are not on application servers
+- Encrypt and decrypt permissions can be granted separately
 - There’s an immutable audit log of all activity
 - Decryption can be disabled if an attack is detected
-- Encrypt and decrypt permissions can be granted separately
 - It’s easy to rotate keys
 
 Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://www.vaultproject.io/)
