@@ -12,6 +12,8 @@ With KMS Encrypted:
 
 Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://www.vaultproject.io/)
 
+Check out [this post](https://ankane.org/sensitive-data-rails) for more info on securing sensitive data with Rails
+
 [![Build Status](https://travis-ci.org/ankane/kms_encrypted.svg?branch=master)](https://travis-ci.org/ankane/kms_encrypted)
 
 ## How It Works
