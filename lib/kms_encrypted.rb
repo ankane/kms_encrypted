@@ -5,6 +5,7 @@ require "json"
 require "securerandom"
 
 # modules
+require "kms_encrypted/box"
 require "kms_encrypted/database"
 require "kms_encrypted/log_subscriber"
 require "kms_encrypted/model"
