@@ -8,12 +8,22 @@ module KmsEncrypted
       context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
 
       class_eval do
-        class << self
-          def kms_keys
-            @kms_keys ||= {}
-          end unless respond_to?(:kms_keys)
+        @kms_keys ||= {}
+
+        unless respond_to?(:kms_keys)
+          def self.kms_keys
+            parent_keys =
+              if superclass.respond_to?(:kms_keys)
+                superclass.kms_keys
+              else
+                {}
+              end
+
+            parent_keys.merge(@kms_keys || {})
+          end
         end
-        kms_keys[key_method.to_sym] = {
+
+        @kms_keys[key_method.to_sym] = {
           key_id: key_id,
           name: name,
           version: version,
@@ -21,7 +31,7 @@ module KmsEncrypted
           upgrade_context: upgrade_context
         }
 
-        if kms_keys.size == 1
+        if @kms_keys.size == 1
           after_save :encrypt_kms_keys
 
           # fetch all keys together so only need to update database once

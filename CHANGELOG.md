@@ -1,3 +1,7 @@
+## 1.0.1 [unreleased]
+
+- Fixed issue with inheritance
+
 ## 1.0.0
 
 - Added versioning

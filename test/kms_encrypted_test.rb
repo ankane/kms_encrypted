@@ -69,6 +69,11 @@ class KmsEncryptedTest < Minitest::Test
     assert User.kms_keys[:kms_key_phone]
   end
 
+  def test_inheritance
+    assert_equal [:kms_key, :kms_key_phone, :kms_key_street], User.kms_keys.keys
+    assert_equal [:kms_key, :kms_key_phone, :kms_key_street, :kms_key_child], ActiveUser.kms_keys.keys
+  end
+
   def test_context_hash
     skip unless ENV["KMS_KEY_ID"].start_with?("vault/")
 

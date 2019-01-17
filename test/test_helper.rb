@@ -70,3 +70,7 @@ class User < ActiveRecord::Base
     {version: version}
   end
 end
+
+class ActiveUser < User
+  has_kms_key name: :child
+end
