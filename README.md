@@ -45,13 +45,13 @@ You pass `key_id`, `version`, and `previous_versions` if needed.
 Encrypt
 
 ```ruby
-kms.encrypt(message, context: {message_id: 123})
+kms.encrypt(message, context: {model_name: "User", model_id: 123})
 ```
 
 Decrypt
 
 ```ruby
-kms.decrypt(ciphertext, context: {message_id: 123})
+kms.decrypt(ciphertext, context: {model_name: "User", model_id: 123})
 ```
 
 ## Related Projects
