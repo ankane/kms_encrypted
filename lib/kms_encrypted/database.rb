@@ -16,6 +16,14 @@ module KmsEncrypted
       end
     end
 
+    def key_id
+      @key_id ||= begin
+        key_id = options[:key_id]
+        key_id = record.instance_exec(&key_id) if key_id.respond_to?(:call)
+        key_id
+      end
+    end
+
     def context(version)
       name = options[:name]
       context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
@@ -30,7 +38,7 @@ module KmsEncrypted
       context = context(version)
 
       KmsEncrypted::Box.new(
-        key_id: options[:key_id],
+        key_id: key_id,
         version: version,
         previous_versions: options[:previous_versions]
       ).encrypt(plaintext, context: context)
@@ -43,7 +51,7 @@ module KmsEncrypted
       context = (options[:upgrade_context] && !m) ? {} : context(version)
 
       KmsEncrypted::Box.new(
-        key_id: options[:key_id],
+        key_id: key_id,
         previous_versions: options[:previous_versions]
       ).decrypt(ciphertext, context: context)
     end

@@ -1,6 +1,7 @@
 ## 1.0.1 [unreleased]
 
 - Fixed issue with inheritance
+- Added support for dynamic keys
 
 ## 1.0.0
 

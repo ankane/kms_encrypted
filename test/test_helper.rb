@@ -52,7 +52,7 @@ $version = 1
 
 class User < ActiveRecord::Base
   has_kms_key
-  has_kms_key name: :phone, eager_encrypt: :try
+  has_kms_key name: :phone, eager_encrypt: :try, key_id: -> { ENV["KMS_KEY_ID"] }
   has_kms_key name: :street, version: -> { $version },
     previous_versions: {
       1 => {key_id: "insecure-test-key"}
