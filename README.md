@@ -40,7 +40,7 @@ To encrypt and decrypt outside of models, create a box:
 kms = KmsEncrypted::Box.new
 ```
 
-You pass `key_id`, `version`, and `previous_versions` if needed.
+You can pass `key_id`, `version`, and `previous_versions` if needed.
 
 Encrypt
 
