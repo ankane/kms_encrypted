@@ -9,6 +9,7 @@ module KmsEncrypted
     end
 
     def encrypt(plaintext, context: nil)
+      context = version_context(context, version)
       key_id = version_key_id(version)
       ciphertext = KmsEncrypted::Client.new(key_id: key_id, data_key: true).encrypt(plaintext, context: context)
       "v#{version}:#{encode64(ciphertext)}"
@@ -41,6 +42,7 @@ module KmsEncrypted
 
       key_id ||= version_key_id(version)
       ciphertext = decode64(ciphertext)
+      context = version_context(context, version)
 
       KmsEncrypted::Client.new(
         key_id: key_id,
@@ -64,6 +66,18 @@ module KmsEncrypted
       raise ArgumentError, "Missing key id" unless key_id
 
       key_id
+    end
+
+    def version_context(context, version)
+      if context.respond_to?(:call)
+        if context.arity == 0
+          context.call
+        else
+          context.call(version)
+        end
+      else
+        context
+      end
     end
 
     def encode64(bytes)

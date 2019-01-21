@@ -17,4 +17,12 @@ class BoxTest < Minitest::Test
     ciphertext = client.encrypt(plaintext, context: context1)
     assert_equal plaintext, client.decrypt(ciphertext, context: context2)
   end
+
+  def test_context_proc
+    client = KmsEncrypted::Box.new
+    plaintext = "hello" * 100
+    context = ->(v) { {test: 123} }
+    ciphertext = client.encrypt(plaintext, context: context)
+    assert_equal plaintext, client.decrypt(ciphertext, context: context)
+  end
 end
