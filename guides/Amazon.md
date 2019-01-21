@@ -192,3 +192,25 @@ end
 ## File Uploads
 
 While outside the scope of this gem, you can also use KMS for sensitive file uploads. Check out [this guide](https://ankane.org/aws-client-side-encryption) to learn more.
+
+## Outside Models [master]
+
+To encrypt and decrypt outside of models, create a box:
+
+```ruby
+box = KmsEncrypted::Box.new(key_id: ...)
+```
+
+You can also pass `version` and `previous_versions`.
+
+Encrypt
+
+```ruby
+box.encrypt(message, context: {message_id: 123})
+```
+
+Decrypt
+
+```ruby
+box.decrypt(ciphertext, context: {message_id: 123})
+```

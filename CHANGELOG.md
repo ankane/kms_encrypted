@@ -1,7 +1,8 @@
 ## 1.0.1 [unreleased]
 
-- Fixed issue with inheritance
+- Added support for encryption and decryption outside models
 - Added support for dynamic keys
+- Fixed issue with inheritance
 
 ## 1.0.0
 
