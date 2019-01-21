@@ -37,10 +37,10 @@ Follow the instructions for your key management service:
 To encrypt and decrypt outside of models, create a box:
 
 ```ruby
-box = KmsEncrypted::Box.new(key_id: ...)
+box = KmsEncrypted::Box.new
 ```
 
-You can also pass `version` and `previous_versions`.
+You pass `key_id`, `version`, and `previous_versions` if needed.
 
 Encrypt
 

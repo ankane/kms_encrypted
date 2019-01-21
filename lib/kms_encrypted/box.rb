@@ -3,7 +3,7 @@ module KmsEncrypted
     attr_reader :key_id, :version, :previous_versions
 
     def initialize(key_id: nil, version: nil, previous_versions: nil)
-      @key_id = key_id
+      @key_id = key_id || ENV["KMS_KEY_ID"]
       @version = version || 1
       @previous_versions = previous_versions || {}
     end
