@@ -108,25 +108,3 @@ To rotate keys, use:
 ```ruby
 user.rotate_kms_key_phone!
 ```
-
-## Outside Models [master]
-
-To encrypt and decrypt outside of models, create a box:
-
-```ruby
-box = KmsEncrypted::Box.new(key_id: ...)
-```
-
-You can also pass `version` and `previous_versions`.
-
-Encrypt
-
-```ruby
-box.encrypt(message, context: {message_id: 123})
-```
-
-Decrypt
-
-```ruby
-box.decrypt(ciphertext, context: {message_id: 123})
-```
