@@ -9,19 +9,15 @@ module KmsEncrypted
     end
 
     def version
-      @version ||= begin
-        version = options[:version]
-        version = record.instance_exec(&version) if version.respond_to?(:call)
-        version.to_i
-      end
+      @version ||= evaluate_option(:version).to_i
     end
 
     def key_id
-      @key_id ||= begin
-        key_id = options[:key_id]
-        key_id = record.instance_exec(&key_id) if key_id.respond_to?(:call)
-        key_id
-      end
+      @key_id ||= evaluate_option(:key_id)
+    end
+
+    def previous_versions
+      @previous_versions ||= evaluate_option(:previous_versions)
     end
 
     def context(version)
@@ -40,7 +36,7 @@ module KmsEncrypted
       KmsEncrypted::Box.new(
         key_id: key_id,
         version: version,
-        previous_versions: options[:previous_versions]
+        previous_versions: previous_versions
       ).encrypt(plaintext, context: context)
     end
 
@@ -52,8 +48,16 @@ module KmsEncrypted
 
       KmsEncrypted::Box.new(
         key_id: key_id,
-        previous_versions: options[:previous_versions]
+        previous_versions: previous_versions
       ).decrypt(ciphertext, context: context)
+    end
+
+    private
+
+    def evaluate_option(key)
+      opt = options[key]
+      opt = record.instance_exec(&opt) if opt.respond_to?(:call)
+      opt
     end
   end
 end
