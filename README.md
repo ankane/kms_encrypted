@@ -32,7 +32,7 @@ Follow the instructions for your key management service:
 - [Google Cloud KMS](guides/Google.md)
 - [Vault](guides/Vault.md)
 
-## Outside Models [master]
+## Outside Models
 
 To encrypt and decrypt outside of models, create a box:
 
