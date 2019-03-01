@@ -110,7 +110,7 @@ To encrypt the data, use a policy with:
         {
             "Sid": "EncryptData",
             "Effect": "Allow",
-            "Action": "kms:GenerateDataKey",
+            "Action": "kms:Encrypt",
             "Resource": "arn:aws:kms:..."
         }
     ]
