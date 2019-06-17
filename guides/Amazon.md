@@ -49,7 +49,7 @@ For each encrypted attribute, use the `kms_key` method for its key.
 aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=Decrypt
 ```
 
-If you haven’t already, enable CloudTrail storage to S3 to ensure events are accessible after 90 days. Later, you can use Amazon Athena and this [table structure](http://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) to query them.
+If you haven’t already, enable CloudTrail storage to S3 to ensure events are accessible after 90 days. Later, you can use Amazon Athena and this [table structure](https://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) to query them.
 
 Encryption context is used to identify the data being decrypted. This is the model name and id by default. You can customize this with:
 
