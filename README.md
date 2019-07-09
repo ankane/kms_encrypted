@@ -1,6 +1,6 @@
 # KMS Encrypted
 
-Simple, secure key management for [attr_encrypted](https://github.com/attr-encrypted/attr_encrypted)
+Simple, secure key management for [Lockbox](https://github.com/ankane/lockbox) and [attr_encrypted](https://github.com/attr-encrypted/attr_encrypted)
 
 With KMS Encrypted:
 

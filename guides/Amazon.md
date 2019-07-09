@@ -35,6 +35,10 @@ And update your model
 class User < ApplicationRecord
   has_kms_key
 
+  # Lockbox
+  encrypts :email, key: :kms_key
+
+  # attr_encrypted
   attr_encrypted :email, key: :kms_key
 end
 ```
@@ -120,7 +124,13 @@ To encrypt the data, use a policy with:
 If a system can only encrypt, you must clear out existing data and data keys before updates.
 
 ```ruby
+# Lockbox
+user.email_ciphertext = nil
+
+# attr_encrypted
 user.encrypted_email = nil
+
+# both
 user.encrypted_kms_key = nil
 # before user.save or user.update
 ```
@@ -168,6 +178,11 @@ class User < ApplicationRecord
   has_kms_key
   has_kms_key name: :phone, key_id: "..."
 
+  # Lockbox
+  encrypts :email, key: :kms_key
+  encrypts :phone, key: :kms_key_phone
+
+  # attr_encrypted
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
 end

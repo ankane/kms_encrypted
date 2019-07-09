@@ -39,6 +39,10 @@ And update your model
 class User < ApplicationRecord
   has_kms_key
 
+  # Lockbox
+  encrypts :email, key: :kms_key
+
+  # attr_encrypted
   attr_encrypted :email, key: :kms_key
 end
 ```
@@ -122,6 +126,11 @@ class User < ApplicationRecord
   has_kms_key
   has_kms_key name: :phone, key_id: "..."
 
+  # Lockbox
+  encrypts :email, key: :kms_key
+  encrypts :phone, key: :kms_key_phone
+
+  # attr_encrypted
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
 end

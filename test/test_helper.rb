@@ -1,10 +1,9 @@
 require "bundler/setup"
 require "active_record"
 require "attr_encrypted"
-Bundler.require(:default)
+Bundler.require(:default, :development)
 require "minitest/autorun"
 require "minitest/pride"
-require "aws-sdk-kms"
 require "google/apis/cloudkms_v1"
 
 # must come before vault
@@ -33,12 +32,17 @@ end
 
 ActiveRecord::Migration.create_table :users do |t|
   t.string :name
+
+  # attr_encrypted
   t.string :encrypted_email
   t.string :encrypted_email_iv
   t.string :encrypted_phone
   t.string :encrypted_phone_iv
   t.string :encrypted_street
   t.string :encrypted_street_iv
+
+  # lockbox
+  t.string :date_of_birth_ciphertext
 
   # kms_encrypted
   t.string :encrypted_kms_key
@@ -61,6 +65,8 @@ class User < ActiveRecord::Base
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
   attr_encrypted :street, key: :kms_key_street
+
+  encrypts :date_of_birth, key: :kms_key
 
   def kms_encryption_context
     {"Name" => name}

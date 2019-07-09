@@ -12,6 +12,13 @@ class KmsEncryptedTest < Minitest::Test
     assert_equal "555-555-5555", user.phone
   end
 
+  def test_lockbox
+    user = create_user(date_of_birth: "1970-01-01")
+    assert_equal "1970-01-01", user.date_of_birth
+    user.reload
+    assert_equal "1970-01-01", user.date_of_birth
+  end
+
   def test_read
     user = User.last
     assert_equal "test@example.org", user.email
@@ -148,10 +155,7 @@ class KmsEncryptedTest < Minitest::Test
     end
   end
 
-  def create_user
-    # for now
-    ActiveSupport::Deprecation.silence do
-      User.create!(name: "Test", email: "test@example.org", phone: "555-555-5555")
-    end
+  def create_user(**attributes)
+    User.create!(name: "Test", email: "test@example.org", phone: "555-555-5555", **attributes)
   end
 end
