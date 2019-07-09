@@ -13,6 +13,8 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_lockbox
+    skip if ActiveRecord::VERSION::MAJOR < 5
+
     user = create_user(date_of_birth: "1970-01-01")
     assert_equal "1970-01-01", user.date_of_birth
     user.reload
@@ -30,9 +32,7 @@ class KmsEncryptedTest < Minitest::Test
       user = User.last
       user.encrypted_kms_key = nil
       user.encrypted_email = nil
-      ActiveSupport::Deprecation.silence do
-        user.update!(email: "test@example.org")
-      end
+      user.update!(email: "test@example.org")
     end
   end
 
