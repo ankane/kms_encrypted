@@ -1,6 +1,5 @@
 require "bundler/setup"
 require "active_record"
-require "attr_encrypted"
 Bundler.require(:default, :development)
 require "minitest/autorun"
 require "minitest/pride"
