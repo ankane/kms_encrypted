@@ -125,8 +125,6 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_lockbox
-    skip if ActiveRecord::VERSION::MAJOR < 5
-
     user = create_user
     assert_equal "1970-01-01", user.date_of_birth
     user.reload
@@ -134,8 +132,6 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_lockbox_rotate
-    skip if ActiveRecord::VERSION::MAJOR < 5
-
     user = User.last
     fields = user.attributes
     user.rotate_kms_key!
