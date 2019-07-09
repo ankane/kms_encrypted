@@ -1,3 +1,7 @@
+## 1.1.0 [unreleased]
+
+- Added support for Lockbox
+
 ## 1.0.1
 
 - Added support for encryption and decryption outside models

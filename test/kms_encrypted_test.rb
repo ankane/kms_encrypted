@@ -12,15 +12,6 @@ class KmsEncryptedTest < Minitest::Test
     assert_equal "555-555-5555", user.phone
   end
 
-  def test_lockbox
-    skip if ActiveRecord::VERSION::MAJOR < 5
-
-    user = create_user(date_of_birth: "1970-01-01")
-    assert_equal "1970-01-01", user.date_of_birth
-    user.reload
-    assert_equal "1970-01-01", user.date_of_birth
-  end
-
   def test_read
     user = User.last
     assert_equal "test@example.org", user.email
@@ -133,6 +124,30 @@ class KmsEncryptedTest < Minitest::Test
     end
   end
 
+  def test_lockbox
+    skip if ActiveRecord::VERSION::MAJOR < 5
+
+    user = create_user
+    assert_equal "1970-01-01", user.date_of_birth
+    user.reload
+    assert_equal "1970-01-01", user.date_of_birth
+  end
+
+  def test_lockbox_rotate
+    skip if ActiveRecord::VERSION::MAJOR < 5
+
+    user = User.last
+    fields = user.attributes
+    user.rotate_kms_key!
+
+    %w(date_of_birth_ciphertext encrypted_kms_key).each do |attr|
+      assert user.send(attr) != fields[attr], "#{attr} expected to change"
+    end
+
+    user.reload
+    assert_equal "1970-01-01", user.date_of_birth
+  end
+
   private
 
   def assert_operations(expected)
@@ -155,7 +170,7 @@ class KmsEncryptedTest < Minitest::Test
     end
   end
 
-  def create_user(**attributes)
-    User.create!(name: "Test", email: "test@example.org", phone: "555-555-5555", **attributes)
+  def create_user
+    User.create!(name: "Test", email: "test@example.org", phone: "555-555-5555", date_of_birth: "1970-01-01")
   end
 end

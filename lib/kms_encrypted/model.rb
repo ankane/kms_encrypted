@@ -112,6 +112,9 @@ module KmsEncrypted
           self.class.encrypted_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
             plaintext_attributes[key] = send(key)
           end
+          self.class.lockbox_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
+            plaintext_attributes[key] = send(key)
+          end
 
           # reset key
           instance_variable_set("@#{key_method}", nil)
