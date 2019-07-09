@@ -1,4 +1,4 @@
-## 1.1.0 [unreleased]
+## 1.1.0
 
 - Added support for Lockbox
 - Dropped support for Rails 4.2
