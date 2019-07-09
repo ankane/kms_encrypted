@@ -1,6 +1,7 @@
 ## 1.1.0 [unreleased]
 
 - Added support for Lockbox
+- Dropped support for Rails 4.2
 
 ## 1.0.1
 

@@ -1,11 +1,11 @@
 dist: xenial
 language: ruby
-rvm: 2.5.3
+rvm: 2.6.3
 gemfile:
   - Gemfile
+  - test/gemfiles/activesupport52.gemfile
   - test/gemfiles/activesupport51.gemfile
   - test/gemfiles/activesupport50.gemfile
-  - test/gemfiles/activesupport42.gemfile
 script: bundle exec rake test
 notifications:
   email:
