@@ -109,12 +109,24 @@ module KmsEncrypted
         define_method("rotate_#{key_method}!") do
           # decrypt
           plaintext_attributes = {}
-          self.class.encrypted_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
-            plaintext_attributes[key] = send(key)
+
+          # attr_encrypted
+          if self.class.respond_to?(:encrypted_attributes)
+            self.class.encrypted_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
+              plaintext_attributes[key] = send(key)
+            end
           end
-          self.class.lockbox_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
-            plaintext_attributes[key] = send(key)
+
+          # lockbox attributes
+          if self.class.respond_to?(:lockbox_attributes)
+            self.class.lockbox_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
+              plaintext_attributes[key] = send(key)
+            end
           end
+
+          # TODO lockbox attachments
+          # if self.class.respond_to?(:lockbox_attachments)
+          # end
 
           # reset key
           instance_variable_set("@#{key_method}", nil)
