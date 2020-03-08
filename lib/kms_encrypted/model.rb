@@ -55,16 +55,17 @@ module KmsEncrypted
             end
           end
 
-          # same pattern as attr_encrypted reload
           if method_defined?(:reload)
-            alias_method :reload_without_kms_encrypted, :reload
-            def reload(*args, &block)
-              result = reload_without_kms_encrypted(*args, &block)
-              self.class.kms_keys.keys.each do |key_method|
-                instance_variable_set("@#{key_method}", nil)
+            m = Module.new do
+              define_method(:reload) do |*args, &block|
+                result = super(*args, &block)
+                self.class.kms_keys.keys.each do |key_method|
+                  instance_variable_set("@#{key_method}", nil)
+                end
+                result
               end
-              result
             end
+            prepend m
           end
         end
 
