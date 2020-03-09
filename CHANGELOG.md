@@ -1,3 +1,7 @@
+## 1.1.1 (unreleased)
+
+- Fixed `SystemStackError` with `reload` and CarrierWave
+
 ## 1.1.0 (2019-07-09)
 
 - Added support for Lockbox
