@@ -1,4 +1,4 @@
-## 1.1.1 (unreleased)
+## 1.1.1 (2020-04-16)
 
 - Fixed `SystemStackError` with `reload` and CarrierWave
 
