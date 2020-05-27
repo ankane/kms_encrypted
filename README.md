@@ -114,7 +114,7 @@ VAULT_TOKEN=secret
 
 ## Getting Started
 
-Add a column for the encrypted KMS data keys
+Create a migration to add a column for the encrypted KMS data keys
 
 ```ruby
 add_column :users, :encrypted_kms_key, :text
@@ -309,9 +309,7 @@ end
 
 ### Switching Keys
 
-You can change keys within your current KMS or move to a different KMS without downtime.
-
-Update your model:
+You can change keys within your current KMS or move to a different KMS without downtime. Update your model:
 
 ```ruby
 class User < ApplicationRecord
@@ -334,9 +332,7 @@ Once all data is updated, you can remove the `previous_versions` option.
 
 ### Switching Context
 
-You can change your encryption context without downtime.
-
-Update your model:
+You can change your encryption context without downtime. Update your model:
 
 ```ruby
 class User < ApplicationRecord
