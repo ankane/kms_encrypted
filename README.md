@@ -233,7 +233,7 @@ user.encrypted_kms_key = nil
 
 ### AWS KMS
 
-To encrypt the data, use a policy with:
+To encrypt the data, use an IAM policy with:
 
 ```json
 {
@@ -249,7 +249,7 @@ To encrypt the data, use a policy with:
 }
 ```
 
-To decrypt the data, use a policy with:
+To decrypt the data, use an IAM policy with:
 
 ```json
 {
