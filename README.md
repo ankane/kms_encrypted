@@ -201,11 +201,7 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. You can [rotate the context](#switching-context) without downtime if needed.
 
-**Note:** You need to set `derived` to true when creating the key for Vault to verify this value. If this is not done, the context cannot be trusted.
-
-```sh
-vault write -f transit/keys/my-key derived=true
-```
+**Note:** Vault will only verify this value if `derived` was set to true when creating the key. If this is not done, the context cannot be trusted.
 
 Context will show up hashed in the audit logs. To get the hash for a record, use:
 
