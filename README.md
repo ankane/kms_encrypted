@@ -217,18 +217,16 @@ A great feature of KMS is the ability to grant encryption and decryption permiss
 
 Be extremely selective of systems you allow to decrypt.
 
-For servers that can only encrypt, you must clear out existing data and data keys before updates.
+For servers that can only encrypt, clear out the existing data and data key before assigning new values (otherwise, you’ll get a decryption error).
 
 ```ruby
 # Lockbox
 user.email_ciphertext = nil
+user.encrypted_kms_key = nil
 
 # attr_encrypted
 user.encrypted_email = nil
-
-# both
 user.encrypted_kms_key = nil
-# before user.save or user.update
 ```
 
 ### AWS KMS
