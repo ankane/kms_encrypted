@@ -101,7 +101,7 @@ vault secrets enable transit
 And create a key
 
 ```sh
-vault write -f transit/keys/my-key
+vault write -f transit/keys/my-key derived=true
 ```
 
 Set it in your environment along with your Vault credentials ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
@@ -204,7 +204,7 @@ The context is used as part of the encryption and decryption process, so it must
 **Note:** You need to set `derived` to true when creating the key for Vault to verify this value. If this is not done, the context cannot be trusted.
 
 ```sh
-vault write transit/keys/my-key derived=true
+vault write -f transit/keys/my-key derived=true
 ```
 
 Context will show up hashed in the audit logs. To get the hash for a record, use:
@@ -217,9 +217,25 @@ The `path` option should point to your audit device. Common paths are `file`, `s
 
 ## Separate Permissions
 
-### AWS KMS
-
 A great feature of KMS is the ability to grant encryption and decryption permission separately.
+
+Be extremely selective of systems you allow to decrypt.
+
+For servers that can only encrypt, you must clear out existing data and data keys before updates.
+
+```ruby
+# Lockbox
+user.email_ciphertext = nil
+
+# attr_encrypted
+user.encrypted_email = nil
+
+# both
+user.encrypted_kms_key = nil
+# before user.save or user.update
+```
+
+### AWS KMS
 
 To encrypt the data, use a policy with:
 
@@ -235,20 +251,6 @@ To encrypt the data, use a policy with:
         }
     ]
 }
-```
-
-If a system can only encrypt, you must clear out existing data and data keys before updates.
-
-```ruby
-# Lockbox
-user.email_ciphertext = nil
-
-# attr_encrypted
-user.encrypted_email = nil
-
-# both
-user.encrypted_kms_key = nil
-# before user.save or user.update
 ```
 
 To decrypt the data, use a policy with:
@@ -267,15 +269,41 @@ To decrypt the data, use a policy with:
 }
 ```
 
-Be extremely selective of systems you allow to decrypt.
-
 ### Google Cloud KMS
 
 todo: document
 
 ### Vault
 
-todo: document
+To encrypt the data, use a policy with:
+
+```hcl
+path "transit/encrypt/my-key"
+{
+  capabilities = ["create", "update"]
+}
+```
+
+To decrypt the data, use a policy with:
+
+```hcl
+path "transit/decrypt/my-key"
+{
+  capabilities = ["create", "update"]
+}
+```
+
+Apply a policy with:
+
+```sh
+vault policy write encrypt encrypt.hcl
+```
+
+And create a token with a specific policy with:
+
+```sh
+vault token create -policy=encrypt -policy=decrypt -no-default-policy
+```
 
 ## Testing
 
