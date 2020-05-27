@@ -335,6 +335,8 @@ User.find_each do |user|
 end
 ```
 
+**Note:** This method does not rotate encrypted files, so avoid calling `rotate_kms_key!` on models with file uploads for now.
+
 ### Switching Keys
 
 You can change keys within your current KMS or move to a different KMS without downtime. Update your model:
