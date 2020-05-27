@@ -215,7 +215,7 @@ The `path` option should point to your audit device. Common paths are `file`, `s
 
 A great feature of KMS is the ability to grant encryption and decryption permission separately.
 
-Be extremely selective of systems you allow to decrypt.
+Be extremely selective of servers you allow to decrypt.
 
 For servers that can only encrypt, clear out the existing data and data key before assigning new values (otherwise, you’ll get a decryption error).
 
