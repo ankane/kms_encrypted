@@ -293,7 +293,7 @@ Apply a policy with:
 vault policy write encrypt encrypt.hcl
 ```
 
-And create a token with a specific policy with:
+And create a token with specific policies with:
 
 ```sh
 vault token create -policy=encrypt -policy=decrypt -no-default-policy
