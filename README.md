@@ -18,7 +18,7 @@ Check out [this post](https://ankane.org/sensitive-data-rails) for more info on 
 
 ## How It Works
 
-This approach uses a key management service (KMS) to manage encryption keys and attr_encrypted to do the encryption.
+This approach uses a key management service (KMS) to manage encryption keys and Lockbox / attr_encrypted to do the encryption.
 
 To encrypt an attribute, we first generate a data key and encrypt it with the KMS. This is known as [envelope encryption](https://cloud.google.com/kms/docs/envelope-encryption). We pass the unencrypted version to attr_encrypted and store the encrypted version in the `encrypted_kms_key` column. For each record, we generate a different data key.
 
