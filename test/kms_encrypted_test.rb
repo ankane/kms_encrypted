@@ -12,6 +12,30 @@ class KmsEncryptedTest < Minitest::Test
     assert_equal "555-555-5555", user.phone
   end
 
+  def test_update_eager_encrypt_false
+    user = User.create!(name: "Test")
+    assert_operations encrypt: 0 do
+      user.email = "test@example.org"
+    end
+    assert_operations encrypt: 1 do
+      user.save!
+    end
+    user = User.last
+    assert_equal "test@example.org", user.email
+  end
+
+  def test_update_eager_encrypt_try
+    user = User.create!(name: "Test")
+    assert_operations encrypt: 1 do
+      user.phone = "555-555-5555"
+    end
+    assert_operations encrypt: 0 do
+      user.save!
+    end
+    user = User.last
+    assert_equal "555-555-5555", user.phone
+  end
+
   def test_read
     user = User.last
     assert_equal "test@example.org", user.email
@@ -149,7 +173,7 @@ class KmsEncryptedTest < Minitest::Test
   def assert_operations(expected)
     $events.clear
     yield
-    assert_equal expected, $events
+    assert_equal expected.select { |k, v| v > 0 }, $events
   end
 
   def assert_start_with(start, str)
