@@ -131,6 +131,7 @@ module KmsEncrypted
               # can likely add support at some point, but may be complicated
               # ideally use rotate_encryption! from Lockbox
               # but needs access to both old and new keys
+              # also need to update database atomically
               raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
             end
           end
