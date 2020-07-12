@@ -158,7 +158,7 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. You can [rotate the context](#switching-context) without downtime if needed.
 
-### New Records
+### Order of Events
 
 Since the default context includes the id, the data key cannot be encrypted until the record has an id. For new records, the default flow is:
 
