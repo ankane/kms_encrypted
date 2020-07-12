@@ -141,6 +141,42 @@ For each encrypted attribute, use the `kms_key` method for its key.
 
 ## Auditing & Alerting
 
+### Context
+
+Encryption context is used in auditing to identify the data being decrypted. This is the model name and id by default. You can customize this with:
+
+```ruby
+class User < ApplicationRecord
+  def kms_encryption_context
+    # some hash
+  end
+end
+```
+
+The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. You can [rotate the context](#switching-context) without downtime if needed.
+
+Since the default context includes the id, the data key cannot be encrypted the database has assigned an id to the record. For new records, the default flow is:
+
+1. Start a database transaction
+2. Insert the record, getting back the id
+3. Call KMS to encrypt the data key, passing the id as part of the context
+4. Update the `encrypted_kms_key` column
+5. Commit the database transaction
+
+With Postgres, you can avoid a network call inside a transaction with:
+
+```ruby
+class User < ApplicationRecord
+  has_kms_key eager_encrypt: :fetch_id
+end
+```
+
+This changes the flow to:
+
+1. Prefetch the id with the Postgres `nextval` function
+2. Call KMS to encrypt the data key, passing the id as part of the context
+3. Insert the record with the id and encrypted data key
+
 ### AWS KMS
 
 [AWS CloudTrail](https://aws.amazon.com/cloudtrail/) logs all decryption calls. You can view them in the [CloudTrail console](https://console.aws.amazon.com/cloudtrail/home#/events?EventName=Decrypt). Note that it can take 20 minutes for events to show up. You can also use the AWS CLI.
@@ -151,17 +187,7 @@ aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,Attribut
 
 If you haven’t already, enable CloudTrail storage to S3 to ensure events are accessible after 90 days. Later, you can use Amazon Athena and this [table structure](https://www.1strategy.com/blog/2017/07/25/auditing-aws-activity-with-cloudtrail-and-athena/) to query them.
 
-Encryption context is used to identify the data being decrypted. This is the model name and id by default. You can customize this with:
-
-```ruby
-class User < ApplicationRecord
-  def kms_encryption_context
-    # some hash
-  end
-end
-```
-
-The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html). You can [rotate the context](#switching-context) without downtime if needed.
+Read more about [encryption context here](https://docs.aws.amazon.com/kms/latest/developerguide/encryption-context.html).
 
 #### Alerting
 
@@ -188,18 +214,6 @@ Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set
 ### Vault
 
 Follow the [instructions here](https://www.vaultproject.io/docs/audit/) to set up data access logging.
-
-Context is used to identify the data being decrypted. This is the model name and id by default. You can customize this with:
-
-```ruby
-class User < ApplicationRecord
-  def kms_encryption_context
-    # some hash
-  end
-end
-```
-
-The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. You can [rotate the context](#switching-context) without downtime if needed.
 
 **Note:** Vault will only verify this value if `derived` was set to true when creating the key. If this is not done, the context cannot be trusted.
 
