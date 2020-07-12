@@ -136,6 +136,11 @@ module KmsEncrypted
             end
           end
 
+          # TODO check mounted CarrierWave uploaders
+          # may not be able to check for kms key directly
+          # but can raise error if there are any uploaders
+          # with option to override
+
           # reset key
           instance_variable_set("@#{key_method}", nil)
           send("encrypted_#{key_method}=", nil)
