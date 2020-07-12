@@ -158,7 +158,7 @@ end
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. You can [rotate the context](#switching-context) without downtime if needed.
 
-### Flow
+### New Records
 
 Since the default context includes the id, the data key cannot be encrypted until the record has an id. For new records, the default flow is:
 
@@ -181,6 +181,14 @@ This changes the flow to:
 1. Prefetch the id with the Postgres `nextval` function
 2. Call KMS to encrypt the data key, passing the id as part of the context
 3. Insert the record with the id and encrypted data key
+
+If you don’t need the id from the database for context, you can use:
+
+```ruby
+class User < ApplicationRecord
+  has_kms_key eager_encrypt: true
+end
+```
 
 ### AWS KMS
 
