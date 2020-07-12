@@ -148,14 +148,17 @@ Encryption context is used in auditing to identify the data being decrypted. Thi
 ```ruby
 class User < ApplicationRecord
   def kms_encryption_context
-    # some hash
+    {
+      model_name: model_name.to_s,
+      model_id: id
+    }
   end
 end
 ```
 
 The context is used as part of the encryption and decryption process, so it must be a value that doesn’t change. Otherwise, you won’t be able to decrypt. You can [rotate the context](#switching-context) without downtime if needed.
 
-Since the default context includes the id, the data key cannot be encrypted until the database has assigned an id to the record. For new records, the default flow is:
+Since the default context includes the id, the data key cannot be encrypted until the record has an id. For new records, the default flow is:
 
 1. Start a database transaction
 2. Insert the record, getting back the id
