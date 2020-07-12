@@ -1,3 +1,7 @@
+## 1.2.0 (unreleased)
+
+- Raise error when trying to rotate key used for encrypted files
+
 ## 1.1.1 (2020-04-16)
 
 - Fixed `SystemStackError` with `reload` and CarrierWave

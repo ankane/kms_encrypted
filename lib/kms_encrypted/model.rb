@@ -125,9 +125,15 @@ module KmsEncrypted
             end
           end
 
-          # TODO lockbox attachments
-          # if self.class.respond_to?(:lockbox_attachments)
-          # end
+          # lockbox attachments
+          if self.class.respond_to?(:lockbox_attachments)
+            if self.class.lockbox_attachments.select { |_, v| v[:key] == key_method.to_sym }.any?
+              # can likely add support at some point, but may be complicated
+              # ideally use rotate_encryption! from Lockbox
+              # but needs access to both old and new keys
+              raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
+            end
+          end
 
           # reset key
           instance_variable_set("@#{key_method}", nil)
