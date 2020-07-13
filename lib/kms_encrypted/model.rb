@@ -107,8 +107,8 @@ module KmsEncrypted
           }
         end
 
-        # since we have the record, we could call keys
-        # for simplicity, just warn
+        # TODO raise error for callable keys in 2.0
+        # with option to override
         define_method("rotate_#{key_method}!") do
           # decrypt
           plaintext_attributes = {}
