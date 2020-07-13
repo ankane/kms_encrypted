@@ -116,10 +116,10 @@ module KmsEncrypted
           # attr_encrypted
           if self.class.respond_to?(:encrypted_attributes)
             self.class.encrypted_attributes.each do |key, v|
-              if v[:key].respond_to?(:call)
-                warn "[kms_encrypted] Can't detect attributes with callable keys"
-              elsif v[:key] == key_method.to_sym
+              if v[:key] == key_method.to_sym
                 plaintext_attributes[key] = send(key)
+              elsif v[:key].respond_to?(:call)
+                warn "[kms_encrypted] Can't detect attributes with callable keys"
               end
             end
           end
@@ -128,10 +128,10 @@ module KmsEncrypted
           # only checks key, not previous versions
           if self.class.respond_to?(:lockbox_attributes)
             self.class.lockbox_attributes.each do |key, v|
-              if v[:key].respond_to?(:call)
-                warn "[kms_encrypted] Can't detect attributes with callable keys"
-              elsif v[:key] == key_method.to_sym
+              if v[:key] == key_method.to_sym
                 plaintext_attributes[key] = send(key)
+              elsif v[:key].respond_to?(:call)
+                warn "[kms_encrypted] Can't detect attributes with callable keys"
               end
             end
           end
@@ -140,14 +140,14 @@ module KmsEncrypted
           # only checks key, not previous versions
           if self.class.respond_to?(:lockbox_attachments)
             self.class.lockbox_attachments.each do |key, v|
-              if v[:key].respond_to?(:call)
-                warn "[kms_encrypted] Can't detect attachments with callable keys"
-              elsif v[:key] == key_method.to_sym
+              if v[:key] == key_method.to_sym
                 # can likely add support at some point, but may be complicated
                 # ideally use rotate_encryption! from Lockbox
                 # but needs access to both old and new keys
                 # also need to update database atomically
                 raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
+              elsif v[:key].respond_to?(:call)
+                warn "[kms_encrypted] Can't detect attachments with callable keys"
               end
             end
           end
