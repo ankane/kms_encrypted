@@ -107,8 +107,16 @@ module KmsEncrypted
           }
         end
 
-        # TODO raise error for callable keys in 2.0
-        # with option to override
+        # automatically detects attributes and files where the encryption key is:
+        # 1. a symbol that matches kms key method exactly
+        # does not detect attributes and files where the encryption key is:
+        # 1. callable (warns)
+        # 2. a symbol that internally calls kms key method
+        # it could try to get the exact key and compare
+        # (there's a very small chance this could have false positives)
+        # but bias towards simplicity for now
+        # TODO possibly raise error for callable keys in 2.0
+        # with option to override/specify attributes
         define_method("rotate_#{key_method}!") do
           # decrypt
           plaintext_attributes = {}
