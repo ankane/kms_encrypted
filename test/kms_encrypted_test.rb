@@ -186,6 +186,8 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_lockbox_carrierwave
+    skip "Waiting for next Lockbox release"
+
     user = CarrierWaveUser.create!
     error = assert_raises(KmsEncrypted::Error) do
       user.rotate_kms_key!
