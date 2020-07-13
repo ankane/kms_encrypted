@@ -53,7 +53,7 @@ ActiveRecord::Migration.create_table :users do |t|
   t.timestamps null: false
 end
 
-ActiveRecord::Migration.create_table :active_storage_user do |t|
+ActiveRecord::Migration.create_table :active_storage_users do |t|
   t.string :encrypted_kms_key
 end
 
