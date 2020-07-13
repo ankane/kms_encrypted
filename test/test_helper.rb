@@ -51,6 +51,10 @@ ActiveRecord::Migration.create_table :users do |t|
   t.timestamps null: false
 end
 
+ActiveRecord::Migration.create_table :admins do |t|
+  t.string :encrypted_kms_key
+end
+
 $version = 1
 
 class User < ActiveRecord::Base
@@ -78,4 +82,9 @@ end
 
 class ActiveUser < User
   has_kms_key name: :child
+end
+
+class Admin < ActiveRecord::Base
+  has_kms_key
+  encrypts_attached :license, key: :kms_key
 end

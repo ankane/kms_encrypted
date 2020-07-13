@@ -168,6 +168,20 @@ class KmsEncryptedTest < Minitest::Test
     assert_equal "1970-01-01", user.date_of_birth
   end
 
+  def test_lockbox_active_storage
+    skip "Active Storage requires Active Record 5.2+" unless ActiveRecord::VERSION::STRING >= "5.2."
+
+    admin = Admin.create!
+    error = assert_raises(KmsEncrypted::Error) do
+      admin.rotate_kms_key!
+    end
+    assert_equal "Can't rotate key used for encrypted files", error.message
+  end
+
+  def test_lockbox_carrierwave
+    # TODO
+  end
+
   private
 
   def assert_operations(expected)
