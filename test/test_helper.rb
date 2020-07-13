@@ -57,8 +57,17 @@ ActiveRecord::Migration.create_table :active_storage_users do |t|
   t.string :encrypted_kms_key
 end
 
+ActiveRecord::Migration.create_table :active_storage_admins do |t|
+  t.string :encrypted_kms_key
+end
+
 ActiveRecord::Migration.create_table :carrier_wave_users do |t|
   t.string :license
+  t.string :encrypted_kms_key
+end
+
+ActiveRecord::Migration.create_table :carrier_wave_admins do |t|
+  t.string :document
   t.string :encrypted_kms_key
 end
 
@@ -96,6 +105,11 @@ class ActiveStorageUser < ActiveRecord::Base
   encrypts_attached :license, key: :kms_key
 end
 
+class ActiveStorageAdmin < ActiveRecord::Base
+  has_kms_key
+  encrypts_attached :license
+end
+
 CarrierWave.configure do |config|
   config.storage = :file
   config.store_dir = "/tmp/store"
@@ -106,7 +120,16 @@ class LicenseUploader < CarrierWave::Uploader::Base
   encrypt key: -> { model.kms_key }
 end
 
+class DocumentUploader < CarrierWave::Uploader::Base
+  encrypt key: -> { "not-kms-key" }
+end
+
 class CarrierWaveUser < ActiveRecord::Base
   has_kms_key
   mount_uploader :license, LicenseUploader
+end
+
+class CarrierWaveAdmin < ActiveRecord::Base
+  has_kms_key
+  mount_uploader :document, DocumentUploader
 end

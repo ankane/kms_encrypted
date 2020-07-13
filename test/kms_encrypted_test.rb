@@ -178,12 +178,24 @@ class KmsEncryptedTest < Minitest::Test
     assert_equal "Can't rotate key used for encrypted files", error.message
   end
 
+  def test_lockbox_active_storage_different_key
+    skip "Active Storage requires Active Record 5.2+" unless ActiveRecord::VERSION::STRING >= "5.2."
+
+    user = ActiveStorageAdmin.create!
+    user.rotate_kms_key!
+  end
+
   def test_lockbox_carrierwave
     user = CarrierWaveUser.create!
     error = assert_raises(KmsEncrypted::Error) do
       user.rotate_kms_key!
     end
     assert_equal "Can't rotate key used for encrypted files", error.message
+  end
+
+  def test_lockbox_carrierwave_different_key
+    user = CarrierWaveAdmin.create!
+    user.rotate_kms_key!
   end
 
   private

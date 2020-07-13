@@ -138,12 +138,16 @@ module KmsEncrypted
 
           # CarrierWave uploaders
           if self.class.respond_to?(:uploaders)
-            self.class.uploaders.each do |_, uploader|
-              # not able to check for kms key directly
-              # instead, check if Lockbox key is callable
-              # TODO add option to override if needed
-              if uploader.respond_to?(:lockbox_options) && uploader.lockbox_options[:key].respond_to?(:call)
-                raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
+            self.class.uploaders.each_key do |key|
+              uploader = send(key)
+
+              # check if key matches
+              # might be better to just check if key is callable instead of exact match
+              if uploader.class.respond_to?(:lockbox_options) && uploader.class.lockbox_options[:key].respond_to?(:call)
+                key = uploader.instance_exec(&uploader.class.lockbox_options[:key])
+                if key == send(key_method)
+                  raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
+                end
               end
             end
           end
