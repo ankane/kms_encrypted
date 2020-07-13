@@ -107,34 +107,46 @@ module KmsEncrypted
           }
         end
 
+        # since we have the record, we could call keys
+        # for simplicity, just warn (except for CarrierWave, which can't use symbol)
         define_method("rotate_#{key_method}!") do
           # decrypt
           plaintext_attributes = {}
 
           # attr_encrypted
           if self.class.respond_to?(:encrypted_attributes)
-            self.class.encrypted_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
-              plaintext_attributes[key] = send(key)
+            self.class.encrypted_attributes.each do |key, v|
+              if v[:key].respond_to?(:call)
+                warn "[kms_encrypted] Can't detect attributes with callable keys"
+              elsif v[:key] == key_method.to_sym
+                plaintext_attributes[key] = send(key)
+              end
             end
           end
 
           # lockbox attributes
-          # doesn't detect callable keys
           if self.class.respond_to?(:lockbox_attributes)
-            self.class.lockbox_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
-              plaintext_attributes[key] = send(key)
+            self.class.lockbox_attributes.each do |key, v|
+              if v[:key].respond_to?(:call)
+                warn "[kms_encrypted] Can't detect attributes with callable keys"
+              elsif v[:key] == key_method.to_sym
+                plaintext_attributes[key] = send(key)
+              end
             end
           end
 
           # lockbox attachments
-          # doesn't detect callable keys
           if self.class.respond_to?(:lockbox_attachments)
-            if self.class.lockbox_attachments.select { |_, v| v[:key] == key_method.to_sym }.any?
-              # can likely add support at some point, but may be complicated
-              # ideally use rotate_encryption! from Lockbox
-              # but needs access to both old and new keys
-              # also need to update database atomically
-              raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
+            self.class.lockbox_attachments.each do |key, v|
+              if v[:key].respond_to?(:call)
+                warn "[kms_encrypted] Can't detect attachments with callable keys"
+              elsif v[:key] == key_method.to_sym
+                # can likely add support at some point, but may be complicated
+                # ideally use rotate_encryption! from Lockbox
+                # but needs access to both old and new keys
+                # also need to update database atomically
+                raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
+              end
             end
           end
 
@@ -144,7 +156,6 @@ module KmsEncrypted
               uploader = send(key)
 
               # check if key matches
-              # might be better to just check if key is callable instead of exact match
               if uploader.class.respond_to?(:lockbox_options) && uploader.class.lockbox_options[:key].respond_to?(:call)
                 key = uploader.instance_exec(&uploader.class.lockbox_options[:key])
                 if key == send(key_method)
