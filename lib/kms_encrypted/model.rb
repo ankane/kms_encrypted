@@ -108,7 +108,8 @@ module KmsEncrypted
         end
 
         # since we have the record, we could call keys
-        # for simplicity, just warn (except for CarrierWave, which can't use symbol)
+        # for simplicity, just warn
+        # (except for CarrierWave, which can't use symbol)
         define_method("rotate_#{key_method}!") do
           # decrypt
           plaintext_attributes = {}
@@ -125,6 +126,7 @@ module KmsEncrypted
           end
 
           # lockbox attributes
+          # only checks key, not previous versions
           if self.class.respond_to?(:lockbox_attributes)
             self.class.lockbox_attributes.each do |key, v|
               if v[:key].respond_to?(:call)
@@ -136,6 +138,7 @@ module KmsEncrypted
           end
 
           # lockbox attachments
+          # only checks key, not previous versions
           if self.class.respond_to?(:lockbox_attachments)
             self.class.lockbox_attachments.each do |key, v|
               if v[:key].respond_to?(:call)
