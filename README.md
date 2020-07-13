@@ -253,6 +253,7 @@ user.encrypted_kms_key = nil
 
 # attr_encrypted
 user.encrypted_email = nil
+user.encrypted_email_iv = nil
 user.encrypted_kms_key = nil
 ```
 
