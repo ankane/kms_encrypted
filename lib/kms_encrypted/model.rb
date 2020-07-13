@@ -119,6 +119,7 @@ module KmsEncrypted
           end
 
           # lockbox attributes
+          # doesn't detect callable keys
           if self.class.respond_to?(:lockbox_attributes)
             self.class.lockbox_attributes.select { |_, v| v[:key] == key_method.to_sym }.keys.each do |key|
               plaintext_attributes[key] = send(key)
@@ -126,6 +127,7 @@ module KmsEncrypted
           end
 
           # lockbox attachments
+          # doesn't detect callable keys
           if self.class.respond_to?(:lockbox_attachments)
             if self.class.lockbox_attachments.select { |_, v| v[:key] == key_method.to_sym }.any?
               # can likely add support at some point, but may be complicated
