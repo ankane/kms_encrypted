@@ -66,7 +66,7 @@ class KmsEncryptedTest < Minitest::Test
     user.rotate_kms_key!
 
     %w(encrypted_email encrypted_email_iv encrypted_kms_key).each do |attr|
-      assert user.send(attr) != fields[attr], "#{attr} expected to change"
+      refute_equal user.send(attr), fields[attr]
     end
 
     user.reload
