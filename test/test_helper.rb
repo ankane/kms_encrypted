@@ -1,5 +1,7 @@
 require "bundler/setup"
+require "carrierwave"
 require "active_record"
+require "carrierwave/orm/activerecord"
 Bundler.require(:default, :development)
 require "minitest/autorun"
 require "minitest/pride"
@@ -51,7 +53,12 @@ ActiveRecord::Migration.create_table :users do |t|
   t.timestamps null: false
 end
 
-ActiveRecord::Migration.create_table :admins do |t|
+ActiveRecord::Migration.create_table :active_storage_user do |t|
+  t.string :encrypted_kms_key
+end
+
+ActiveRecord::Migration.create_table :carrier_wave_users do |t|
+  t.string :license
   t.string :encrypted_kms_key
 end
 
@@ -84,7 +91,22 @@ class ActiveUser < User
   has_kms_key name: :child
 end
 
-class Admin < ActiveRecord::Base
+class ActiveStorageUser < ActiveRecord::Base
   has_kms_key
   encrypts_attached :license, key: :kms_key
+end
+
+CarrierWave.configure do |config|
+  config.storage = :file
+  config.store_dir = "/tmp/store"
+  config.cache_dir = "/tmp/cache"
+end
+
+class LicenseUploader < CarrierWave::Uploader::Base
+  encrypt key: -> { model.kms_key }
+end
+
+class CarrierWaveUser < ActiveRecord::Base
+  has_kms_key
+  mount_uploader :license, LicenseUploader
 end
