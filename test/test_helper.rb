@@ -121,7 +121,7 @@ class LicenseUploader < CarrierWave::Uploader::Base
 end
 
 class DocumentUploader < CarrierWave::Uploader::Base
-  encrypt key: -> { "not-kms-key" }
+  encrypt
 end
 
 class CarrierWaveUser < ActiveRecord::Base

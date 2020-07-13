@@ -109,7 +109,6 @@ module KmsEncrypted
 
         # since we have the record, we could call keys
         # for simplicity, just warn
-        # (except for CarrierWave, which can't use symbol)
         define_method("rotate_#{key_method}!") do
           # decrypt
           plaintext_attributes = {}
@@ -155,15 +154,10 @@ module KmsEncrypted
 
           # CarrierWave uploaders
           if self.class.respond_to?(:uploaders)
-            self.class.uploaders.each_key do |key|
-              uploader = send(key)
-
-              # check if key matches
-              if uploader.class.respond_to?(:lockbox_options) && uploader.class.lockbox_options[:key].respond_to?(:call)
-                key = uploader.instance_exec(&uploader.class.lockbox_options[:key])
-                if key == send(key_method)
-                  raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
-                end
+            self.class.uploaders.each do |_, uploader|
+              # for simplicity, only check if key is callable
+              if uploader.respond_to?(:lockbox_options) && uploader.lockbox_options[:key].respond_to?(:call)
+                raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
               end
             end
           end
