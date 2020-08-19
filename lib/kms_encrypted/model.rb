@@ -127,7 +127,7 @@ module KmsEncrypted
               if v[:key] == key_method.to_sym
                 plaintext_attributes[key] = send(key)
               elsif v[:key].respond_to?(:call)
-                warn "[kms_encrypted] Can't detect attributes with callable keys"
+                warn "[kms_encrypted] Can't detect if encrypted attribute uses this key"
               end
             end
           end
@@ -139,7 +139,7 @@ module KmsEncrypted
               if v[:key] == key_method.to_sym
                 plaintext_attributes[key] = send(key)
               elsif v[:key].respond_to?(:call)
-                warn "[kms_encrypted] Can't detect attributes with callable keys"
+                warn "[kms_encrypted] Can't detect if encrypted attribute uses this key"
               end
             end
           end
@@ -155,7 +155,7 @@ module KmsEncrypted
                 # also need to update database atomically
                 raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
               elsif v[:key].respond_to?(:call)
-                warn "[kms_encrypted] Can't detect attachments with callable keys"
+                warn "[kms_encrypted] Can't detect if encrypted attachment uses this key"
               end
             end
           end
@@ -165,7 +165,7 @@ module KmsEncrypted
             self.class.uploaders.each do |_, uploader|
               # for simplicity, only checks if key is callable
               if uploader.respond_to?(:lockbox_options) && uploader.lockbox_options[:key].respond_to?(:call)
-                raise KmsEncrypted::Error, "Can't rotate key used for encrypted files"
+                warn "[kms_encrypted] Can't detect if encrypted uploader uses this key"
               end
             end
           end

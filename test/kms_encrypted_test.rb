@@ -187,10 +187,10 @@ class KmsEncryptedTest < Minitest::Test
 
   def test_lockbox_carrierwave
     user = CarrierWaveUser.create!
-    error = assert_raises(KmsEncrypted::Error) do
+    _, stderr = capture_io do
       user.rotate_kms_key!
     end
-    assert_equal "Can't rotate key used for encrypted files", error.message
+    assert_match "Can't detect if encrypted uploader uses this key", stderr
   end
 
   def test_lockbox_carrierwave_different_key
