@@ -1,4 +1,4 @@
-## 1.2.0 (unreleased)
+## 1.2.0 (2020-08-18)
 
 - Raise error when trying to rotate key used for encrypted files
 
