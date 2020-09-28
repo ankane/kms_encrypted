@@ -126,17 +126,23 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_versions
-    user = User.create!(street: "123 Main St")
-    assert_start_with "v1:", user.encrypted_kms_key_street
+    user1 = User.create!(street: "123 Main St")
+    assert_start_with "v1:", user1.encrypted_kms_key_street
+
+    user2 = User.create!(street: "123 Main St")
+    assert_start_with "v1:", user2.encrypted_kms_key_street
 
     with_version(2) do
-      user = User.last
-      assert user.street # can decrypt
-      user.rotate_kms_key_street!
-      assert_start_with "v2:", user.encrypted_kms_key_street
-      user.reload
+      user2 = User.last
+      assert user2.street # can decrypt
+      user2.rotate_kms_key_street!
+      assert_start_with "v2:", user2.encrypted_kms_key_street
+      user2.reload
       # TODO uncomment
-      # assert user.street # can decrypt
+      # assert user2.street # can decrypt
+
+      user1 = User.first
+      user1.street # can decrypt
     end
   end
 
