@@ -134,6 +134,9 @@ class KmsEncryptedTest < Minitest::Test
       assert user.street # can decrypt
       user.rotate_kms_key_street!
       assert_start_with "v2:", user.encrypted_kms_key_street
+      user.reload
+      # TODO uncomment
+      # assert user.street # can decrypt
     end
   end
 
@@ -143,9 +146,10 @@ class KmsEncryptedTest < Minitest::Test
     user.save!
 
     user = User.last
-    assert_raises "bad" do
+    error = assert_raises do
       user.street
     end
+    assert_equal "Version not active: 3", error.message
   end
 
   def test_lockbox
