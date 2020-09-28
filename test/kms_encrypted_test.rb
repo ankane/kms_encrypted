@@ -138,8 +138,7 @@ class KmsEncryptedTest < Minitest::Test
       user2.rotate_kms_key_street!
       assert_start_with "v2:", user2.encrypted_kms_key_street
       user2.reload
-      # TODO uncomment
-      # assert user2.street # can decrypt
+      assert user2.street # can decrypt
 
       user1 = User.first
       user1.street # can decrypt
