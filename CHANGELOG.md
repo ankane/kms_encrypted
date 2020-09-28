@@ -1,4 +1,4 @@
-## 1.2.1 (unreleased)
+## 1.2.1 (2020-09-28)
 
 - Fixed `Version not active` error when switching keys
 
