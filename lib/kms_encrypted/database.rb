@@ -48,7 +48,7 @@ module KmsEncrypted
 
       KmsEncrypted::Box.new(
         key_id: key_id,
-        version: version,
+        version: self.version,
         previous_versions: previous_versions
       ).decrypt(ciphertext, context: context)
     end
