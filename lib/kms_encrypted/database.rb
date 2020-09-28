@@ -43,12 +43,12 @@ module KmsEncrypted
     def decrypt(ciphertext)
       # determine version for context
       m = /\Av(\d+):/.match(ciphertext)
-      version = m ? m[1].to_i : 1
-      context = (options[:upgrade_context] && !m) ? {} : context(version)
+      ciphertext_version = m ? m[1].to_i : 1
+      context = (options[:upgrade_context] && !m) ? {} : context(ciphertext_version)
 
       KmsEncrypted::Box.new(
         key_id: key_id,
-        version: self.version,
+        version: version,
         previous_versions: previous_versions
       ).decrypt(ciphertext, context: context)
     end
