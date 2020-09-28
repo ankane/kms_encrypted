@@ -146,7 +146,7 @@ class KmsEncryptedTest < Minitest::Test
     user.save!
 
     user = User.last
-    error = assert_raises do
+    error = assert_raises(KmsEncrypted::Error) do
       user.street
     end
     assert_equal "Version not active: 3", error.message
