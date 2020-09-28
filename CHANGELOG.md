@@ -1,3 +1,7 @@
+## 1.2.1 (unreleased)
+
+- Fixed `Version not active` error when switching keys
+
 ## 1.2.0 (2020-08-18)
 
 - Raise error when trying to rotate key used for encrypted files
