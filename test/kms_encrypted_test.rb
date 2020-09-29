@@ -207,6 +207,17 @@ class KmsEncryptedTest < Minitest::Test
     user.rotate_kms_key!
   end
 
+  def test_serialized_hash
+    user = create_user
+    assert_nil user.serializable_hash["encrypted_kms_key"]
+  end
+
+  def test_to_json
+    user = create_user
+    refute_match "encrypted_kms_key", user.to_json
+    assert_nil user.as_json["encrypted_kms_key"]
+  end
+
   private
 
   def assert_operations(expected)

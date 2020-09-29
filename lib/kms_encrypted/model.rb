@@ -28,7 +28,8 @@ module KmsEncrypted
           name: name,
           version: version,
           previous_versions: previous_versions,
-          upgrade_context: upgrade_context
+          upgrade_context: upgrade_context,
+          attribute: key_column
         }
 
         if @kms_keys.size == 1
@@ -54,6 +55,19 @@ module KmsEncrypted
               update_columns(updates)
             end
           end
+
+          # use same approach as activerecord serialization
+          m2 = Module.new do
+            def serializable_hash(options = nil)
+              options = options.try(:dup) || {}
+
+              options[:except] = Array(options[:except])
+              options[:except] += self.class.kms_keys.map { |_, v| v[:attribute] }
+
+              super(options)
+            end
+          end
+          prepend m2
 
           if method_defined?(:reload)
             m = Module.new do
