@@ -337,7 +337,7 @@ KMS_KEY_ID=insecure-test-key
 
 ## Key Rotation
 
-Key management services allow you to rotate the master key.
+Key management services allow you to rotate the master key without any code changes.
 
 AWS KMS supports [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html).
 
