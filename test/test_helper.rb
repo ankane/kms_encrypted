@@ -15,16 +15,16 @@ ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
 ENV["KMS_KEY_ID"] ||= "insecure-test-key"
 
-if ENV["VERBOSE"]
-  logger = ActiveSupport::Logger.new(STDOUT)
-  Aws.config[:logger] = logger
-  ActiveRecord::Base.logger = logger
-  ActiveSupport::LogSubscriber.logger = logger
-  Google::Apis.logger = logger
-  if ENV["KMS_KEY_ID"].start_with?("projects/")
-    KmsEncrypted.google_client.client_options.log_http_requests = true
-  end
+logger = ActiveSupport::Logger.new(ENV["VERBOSE"] ? STDOUT : nil)
+Aws.config[:logger] = logger
+ActiveRecord::Base.logger = logger
+ActiveSupport::LogSubscriber.logger = logger
+Google::Apis.logger = logger
+
+if ENV["VERBOSE"] && ENV["KMS_KEY_ID"].start_with?("projects/")
+  KmsEncrypted.google_client.client_options.log_http_requests = true
 end
+ActiveRecord::Migration.verbose = ENV["VERBOSE"]
 
 $events = Hash.new(0)
 ActiveSupport::Notifications.subscribe(/kms_encrypted/) do |name, _start, _finish, _id, _payload|
