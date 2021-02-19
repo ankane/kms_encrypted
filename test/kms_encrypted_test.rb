@@ -97,7 +97,7 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_context_hash
-    skip unless ENV["KMS_KEY_ID"].start_with?("vault/")
+    skip unless KmsEncrypted.key_id.start_with?("vault/")
 
     context = User.last.kms_encryption_context
     context_hash = KmsEncrypted.context_hash(context, path: "file")

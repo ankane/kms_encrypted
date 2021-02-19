@@ -335,6 +335,16 @@ For testing, you can prevent network calls to KMS by setting:
 KMS_KEY_ID=insecure-test-key
 ```
 
+In a Rails application, you can also create an initializer `config/initializer/kms_encrypted.rb`
+
+```ruby
+KmsEncrypted.key_id = if Rails.env.test?
+  'insecure-test-key'
+else
+  ENV['KMS_KEY_ID']
+end
+```
+
 ## Key Rotation
 
 Key management services allow you to rotate the master key without any code changes.
