@@ -67,7 +67,7 @@ KMS_KEY_ID=alias/my-alias
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'google-api-client'
+gem 'google-apis-cloudkms_v1'
 ```
 
 Create a [Google Cloud Platform](https://cloud.google.com/) account if you don’t have one. KMS works great whether or not you run your infrastructure on GCP.

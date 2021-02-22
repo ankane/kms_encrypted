@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "attr_encrypted"
   spec.add_development_dependency "lockbox", ">= 0.4.7"
   spec.add_development_dependency "aws-sdk-kms"
-  spec.add_development_dependency "google-api-client"
+  spec.add_development_dependency "google-apis-cloudkms_v1"
   spec.add_development_dependency "vault"
   spec.add_development_dependency "carrierwave"
 end
