@@ -55,7 +55,6 @@ module KmsEncrypted
       @vault_client ||= ::Vault::Client.new
     end
 
-
     def key_id
       @key_id ||= ENV["KMS_KEY_ID"]
     end
