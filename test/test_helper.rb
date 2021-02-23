@@ -13,7 +13,7 @@ require "vault"
 
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
-ENV["KMS_KEY_ID"] ||= "insecure-test-key"
+KmsEncrypted.key_id ||= "insecure-test-key"
 
 logger = ActiveSupport::Logger.new(ENV["VERBOSE"] ? STDOUT : nil)
 Aws.config[:logger] = logger
@@ -21,7 +21,7 @@ ActiveRecord::Base.logger = logger
 ActiveSupport::LogSubscriber.logger = logger
 Google::Apis.logger = logger
 
-if ENV["VERBOSE"] && ENV["KMS_KEY_ID"].start_with?("projects/")
+if ENV["VERBOSE"] && KmsEncrypted.key_id.start_with?("projects/")
   KmsEncrypted.google_client.client_options.log_http_requests = true
 end
 ActiveRecord::Migration.verbose = ENV["VERBOSE"]
@@ -75,7 +75,7 @@ $version = 1
 
 class User < ActiveRecord::Base
   has_kms_key
-  has_kms_key name: :phone, eager_encrypt: :try, key_id: -> { ENV["KMS_KEY_ID"] }
+  has_kms_key name: :phone, eager_encrypt: :try, key_id: -> { KmsEncrypted.key_id }
   has_kms_key name: :street, version: -> { $version },
     previous_versions: {
       1 => {key_id: "insecure-test-key"}
