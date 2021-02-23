@@ -335,7 +335,7 @@ For testing, you can prevent network calls to KMS by setting:
 KMS_KEY_ID=insecure-test-key
 ```
 
-In a Rails application, you can also create an initializer `config/initializer/kms_encrypted.rb`
+In a Rails application, you can also create `config/initializer/kms_encrypted.rb` with:
 
 ```ruby
 KmsEncrypted.key_id = Rails.env.test? ? "insecure-test-key" : ENV["KMS_KEY_ID"]
