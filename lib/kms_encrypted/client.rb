@@ -1,7 +1,5 @@
 module KmsEncrypted
   class Client
-    delegate :encrypt, :decrypt, to: :client
-
     attr_reader :key_id, :data_key
 
     def initialize(key_id: nil, legacy_context: false, data_key: false)

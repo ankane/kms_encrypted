@@ -12,6 +12,8 @@ module KmsEncrypted
       def decrypt(ciphertext, context: nil)
         prefix, plaintext, stored_context = ciphertext.split(":")
 
+        decryption_failed! if prefix != PREFIX
+
         context = generate_context(context) if context
         decryption_failed! if context != stored_context
 
