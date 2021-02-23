@@ -27,6 +27,7 @@ module KmsEncrypted
     attr_writer :aws_client
     attr_writer :google_client
     attr_writer :vault_client
+    attr_writer :key_id
 
     def aws_client
       @aws_client ||= Aws::KMS::Client.new(
@@ -52,6 +53,11 @@ module KmsEncrypted
 
     def vault_client
       @vault_client ||= ::Vault::Client.new
+    end
+
+
+    def key_id
+      @key_id ||= ENV["KMS_KEY_ID"]
     end
 
     # hash is independent of key, but specific to audit device

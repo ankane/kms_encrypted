@@ -5,7 +5,7 @@ module KmsEncrypted
     attr_reader :key_id, :data_key
 
     def initialize(key_id: nil, legacy_context: false, data_key: false)
-      @key_id = key_id || ENV["KMS_KEY_ID"]
+      @key_id = key_id || KmsEncrypted.key_id
       @legacy_context = legacy_context
       @data_key = data_key
     end
