@@ -31,44 +31,46 @@ ActiveSupport::Notifications.subscribe(/kms_encrypted/) do |name, _start, _finis
   $events[name.sub(".kms_encrypted", "").to_sym] += 1
 end
 
-ActiveRecord::Migration.create_table :users do |t|
-  t.string :name
+ActiveRecord::Schema.define do
+  create_table :users do |t|
+    t.string :name
 
-  # attr_encrypted
-  t.string :encrypted_email
-  t.string :encrypted_email_iv
-  t.string :encrypted_phone
-  t.string :encrypted_phone_iv
-  t.string :encrypted_street
-  t.string :encrypted_street_iv
+    # attr_encrypted
+    t.string :encrypted_email
+    t.string :encrypted_email_iv
+    t.string :encrypted_phone
+    t.string :encrypted_phone_iv
+    t.string :encrypted_street
+    t.string :encrypted_street_iv
 
-  # lockbox
-  t.string :date_of_birth_ciphertext
+    # lockbox
+    t.string :date_of_birth_ciphertext
 
-  # kms_encrypted
-  t.string :encrypted_kms_key
-  t.string :encrypted_kms_key_phone
-  t.string :encrypted_kms_key_street
+    # kms_encrypted
+    t.string :encrypted_kms_key
+    t.string :encrypted_kms_key_phone
+    t.string :encrypted_kms_key_street
 
-  t.timestamps null: false
-end
+    t.timestamps null: false
+  end
 
-ActiveRecord::Migration.create_table :active_storage_users do |t|
-  t.string :encrypted_kms_key
-end
+  create_table :active_storage_users do |t|
+    t.string :encrypted_kms_key
+  end
 
-ActiveRecord::Migration.create_table :active_storage_admins do |t|
-  t.string :encrypted_kms_key
-end
+  create_table :active_storage_admins do |t|
+    t.string :encrypted_kms_key
+  end
 
-ActiveRecord::Migration.create_table :carrier_wave_users do |t|
-  t.string :license
-  t.string :encrypted_kms_key
-end
+  create_table :carrier_wave_users do |t|
+    t.string :license
+    t.string :encrypted_kms_key
+  end
 
-ActiveRecord::Migration.create_table :carrier_wave_admins do |t|
-  t.string :document
-  t.string :encrypted_kms_key
+  create_table :carrier_wave_admins do |t|
+    t.string :document
+    t.string :encrypted_kms_key
+  end
 end
 
 $version = 1
