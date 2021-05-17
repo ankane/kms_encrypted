@@ -1,3 +1,7 @@
+## 1.2.2 (unreleased)
+
+- Added `key_id` method
+
 ## 1.2.1 (2020-09-28)
 
 - Fixed `Version not active` error when switching keys
