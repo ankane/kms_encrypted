@@ -11,7 +11,7 @@ module KmsEncrypted
 
         # ensure namespace gets loaded
         client = KmsEncrypted.google_client
-        request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(options)
+        request = ::Google::Apis::CloudkmsV1::EncryptRequest.new(**options)
         response = client.encrypt_crypto_key(key_id, request)
 
         @last_key_version = response.name
