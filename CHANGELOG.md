@@ -1,3 +1,7 @@
+## 1.2.3 (unreleased)
+
+- Fixed argument error with Google Cloud KMS and Ruby 3
+
 ## 1.2.2 (2021-05-17)
 
 - Added `key_id` method
