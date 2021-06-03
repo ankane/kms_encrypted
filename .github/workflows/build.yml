@@ -10,6 +10,7 @@ jobs:
         include:
         - ruby: 3.0
           gemfile: Gemfile
+          vault: true
         - ruby: 2.7
           gemfile: gemfiles/activesupport60.gemfile
         - ruby: 2.6
@@ -27,3 +28,19 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - run: bundle exec rake test
+
+    - if: ${{ matrix.vault }}
+      run: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt-get update
+        sudo apt-get install vault
+        vault server -dev &
+        sleep 1
+        vault secrets enable transit
+        vault write -f transit/keys/my-key derived=true
+        vault audit enable file file_path=vault_audit.log
+        bundle exec rake test
+      env:
+        KMS_KEY_ID: vault/my-key
+        VAULT_ADDR: http://127.0.0.1:8200

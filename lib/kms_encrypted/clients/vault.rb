@@ -30,6 +30,9 @@ module KmsEncrypted
           rescue ::Vault::HTTPClientError => e
             decryption_failed! if e.message.include?("unable to decrypt")
             raise e
+          rescue ::Vault::HTTPServerError => e
+            decryption_failed! if e.message.include?("message authentication failed")
+            raise e
           rescue Encoding::UndefinedConversionError
             decryption_failed!
           end
