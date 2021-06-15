@@ -1,3 +1,7 @@
+## 1.2.4 (unreleased)
+
+- Fixed another argument error with Google Cloud KMS and Ruby 3
+
 ## 1.2.3 (2021-06-02)
 
 - Fixed argument error with Google Cloud KMS and Ruby 3
