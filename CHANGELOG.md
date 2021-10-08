@@ -1,3 +1,7 @@
+## 1.2.5 (unreleased)
+
+- Added `client` option
+
 ## 1.2.4 (2021-06-20)
 
 - Fixed another argument error with Google Cloud KMS and Ruby 3

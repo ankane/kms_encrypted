@@ -8,7 +8,7 @@ module KmsEncrypted
         }
         options[:encryption_context] = generate_context(context) if context
 
-        KmsEncrypted.aws_client.encrypt(options).ciphertext_blob
+        client.encrypt(options).ciphertext_blob
       end
 
       def decrypt(ciphertext, context: nil)
@@ -18,10 +18,14 @@ module KmsEncrypted
         options[:encryption_context] = generate_context(context) if context
 
         begin
-          KmsEncrypted.aws_client.decrypt(options).plaintext
+          client.decrypt(options).plaintext
         rescue ::Aws::KMS::Errors::InvalidCiphertextException
           decryption_failed!
         end
+      end
+
+      def client
+        @client ||= KmsEncrypted.aws_client
       end
 
       private
