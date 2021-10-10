@@ -67,7 +67,7 @@ KMS_KEY_ID=alias/my-alias
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'google-apis-cloudkms_v1'
+gem 'google-cloud-kms'
 ```
 
 Create a [Google Cloud Platform](https://cloud.google.com/) account if you don’t have one. KMS works great whether or not you run your infrastructure on GCP.
@@ -76,12 +76,6 @@ Create a [KMS key ring and key](https://console.cloud.google.com/iam-admin/kms) 
 
 ```sh
 KMS_KEY_ID=projects/my-project/locations/global/keyRings/my-key-ring/cryptoKeys/my-key
-```
-
-The Google API client logs requests by default. Be sure to turn off the logger in production or it will leak the plaintext.
-
-```ruby
-Google::Apis.logger = Logger.new(nil)
 ```
 
 ### Vault
