@@ -2,10 +2,9 @@ require "bundler/setup"
 require "carrierwave"
 require "active_record"
 require "carrierwave/orm/activerecord"
-Bundler.require(:default, :development)
+Bundler.require(:default)
 require "minitest/autorun"
 require "minitest/pride"
-require "google/apis/cloudkms_v1"
 
 # must come before vault
 ENV["VAULT_ADDR"] ||= "http://127.0.0.1:8200"
@@ -19,7 +18,7 @@ logger = ActiveSupport::Logger.new(ENV["VERBOSE"] ? STDOUT : nil)
 Aws.config[:logger] = logger
 ActiveRecord::Base.logger = logger
 ActiveSupport::LogSubscriber.logger = logger
-Google::Apis.logger = logger
+Google::Apis.logger = logger if defined?(Google::Apis)
 
 if ENV["VERBOSE"] && KmsEncrypted.key_id.start_with?("projects/")
   KmsEncrypted.google_client.client_options.log_http_requests = true

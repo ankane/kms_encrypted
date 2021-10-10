@@ -39,15 +39,24 @@ module KmsEncrypted
 
     def google_client
       @google_client ||= begin
-        require "google/apis/cloudkms_v1"
-        client = ::Google::Apis::CloudkmsV1::CloudKMSService.new
-        client.authorization = ::Google::Auth.get_application_default(
-          "https://www.googleapis.com/auth/cloud-platform"
-        )
-        client.client_options.log_http_requests = false
-        client.client_options.open_timeout_sec = 2
-        client.client_options.read_timeout_sec = 2
-        client
+        begin
+          require "google/apis/cloudkms_v1"
+
+          client = ::Google::Apis::CloudkmsV1::CloudKMSService.new
+          client.authorization = ::Google::Auth.get_application_default(
+            "https://www.googleapis.com/auth/cloud-platform"
+          )
+          client.client_options.log_http_requests = false
+          client.client_options.open_timeout_sec = 2
+          client.client_options.read_timeout_sec = 2
+          client
+        rescue LoadError
+          require "google/cloud/kms"
+
+          Google::Cloud::Kms.key_management_service do |config|
+            config.timeout = 2
+          end
+        end
       end
     end
 

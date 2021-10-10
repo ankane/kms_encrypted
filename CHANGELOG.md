@@ -1,3 +1,7 @@
+## 1.3.0 (unreleased)
+
+- Added support for `google-cloud-kms` gem
+
 ## 1.2.4 (2021-06-20)
 
 - Fixed another argument error with Google Cloud KMS and Ruby 3
