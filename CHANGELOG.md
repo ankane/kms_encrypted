@@ -1,4 +1,4 @@
-## 1.3.0 (unreleased)
+## 1.3.0 (2021-10-10)
 
 - Added support for `google-cloud-kms` gem
 
