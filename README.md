@@ -75,7 +75,7 @@ Create a [Google Cloud Platform](https://cloud.google.com/) account if you donâ€
 Create a [KMS key ring and key](https://console.cloud.google.com/iam-admin/kms) and set it in your environment along with your GCP credentials ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
 
 ```sh
-KMS_KEY_ID=projects/.../locations/.../keyRings/.../cryptoKeys/...
+KMS_KEY_ID=projects/my-project/locations/global/keyRings/my-key-ring/cryptoKeys/my-key
 ```
 
 The Google API client logs requests by default. Be sure to turn off the logger in production or it will leak the plaintext.
