@@ -75,7 +75,6 @@ class KmsEncryptedTest < Minitest::Test
       else
         %w(encrypted_email encrypted_email_iv)
       end
-
     (encrypted_attributes + %w(encrypted_kms_key)).each do |attr|
       refute_equal user.send(attr), fields[attr]
     end
