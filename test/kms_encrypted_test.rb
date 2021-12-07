@@ -46,7 +46,11 @@ class KmsEncryptedTest < Minitest::Test
     assert_operations encrypt: 1 do
       user = User.last
       user.encrypted_kms_key = nil
-      user.encrypted_email = nil
+      if ActiveRecord::VERSION::MAJOR >= 7
+        user.email_ciphertext = nil
+      else
+        user.encrypted_email = nil
+      end
       user.update!(email: "test@example.org")
     end
   end
@@ -65,7 +69,14 @@ class KmsEncryptedTest < Minitest::Test
     fields = user.attributes
     user.rotate_kms_key!
 
-    %w(encrypted_email encrypted_email_iv encrypted_kms_key).each do |attr|
+    encrypted_attributes =
+      if ActiveRecord::VERSION::MAJOR >= 7
+        %w(email_ciphertext)
+      else
+        %w(encrypted_email encrypted_email_iv)
+      end
+
+    (encrypted_attributes + %w(encrypted_kms_key)).each do |attr|
       refute_equal user.send(attr), fields[attr]
     end
 
@@ -78,7 +89,13 @@ class KmsEncryptedTest < Minitest::Test
     fields = user.attributes
     user.rotate_kms_key_phone!
 
-    %w(encrypted_phone encrypted_phone_iv encrypted_kms_key_phone).each do |attr|
+    encrypted_attributes =
+      if ActiveRecord::VERSION::MAJOR >= 7
+        %w(phone_ciphertext)
+      else
+        %w(encrypted_phone encrypted_phone_iv)
+      end
+    (encrypted_attributes + %w(encrypted_kms_key_phone)).each do |attr|
       assert user.send(attr) != fields[attr], "#{attr} expected to change"
     end
 

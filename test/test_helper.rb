@@ -34,41 +34,47 @@ ActiveRecord::Schema.define do
   create_table :users do |t|
     t.string :name
 
-    # attr_encrypted
-    t.string :encrypted_email
-    t.string :encrypted_email_iv
-    t.string :encrypted_phone
-    t.string :encrypted_phone_iv
-    t.string :encrypted_street
-    t.string :encrypted_street_iv
+    if ActiveRecord::VERSION::MAJOR < 7
+      # attr_encrypted
+      t.text :encrypted_email
+      t.text :encrypted_email_iv
+      t.text :encrypted_phone
+      t.text :encrypted_phone_iv
+      t.text :encrypted_street
+      t.text :encrypted_street_iv
+    else
+      t.text :email_ciphertext
+      t.text :phone_ciphertext
+      t.text :street_ciphertext
+    end
 
     # lockbox
-    t.string :date_of_birth_ciphertext
+    t.text :date_of_birth_ciphertext
 
     # kms_encrypted
-    t.string :encrypted_kms_key
-    t.string :encrypted_kms_key_phone
-    t.string :encrypted_kms_key_street
+    t.text :encrypted_kms_key
+    t.text :encrypted_kms_key_phone
+    t.text :encrypted_kms_key_street
 
     t.timestamps null: false
   end
 
   create_table :active_storage_users do |t|
-    t.string :encrypted_kms_key
+    t.text :encrypted_kms_key
   end
 
   create_table :active_storage_admins do |t|
-    t.string :encrypted_kms_key
+    t.text :encrypted_kms_key
   end
 
   create_table :carrier_wave_users do |t|
     t.string :license
-    t.string :encrypted_kms_key
+    t.text :encrypted_kms_key
   end
 
   create_table :carrier_wave_admins do |t|
     t.string :document
-    t.string :encrypted_kms_key
+    t.text :encrypted_kms_key
   end
 end
 
@@ -82,11 +88,17 @@ class User < ActiveRecord::Base
       1 => {key_id: "insecure-test-key"}
     }
 
-  attr_encrypted :email, key: :kms_key
-  attr_encrypted :phone, key: :kms_key_phone
-  attr_encrypted :street, key: :kms_key_street
+  if ActiveRecord::VERSION::MAJOR < 7
+    attr_encrypted :email, key: :kms_key
+    attr_encrypted :phone, key: :kms_key_phone
+    attr_encrypted :street, key: :kms_key_street
+  else
+    lockbox_encrypts :email, key: :kms_key
+    lockbox_encrypts :phone, key: :kms_key_phone
+    lockbox_encrypts :street, key: :kms_key_street
+  end
 
-  encrypts :date_of_birth, key: :kms_key
+  lockbox_encrypts :date_of_birth, key: :kms_key
 
   def kms_encryption_context
     {"Name" => name}

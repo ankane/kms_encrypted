@@ -123,7 +123,7 @@ module KmsEncrypted
 
           # attr_encrypted
           if self.class.respond_to?(:encrypted_attributes)
-            self.class.encrypted_attributes.each do |key, v|
+            self.class.encrypted_attributes.to_a.each do |key, v|
               if v[:key] == key_method.to_sym
                 plaintext_attributes[key] = send(key)
               elsif v[:key].respond_to?(:call)

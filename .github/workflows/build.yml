@@ -11,6 +11,8 @@ jobs:
         - ruby: 3.0
           gemfile: Gemfile
           vault: true
+        - ruby: 3.0
+          gemfile: gemfiles/activesupport70.gemfile
         - ruby: 2.7
           gemfile: gemfiles/activesupport60.gemfile
         - ruby: 2.6
