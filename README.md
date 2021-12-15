@@ -339,7 +339,7 @@ KmsEncrypted.key_id = Rails.env.test? ? "insecure-test-key" : ENV["KMS_KEY_ID"]
 
 Key management services allow you to rotate the master key without any code changes.
 
-- For AWS KMS, you can use [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html).
+- For AWS KMS, you can use [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)
 - For Google Cloud, use the Google Cloud Console or API
 - For Vault, use:
 
