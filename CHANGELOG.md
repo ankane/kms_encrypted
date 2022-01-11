@@ -1,3 +1,7 @@
+## 1.4.0 (unreleased)
+
+- Dropped support for Ruby < 2.6 and Rails < 5.2
+
 ## 1.3.0 (2021-10-10)
 
 - Added support for `google-cloud-kms` gem

@@ -16,10 +16,6 @@ jobs:
           gemfile: gemfiles/activesupport60.gemfile
         - ruby: 2.6
           gemfile: gemfiles/activesupport52.gemfile
-        - ruby: 2.5
-          gemfile: gemfiles/activesupport51.gemfile
-        - ruby: 2.4
-          gemfile: gemfiles/activesupport50.gemfile
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
