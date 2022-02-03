@@ -109,6 +109,9 @@ class User < ActiveRecord::Base
   end
 end
 
+# ensure has_kms_key does not cause model schema to load
+raise "has_kms_key loading model schema early" if User.send(:schema_loaded?)
+
 class ActiveUser < User
   has_kms_key name: :child
 end
