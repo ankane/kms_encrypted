@@ -429,8 +429,8 @@ class User < ApplicationRecord
   has_kms_key name: :phone, key_id: "..."
 
   # Lockbox
-  encrypts :email, key: :kms_key
-  encrypts :phone, key: :kms_key_phone
+  has_encrypted :email, key: :kms_key
+  has_encrypted :phone, key: :kms_key_phone
 
   # attr_encrypted
   attr_encrypted :email, key: :kms_key
