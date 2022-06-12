@@ -29,7 +29,7 @@ To decrypt an attribute, we first decrypt the data key with the KMS. Once we hav
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'kms_encrypted'
+gem "kms_encrypted"
 ```
 
 And follow the instructions for your key management service:
@@ -43,7 +43,7 @@ And follow the instructions for your key management service:
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'aws-sdk-kms'
+gem "aws-sdk-kms"
 ```
 
 Create an [Amazon Web Services](https://aws.amazon.com/) account if you don’t have one. KMS works great whether or not you run your infrastructure on AWS.
@@ -67,7 +67,7 @@ KMS_KEY_ID=alias/my-alias
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'google-cloud-kms'
+gem "google-cloud-kms"
 ```
 
 Create a [Google Cloud Platform](https://cloud.google.com/) account if you don’t have one. KMS works great whether or not you run your infrastructure on GCP.
@@ -83,7 +83,7 @@ KMS_KEY_ID=projects/my-project/locations/global/keyRings/my-key-ring/cryptoKeys/
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'vault'
+gem "vault"
 ```
 
 Enable the [transit](https://www.vaultproject.io/docs/secrets/transit/index.html) secrets engine
