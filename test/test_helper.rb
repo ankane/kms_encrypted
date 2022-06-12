@@ -93,12 +93,12 @@ class User < ActiveRecord::Base
     attr_encrypted :phone, key: :kms_key_phone
     attr_encrypted :street, key: :kms_key_street
   else
-    lockbox_encrypts :email, key: :kms_key
-    lockbox_encrypts :phone, key: :kms_key_phone
-    lockbox_encrypts :street, key: :kms_key_street
+    has_encrypted :email, key: :kms_key
+    has_encrypted :phone, key: :kms_key_phone
+    has_encrypted :street, key: :kms_key_street
   end
 
-  lockbox_encrypts :date_of_birth, key: :kms_key
+  has_encrypted :date_of_birth, key: :kms_key
 
   def kms_encryption_context
     {"Name" => name}

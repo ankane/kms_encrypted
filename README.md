@@ -121,7 +121,7 @@ class User < ApplicationRecord
   has_kms_key
 
   # Lockbox fields
-  encrypts :email, key: :kms_key
+  has_encrypted :email, key: :kms_key
 
   # Lockbox files
   encrypts_attached :license, key: :kms_key
