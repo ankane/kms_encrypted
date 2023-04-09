@@ -5,19 +5,19 @@ require "json"
 require "securerandom"
 
 # modules
-require "kms_encrypted/box"
-require "kms_encrypted/database"
-require "kms_encrypted/log_subscriber"
-require "kms_encrypted/model"
-require "kms_encrypted/version"
+require_relative "kms_encrypted/box"
+require_relative "kms_encrypted/database"
+require_relative "kms_encrypted/log_subscriber"
+require_relative "kms_encrypted/model"
+require_relative "kms_encrypted/version"
 
 # clients
-require "kms_encrypted/client"
-require "kms_encrypted/clients/base"
-require "kms_encrypted/clients/aws"
-require "kms_encrypted/clients/google"
-require "kms_encrypted/clients/test"
-require "kms_encrypted/clients/vault"
+require_relative "kms_encrypted/client"
+require_relative "kms_encrypted/clients/base"
+require_relative "kms_encrypted/clients/aws"
+require_relative "kms_encrypted/clients/google"
+require_relative "kms_encrypted/clients/test"
+require_relative "kms_encrypted/clients/vault"
 
 module KmsEncrypted
   class Error < StandardError; end
