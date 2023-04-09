@@ -1,4 +1,4 @@
-## 1.5.0 (unreleased)
+## 1.5.0 (2023-04-09)
 
 - Added support for attr_encrypted 4
 - Dropped support for Ruby < 3 and Rails < 6
