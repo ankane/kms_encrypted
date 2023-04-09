@@ -122,8 +122,14 @@ module KmsEncrypted
           plaintext_attributes = {}
 
           # attr_encrypted
-          if self.class.respond_to?(:encrypted_attributes)
-            self.class.encrypted_attributes.to_a.each do |key, v|
+          encrypted_attributes_method =
+            if defined?(AttrEncrypted::Version::MAJOR) && AttrEncrypted::Version::MAJOR >= 4
+              :attr_encrypted_encrypted_attributes
+            else
+              :encrypted_attributes
+            end
+          if self.class.respond_to?(encrypted_attributes_method)
+            self.class.send(encrypted_attributes_method).to_a.each do |key, v|
               if v[:key] == key_method.to_sym
                 plaintext_attributes[key] = send(key)
               elsif v[:key].respond_to?(:call)

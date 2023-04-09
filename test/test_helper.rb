@@ -34,19 +34,13 @@ ActiveRecord::Schema.define do
   create_table :users do |t|
     t.string :name
 
-    if ActiveRecord::VERSION::MAJOR < 7
-      # attr_encrypted
-      t.text :encrypted_email
-      t.text :encrypted_email_iv
-      t.text :encrypted_phone
-      t.text :encrypted_phone_iv
-      t.text :encrypted_street
-      t.text :encrypted_street_iv
-    else
-      t.text :email_ciphertext
-      t.text :phone_ciphertext
-      t.text :street_ciphertext
-    end
+    # attr_encrypted
+    t.text :encrypted_email
+    t.text :encrypted_email_iv
+    t.text :encrypted_phone
+    t.text :encrypted_phone_iv
+    t.text :encrypted_street
+    t.text :encrypted_street_iv
 
     # lockbox
     t.text :date_of_birth_ciphertext
@@ -88,15 +82,9 @@ class User < ActiveRecord::Base
       1 => {key_id: "insecure-test-key"}
     }
 
-  if ActiveRecord::VERSION::MAJOR < 7
-    attr_encrypted :email, key: :kms_key
-    attr_encrypted :phone, key: :kms_key_phone
-    attr_encrypted :street, key: :kms_key_street
-  else
-    has_encrypted :email, key: :kms_key
-    has_encrypted :phone, key: :kms_key_phone
-    has_encrypted :street, key: :kms_key_street
-  end
+  attr_encrypted :email, key: :kms_key
+  attr_encrypted :phone, key: :kms_key_phone
+  attr_encrypted :street, key: :kms_key_street
 
   has_encrypted :date_of_birth, key: :kms_key
 
