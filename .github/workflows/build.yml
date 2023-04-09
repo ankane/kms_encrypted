@@ -14,10 +14,8 @@ jobs:
             gemfile: Gemfile
           - ruby: "3.0"
             gemfile: gemfiles/activesupport61.gemfile
-          - ruby: 2.7
+          - ruby: "3.0"
             gemfile: gemfiles/activesupport60.gemfile
-          - ruby: 2.6
-            gemfile: gemfiles/activesupport52.gemfile
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:

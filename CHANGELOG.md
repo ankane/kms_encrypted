@@ -1,6 +1,7 @@
 ## 1.5.0 (unreleased)
 
 - Added support for attr_encrypted 4
+- Dropped support for Ruby < 3 and Rails < 6
 
 ## 1.4.0 (2022-01-10)
 
