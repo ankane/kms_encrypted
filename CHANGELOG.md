@@ -1,3 +1,7 @@
+## 1.5.1 (unreleased)
+
+- Fixed deprecation warning with Active Support 7.1
+
 ## 1.5.0 (2023-04-09)
 
 - Added support for attr_encrypted 4

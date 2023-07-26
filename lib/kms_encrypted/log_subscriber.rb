@@ -8,7 +8,7 @@ module KmsEncrypted
       name += " (#{event.duration.round(1)}ms)"
       context = event.payload[:context]
       context = context.inspect if context.is_a?(Hash)
-      debug "  #{color(name, YELLOW, true)}  Context: #{context}"
+      debug "  #{color(name, YELLOW, bold: true)}  Context: #{context}"
     end
 
     def encrypt(event)
@@ -19,7 +19,7 @@ module KmsEncrypted
       name += " (#{event.duration.round(1)}ms)"
       context = event.payload[:context]
       context = context.inspect if context.is_a?(Hash)
-      debug "  #{color(name, YELLOW, true)}  Context: #{context}"
+      debug "  #{color(name, YELLOW, bold: true)}  Context: #{context}"
     end
   end
 end
