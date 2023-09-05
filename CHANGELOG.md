@@ -1,4 +1,4 @@
-## 1.5.1 (unreleased)
+## 1.5.1 (2023-09-05)
 
 - Fixed deprecation warning with Active Support 7.1
 
