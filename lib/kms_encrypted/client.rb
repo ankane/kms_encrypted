@@ -41,6 +41,8 @@ module KmsEncrypted
         :vault
       elsif key_id.start_with?("projects/")
         :google
+      elsif key_id.start_with?("azure/")
+        :azure
       else
         :aws
       end
@@ -56,6 +58,8 @@ module KmsEncrypted
             KmsEncrypted::Clients::Vault
           when :google
             KmsEncrypted::Clients::Google
+          when :azure
+            KmsEncrypted::Clients::Azure
           else
             KmsEncrypted::Clients::Aws
           end
