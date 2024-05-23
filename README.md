@@ -14,7 +14,7 @@ Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://clou
 
 Check out [this post](https://ankane.org/sensitive-data-rails) for more info on securing sensitive data with Rails
 
-[![Build Status](https://github.com/ankane/kms_encrypted/workflows/build/badge.svg?branch=master)](https://github.com/ankane/kms_encrypted/actions)
+[![Build Status](https://github.com/ankane/kms_encrypted/actions/workflows/build.yml/badge.svg)](https://github.com/ankane/kms_encrypted/actions)
 
 ## How It Works
 
