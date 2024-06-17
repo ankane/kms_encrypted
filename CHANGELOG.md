@@ -1,3 +1,7 @@
+## 1.6.0 (unreleased)
+
+- Dropped support for Ruby < 3.1 and Rails < 6.1
+
 ## 1.5.1 (2023-09-05)
 
 - Fixed deprecation warning with Active Support 7.1

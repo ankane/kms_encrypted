@@ -10,14 +10,12 @@ jobs:
           - ruby: 3.3
             gemfile: gemfiles/activesupport72.gemfile
             vault: true
-          - ruby: 3.2
+          - ruby: 3.3
             gemfile: Gemfile
-          - ruby: 3.1
+          - ruby: 3.2
             gemfile: gemfiles/activesupport70.gemfile
-          - ruby: "3.0"
+          - ruby: 3.1
             gemfile: gemfiles/activesupport61.gemfile
-          - ruby: "3.0"
-            gemfile: gemfiles/activesupport60.gemfile
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
