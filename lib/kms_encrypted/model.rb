@@ -81,7 +81,7 @@ module KmsEncrypted
                 key = SecureRandom.random_bytes(32)
 
                 if eager_encrypt == :fetch_id
-                  raise ArgumentError, ":fetch_id only works with Postgres" unless self.class.connection.adapter_name =~ /postg/i
+                  raise ArgumentError, ":fetch_id only works with Postgres" unless self.class.connection.adapter_name.match?(/postg/i)
                   self.id ||= self.class.connection.execute("select nextval('#{self.class.sequence_name}')").first["nextval"]
                 end
 
