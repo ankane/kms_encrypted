@@ -4,10 +4,10 @@ gemspec
 
 gem "rake"
 gem "minitest"
-gem "activerecord", "~> 7.1.0"
-gem "sqlite3", "< 2"
+gem "activerecord", "~> 7.2.0"
+gem "sqlite3"
 gem "attr_encrypted"
-gem "lockbox", ">= 1"
+gem "lockbox", ">= 1.4"
 gem "aws-sdk-kms"
 gem "google-cloud-kms"
 gem "nokogiri"
