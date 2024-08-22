@@ -321,6 +321,23 @@ And create a token with specific policies with:
 vault token create -policy=encrypt -policy=decrypt -no-default-policy
 ```
 
+## Configuration
+
+If you need to override which set of AWS credentials are used by the `Aws::KMS` SDK under the hood, you can specify the
+credentials via the `configure` class method:
+
+```ruby
+KmsEncrypted.configure do |config|
+  config.aws_access_key_id = '123456'
+  config.aws_secret_access_key = 'abcdef'
+end
+```
+
+In a Rails application, you can place this code in an initializer file. For example: `config/initializers/kms_encrypted.rb`.
+
+The use-case here would be if your KMS key exists on a separate account from what is specified via your
+`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables.
+
 ## Testing
 
 For testing, you can prevent network calls to KMS by setting:
