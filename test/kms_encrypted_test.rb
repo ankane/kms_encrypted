@@ -203,6 +203,25 @@ class KmsEncryptedTest < Minitest::Test
     user.rotate_kms_key!
   end
 
+  def test_config_overrides
+    assert_equal(
+      ENV['AWS_ACCESS_KEY_ID'],
+      KmsEncrypted.aws_client.config.credentials.access_key_id
+    )
+
+    config_access_key_id = 'config-access-key-id'
+
+    KmsEncrypted.configure do |config|
+      config.aws_access_key_id = config_access_key_id
+      config.aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+    end
+
+    assert_equal(
+      config_access_key_id,
+      KmsEncrypted.aws_client(force_reload: true).config.credentials.access_key_id
+    )
+  end
+
   private
 
   def assert_operations(expected)

@@ -29,11 +29,29 @@ module KmsEncrypted
     attr_writer :vault_client
     attr_writer :key_id
 
-    def aws_client
-      @aws_client ||= Aws::KMS::Client.new(
-        retry_limit: 1,
-        http_open_timeout: 2,
-        http_read_timeout: 2
+    def aws_client(force_reload: false)
+      instance_variable_name = '@aws_client'
+
+      instance_variable_set(instance_variable_name, nil) if force_reload
+      return instance_variable_get(instance_variable_name) if instance_variable_get(instance_variable_name).present?
+
+      instance_variable_set(
+        instance_variable_name,
+        begin
+          override_credentials =
+            if KmsEncrypted.config.aws_credentials_overridden?
+              Aws::Credentials.new(KmsEncrypted.config.aws_access_key_id, KmsEncrypted.config.aws_secret_access_key)
+            end
+
+          params = {
+            retry_limit: 1,
+            http_open_timeout: 2,
+            http_read_timeout: 2,
+            credentials: override_credentials
+          }.compact
+
+          Aws::KMS::Client.new(params)
+        end
       )
     end
 
@@ -72,6 +90,31 @@ module KmsEncrypted
     def context_hash(context, path:)
       context = Base64.encode64(context.to_json)
       vault_client.logical.write("sys/audit-hash/#{path}", input: context).data[:hash]
+    end
+
+    def config
+      @config ||= Configuration.new
+    end
+
+    def configure
+      yield(config)
+
+      if config.aws_access_key_id.present? && config.aws_secret_access_key.nil?
+        raise ArgumentError, "You must provide the `aws_secret_access_key` when `aws_access_key_id` is specified"
+      end
+
+      if config.aws_secret_access_key.present? && config.aws_access_key_id.nil?
+        raise ArgumentError, "You must provide the `aws_access_key_id` when `aws_secret_access_key` is specified"
+      end
+    end
+  end
+
+  class Configuration
+    attr_accessor :aws_access_key_id
+    attr_accessor :aws_secret_access_key
+
+    def aws_credentials_overridden?
+      aws_access_key_id.present?
     end
   end
 end
