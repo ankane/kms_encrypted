@@ -10,7 +10,11 @@ require "minitest/pride"
 ENV["VAULT_ADDR"] ||= "http://127.0.0.1:8200"
 require "vault"
 
-ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
+if ENV["ADAPTER"] == "postgresql"
+  ActiveRecord::Base.establish_connection adapter: "postgresql", database: "kms_encrypted_test"
+else
+  ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
+end
 
 KmsEncrypted.key_id ||= "insecure-test-key"
 
@@ -31,7 +35,7 @@ ActiveSupport::Notifications.subscribe(/kms_encrypted/) do |name, _start, _finis
 end
 
 ActiveRecord::Schema.define do
-  create_table :users do |t|
+  create_table :users, force: true do |t|
     t.string :name
 
     # attr_encrypted
@@ -44,29 +48,31 @@ ActiveRecord::Schema.define do
 
     # lockbox
     t.text :date_of_birth_ciphertext
+    t.text :city_ciphertext
 
     # kms_encrypted
     t.text :encrypted_kms_key
     t.text :encrypted_kms_key_phone
     t.text :encrypted_kms_key_street
+    t.text :encrypted_kms_key_city
 
     t.timestamps null: false
   end
 
-  create_table :active_storage_users do |t|
+  create_table :active_storage_users, force: true do |t|
     t.text :encrypted_kms_key
   end
 
-  create_table :active_storage_admins do |t|
+  create_table :active_storage_admins, force: true do |t|
     t.text :encrypted_kms_key
   end
 
-  create_table :carrier_wave_users do |t|
+  create_table :carrier_wave_users, force: true do |t|
     t.string :license
     t.text :encrypted_kms_key
   end
 
-  create_table :carrier_wave_admins do |t|
+  create_table :carrier_wave_admins, force: true do |t|
     t.string :document
     t.text :encrypted_kms_key
   end
@@ -81,12 +87,14 @@ class User < ActiveRecord::Base
     previous_versions: {
       1 => {key_id: "insecure-test-key"}
     }
+  has_kms_key name: :city, eager_encrypt: :fetch_id
 
   attr_encrypted :email, key: :kms_key
   attr_encrypted :phone, key: :kms_key_phone
   attr_encrypted :street, key: :kms_key_street
 
   has_encrypted :date_of_birth, key: :kms_key
+  has_encrypted :city, key: :kms_key_city
 
   def kms_encryption_context
     {"Name" => name}

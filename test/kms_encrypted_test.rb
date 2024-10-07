@@ -92,8 +92,8 @@ class KmsEncryptedTest < Minitest::Test
   end
 
   def test_inheritance
-    assert_equal [:kms_key, :kms_key_phone, :kms_key_street], User.kms_keys.keys
-    assert_equal [:kms_key, :kms_key_phone, :kms_key_street, :kms_key_child], ActiveUser.kms_keys.keys
+    assert_equal [:kms_key, :kms_key_phone, :kms_key_street, :kms_key_city], User.kms_keys.keys
+    assert_equal [:kms_key, :kms_key_phone, :kms_key_street, :kms_key_city, :kms_key_child], ActiveUser.kms_keys.keys
   end
 
   def test_context_hash
@@ -120,6 +120,15 @@ class KmsEncryptedTest < Minitest::Test
 
   def test_eager_encrypt_try
     user = User.create!
+    assert_operations encrypt: 1 do
+      user.phone = "test@example.org"
+    end
+  end
+
+  def test_eager_encrypt_fetch_id
+    skip if ENV["ADAPTER"] != "postgresql"
+
+    user = User.create!(city: "Test")
     assert_operations encrypt: 1 do
       user.phone = "test@example.org"
     end
