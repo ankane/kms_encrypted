@@ -1,3 +1,7 @@
+## 1.7.0 (unreleased)
+
+- Dropped support for Ruby < 3.2 and Rails < 7.1
+
 ## 1.6.0 (2024-06-24)
 
 - Dropped support for Ruby < 3.1 and Rails < 6.1
