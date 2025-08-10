@@ -10,7 +10,7 @@ With KMS Encrypted:
 - Decryption can be disabled if an attack is detected
 - It’s easy to rotate keys
 
-Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://developer.hashicorp.com/vault)
+Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), [Vault](https://developer.hashicorp.com/vault), and [OpenBao](https://openbao.org/)
 
 Check out [this post](https://ankane.org/sensitive-data-rails) for more info on securing sensitive data with Rails
 
@@ -36,7 +36,7 @@ And follow the instructions for your key management service:
 
 - [AWS KMS](#aws-kms)
 - [Google Cloud KMS](#google-cloud-kms)
-- [Vault](#vault)
+- [Vault and OpenBao](#vault-and-openbao)
 
 ### AWS KMS
 
@@ -78,7 +78,7 @@ Create a [KMS key ring and key](https://console.cloud.google.com/iam-admin/kms) 
 KMS_KEY_ID=projects/my-project/locations/global/keyRings/my-key-ring/cryptoKeys/my-key
 ```
 
-### Vault
+### Vault and OpenBao
 
 Add this line to your application’s Gemfile:
 
@@ -86,19 +86,23 @@ Add this line to your application’s Gemfile:
 gem "vault"
 ```
 
-Enable the [transit](https://developer.hashicorp.com/vault/docs/secrets/transit) secrets engine
+Enable the transit secrets engine for [Vault](https://developer.hashicorp.com/vault/docs/secrets/transit) or [OpenBao](https://openbao.org/docs/secrets/transit/)
 
 ```sh
 vault secrets enable transit
+# or
+bao secrets enable transit
 ```
 
 And create a key
 
 ```sh
 vault write -f transit/keys/my-key derived=true
+# or
+bao write -f transit/keys/my-key derived=true
 ```
 
-Set it in your environment along with your Vault credentials ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
+Set it in your environment along with your credentials ([dotenv](https://github.com/bkeepers/dotenv) is great for this)
 
 ```sh
 KMS_KEY_ID=vault/my-key
@@ -218,11 +222,11 @@ You should also use other tools to detect breaches, like an [IDS](https://www.al
 
 Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set up data access logging. There is not currently a way to see what data is being decrypted, since the additional authenticated data is not logged. For this reason, we recommend another KMS provider.
 
-### Vault
+### Vault and OpenBao
 
-Follow the [instructions here](https://developer.hashicorp.com/vault/docs/audit) to set up data access logging.
+Follow the instructions for [Vault](https://developer.hashicorp.com/vault/docs/audit) or [OpenBao](https://openbao.org/docs/audit/) to set up data access logging.
 
-**Note:** Vault will only verify this value if `derived` was set to true when creating the key. If this is not done, the context cannot be trusted.
+**Note:** Vault and OpenBao will only verify this value if `derived` was set to true when creating the key. If this is not done, the context cannot be trusted.
 
 Context will show up hashed in the audit logs. To get the hash for a record, use:
 
@@ -289,7 +293,7 @@ To decrypt the data, use an IAM policy with:
 
 todo: document
 
-### Vault
+### Vault and OpenBao
 
 To encrypt the data, use a policy with:
 
@@ -313,12 +317,16 @@ Apply a policy with:
 
 ```sh
 vault policy write encrypt encrypt.hcl
+# or
+bao policy write encrypt encrypt.hcl
 ```
 
 And create a token with specific policies with:
 
 ```sh
 vault token create -policy=encrypt -policy=decrypt -no-default-policy
+# or
+bao token create -policy=encrypt -policy=decrypt -no-default-policy
 ```
 
 ## Testing
@@ -343,9 +351,15 @@ Key management services allow you to rotate the master key without any code chan
 - For Google Cloud, use the Google Cloud Console or API
 - For Vault, use:
 
-```sh
-vault write -f transit/keys/my-key/rotate
-```
+  ```sh
+  vault write -f transit/keys/my-key/rotate
+  ```
+
+- For OpenBao, use:
+
+  ```sh
+  bao write -f transit/keys/my-key/rotate
+  ```
 
 New data will be encrypted with the new master key version. To encrypt existing data with new master key version, run:
 
