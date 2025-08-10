@@ -10,7 +10,7 @@ With KMS Encrypted:
 - Decryption can be disabled if an attack is detected
 - It’s easy to rotate keys
 
-Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://www.vaultproject.io/)
+Supports [AWS KMS](https://aws.amazon.com/kms/), [Google Cloud KMS](https://cloud.google.com/kms/), and [Vault](https://developer.hashicorp.com/vault)
 
 Check out [this post](https://ankane.org/sensitive-data-rails) for more info on securing sensitive data with Rails
 
@@ -86,7 +86,7 @@ Add this line to your application’s Gemfile:
 gem "vault"
 ```
 
-Enable the [transit](https://www.vaultproject.io/docs/secrets/transit/index.html) secrets engine
+Enable the [transit](https://developer.hashicorp.com/vault/docs/secrets/transit) secrets engine
 
 ```sh
 vault secrets enable transit
@@ -220,7 +220,7 @@ Follow the [instructions here](https://cloud.google.com/kms/docs/logging) to set
 
 ### Vault
 
-Follow the [instructions here](https://www.vaultproject.io/docs/audit/) to set up data access logging.
+Follow the [instructions here](https://developer.hashicorp.com/vault/docs/audit) to set up data access logging.
 
 **Note:** Vault will only verify this value if `derived` was set to true when creating the key. If this is not done, the context cannot be trusted.
 
