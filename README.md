@@ -349,17 +349,8 @@ Key management services allow you to rotate the master key without any code chan
 
 - For AWS KMS, you can use [automatic key rotation](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)
 - For Google Cloud, use the Google Cloud Console or API
-- For Vault, use:
-
-  ```sh
-  vault write -f transit/keys/my-key/rotate
-  ```
-
-- For OpenBao, use:
-
-  ```sh
-  bao write -f transit/keys/my-key/rotate
-  ```
+- For Vault, use `vault write -f transit/keys/my-key/rotate`
+- For OpenBao, use `bao write -f transit/keys/my-key/rotate`
 
 New data will be encrypted with the new master key version. To encrypt existing data with new master key version, run:
 
