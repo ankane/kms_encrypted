@@ -12,6 +12,7 @@ jobs:
             vault: true
           - ruby: 3.3
             gemfile: gemfiles/activesupport72.gemfile
+            openbao: true
           - ruby: 3.2
             gemfile: gemfiles/activesupport71.gemfile
     env:
@@ -35,6 +36,20 @@ jobs:
           vault secrets enable transit
           vault write -f transit/keys/my-key derived=true
           vault audit enable file file_path=vault_audit.log
+          bundle exec rake test
+        env:
+          KMS_KEY_ID: vault/my-key
+          VAULT_ADDR: http://127.0.0.1:8200
+
+      - if: ${{ matrix.openbao }}
+        run: |
+          wget -q -O bao.deb https://github.com/openbao/openbao/releases/download/v2.3.1/bao_2.3.1_linux_amd64.deb
+          sudo dpkg -i bao.deb
+          bao server -dev &
+          sleep 1
+          bao secrets enable transit
+          bao write -f transit/keys/my-key derived=true
+          bao audit enable file file_path=vault_audit.log
           bundle exec rake test
         env:
           KMS_KEY_ID: vault/my-key
