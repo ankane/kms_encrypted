@@ -96,6 +96,10 @@ class User < ActiveRecord::Base
   has_encrypted :date_of_birth, key: :kms_key
   has_encrypted :city, key: :kms_key_city
 
+  # TODO use module in lib
+  undef_method :kms_encryption_context
+  undef_method :kms_encryption_context_street
+
   def kms_encryption_context
     {"Name" => name}
   end
