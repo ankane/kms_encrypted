@@ -7,7 +7,7 @@ module KmsEncrypted
         }
         options[:context] = generate_context(context) if context
 
-        response = KmsEncrypted.vault_client.logical.write(
+        response = client.logical.write(
           "transit/encrypt/#{key_id.sub("vault/", "")}",
           options
         )
@@ -23,7 +23,7 @@ module KmsEncrypted
 
         response =
           begin
-            KmsEncrypted.vault_client.logical.write(
+            client.logical.write(
               "transit/decrypt/#{key_id.sub("vault/", "")}",
               options
             )
@@ -41,6 +41,10 @@ module KmsEncrypted
       end
 
       private
+
+      def client
+        @client ||= KmsEncrypted.vault_client
+      end
 
       # turn hash into json
       def generate_context(context)

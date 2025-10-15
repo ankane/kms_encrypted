@@ -20,6 +20,10 @@ module KmsEncrypted
       @previous_versions ||= evaluate_option(:previous_versions)
     end
 
+    def client
+      @client ||= evaluate_option(:client)
+    end
+
     def context(version)
       name = options[:name]
       context_method = name ? "kms_encryption_context_#{name}" : "kms_encryption_context"
@@ -36,7 +40,8 @@ module KmsEncrypted
       KmsEncrypted::Box.new(
         key_id: key_id,
         version: version,
-        previous_versions: previous_versions
+        previous_versions: previous_versions,
+        client: client
       ).encrypt(plaintext, context: context)
     end
 
@@ -49,7 +54,8 @@ module KmsEncrypted
       KmsEncrypted::Box.new(
         key_id: key_id,
         version: version,
-        previous_versions: previous_versions
+        previous_versions: previous_versions,
+        client: client
       ).decrypt(ciphertext, context: context)
     end
 

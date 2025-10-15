@@ -3,9 +3,10 @@ module KmsEncrypted
     class Base
       attr_reader :key_id
 
-      def initialize(key_id: nil, legacy_context: false)
+      def initialize(key_id: nil, legacy_context: false, client: nil)
         @key_id = key_id
         @legacy_context = legacy_context
+        @client = client
       end
 
       protected

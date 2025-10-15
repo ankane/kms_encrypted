@@ -1,17 +1,18 @@
 module KmsEncrypted
   class Box
-    attr_reader :key_id, :version, :previous_versions
+    attr_reader :key_id, :version, :previous_versions, :client
 
-    def initialize(key_id: nil, version: nil, previous_versions: nil)
+    def initialize(key_id: nil, version: nil, previous_versions: nil, client: nil)
       @key_id = key_id || KmsEncrypted.key_id
       @version = version || 1
       @previous_versions = previous_versions || {}
+      @client = client
     end
 
     def encrypt(plaintext, context: nil)
       context = version_context(context, version)
       key_id = version_key_id(version)
-      ciphertext = KmsEncrypted::Client.new(key_id: key_id, data_key: true).encrypt(plaintext, context: context)
+      ciphertext = KmsEncrypted::Client.new(key_id: key_id, data_key: true, client: client).encrypt(plaintext, context: context)
       "v#{version}:#{encode64(ciphertext)}"
     end
 
@@ -43,11 +44,13 @@ module KmsEncrypted
       key_id ||= version_key_id(version)
       ciphertext = decode64(ciphertext)
       context = version_context(context, version)
+      client = version_client(version)
 
       KmsEncrypted::Client.new(
         key_id: key_id,
         data_key: true,
-        legacy_context: legacy_context
+        legacy_context: legacy_context,
+        client: client
       ).decrypt(ciphertext, context: context)
     end
 
@@ -66,6 +69,10 @@ module KmsEncrypted
       raise ArgumentError, "Missing key id" unless key_id
 
       key_id
+    end
+
+    def version_client(version)
+      previous_versions.dig(version, :client) || self.client
     end
 
     def version_context(context, version)

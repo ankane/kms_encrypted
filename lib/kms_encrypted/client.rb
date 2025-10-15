@@ -2,10 +2,11 @@ module KmsEncrypted
   class Client
     attr_reader :key_id, :data_key
 
-    def initialize(key_id: nil, legacy_context: false, data_key: false)
+    def initialize(key_id: nil, legacy_context: false, data_key: false, client: nil)
       @key_id = key_id || KmsEncrypted.key_id
       @legacy_context = legacy_context
       @data_key = data_key
+      @service_client = client
     end
 
     def encrypt(plaintext, context: nil)
@@ -60,7 +61,7 @@ module KmsEncrypted
             KmsEncrypted::Clients::Aws
           end
 
-        klass.new(key_id: key_id, legacy_context: @legacy_context)
+        klass.new(key_id: key_id, legacy_context: @legacy_context, client: @service_client)
       end
     end
   end
