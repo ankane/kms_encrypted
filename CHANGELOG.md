@@ -1,6 +1,7 @@
 ## 1.8.0 (unreleased)
 
 - Added `client` option
+- Dropped support for Rails < 7.2
 
 ## 1.7.0 (2025-04-03)
 
