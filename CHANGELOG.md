@@ -1,4 +1,4 @@
-## 1.8.0 (unreleased)
+## 1.8.0 (2025-10-16)
 
 - Added `client` option
 - Dropped support for Rails < 7.2
