@@ -4,7 +4,6 @@ require "active_record"
 require "carrierwave/orm/activerecord"
 Bundler.require(:default)
 require "minitest/autorun"
-require "minitest/pride"
 
 # must come before vault
 ENV["VAULT_ADDR"] ||= "http://127.0.0.1:8200"
