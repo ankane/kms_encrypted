@@ -4,7 +4,7 @@ gemspec
 
 gem "rake"
 gem "minitest"
-gem "activerecord", "~> 8.0.0"
+gem "activerecord", "~> 8.1.0"
 gem "attr_encrypted"
 gem "lockbox", ">= 1.4"
 gem "aws-sdk-kms"

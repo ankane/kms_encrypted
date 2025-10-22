@@ -8,9 +8,9 @@ jobs:
       matrix:
         include:
           - ruby: 3.4
-            gemfile: gemfiles/activesupport81.gemfile
-          - ruby: 3.3
             gemfile: Gemfile
+          - ruby: 3.3
+            gemfile: gemfiles/activesupport80.gemfile
             vault: true
           - ruby: 3.2
             gemfile: gemfiles/activesupport72.gemfile
