@@ -38,6 +38,8 @@ module KmsEncrypted
     def provider
       if key_id == "insecure-test-key"
         :test
+      elsif key_id == "insecure-test-key-encrypt-only"
+        :test_encrypt_only
       elsif key_id.start_with?("vault/")
         :vault
       elsif key_id.start_with?("projects/")
@@ -53,6 +55,8 @@ module KmsEncrypted
           case provider
           when :test
             KmsEncrypted::Clients::Test
+          when :test_encrypt_only
+            KmsEncrypted::Clients::TestEncryptOnly
           when :vault
             KmsEncrypted::Clients::Vault
           when :google
