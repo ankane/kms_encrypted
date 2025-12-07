@@ -19,7 +19,7 @@ class ClientTest < Minitest::Test
   end
 
   def test_encrypt_only
-    client = KmsEncrypted::Client.new(key_id: "insecure-test-key-encrypt-only")
+    client = KmsEncrypted::Client.new(key_id: "insecure-test-key/encrypt")
 
     plaintext = "hello" * 100
     context = {test: 123}
