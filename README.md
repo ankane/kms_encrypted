@@ -343,6 +343,8 @@ In a Rails application, you can also create `config/initializers/kms_encrypted.r
 KmsEncrypted.key_id = Rails.env.test? ? "insecure-test-key" : ENV["KMS_KEY_ID"]
 ```
 
+You can also use `insecure-test-key/encrypt`, which allows encryption but not decryption.
+
 ## Key Rotation
 
 Key management services allow you to rotate the master key without any code changes.

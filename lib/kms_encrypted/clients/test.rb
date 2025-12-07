@@ -10,6 +10,8 @@ module KmsEncrypted
       end
 
       def decrypt(ciphertext, context: nil)
+        decryption_failed! if key_id == "insecure-test-key/encrypt"
+
         prefix, plaintext, stored_context = ciphertext.split(":")
 
         decryption_failed! if prefix != PREFIX

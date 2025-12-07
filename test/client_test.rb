@@ -17,4 +17,22 @@ class ClientTest < Minitest::Test
     ciphertext = client.encrypt(plaintext, context: context1)
     assert_equal plaintext, client.decrypt(ciphertext, context: context2)
   end
+
+  def test_encrypt_only
+    client = KmsEncrypted::Client.new(key_id: "insecure-test-key/encrypt")
+
+    plaintext = "hello" * 100
+    context = {test: 123}
+    ciphertext = client.encrypt(plaintext, context: context)
+
+    assert ciphertext.start_with?(Base64.decode64("insecure+data+A"))
+
+    error = assert_raises(KmsEncrypted::DecryptionError) do
+      client.decrypt(ciphertext, context: context)
+    end
+    assert_equal "Decryption failed", error.message
+
+    client = KmsEncrypted::Client.new(key_id: "insecure-test-key")
+    assert_equal plaintext, client.decrypt(ciphertext, context: context)
+  end
 end

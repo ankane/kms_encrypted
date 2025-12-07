@@ -36,7 +36,7 @@ module KmsEncrypted
     private
 
     def provider
-      if key_id == "insecure-test-key"
+      if key_id == "insecure-test-key" || key_id == "insecure-test-key/encrypt"
         :test
       elsif key_id.start_with?("vault/")
         :vault
