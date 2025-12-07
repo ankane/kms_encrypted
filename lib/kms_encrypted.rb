@@ -19,7 +19,6 @@ require_relative "kms_encrypted/clients/base"
 require_relative "kms_encrypted/clients/aws"
 require_relative "kms_encrypted/clients/google"
 require_relative "kms_encrypted/clients/test"
-require_relative "kms_encrypted/clients/test_encrypt_only"
 require_relative "kms_encrypted/clients/vault"
 
 module KmsEncrypted
