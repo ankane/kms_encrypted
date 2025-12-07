@@ -1,3 +1,7 @@
+## 1.8.1 (unreleased)
+
+- Added support for encryption-only test key
+
 ## 1.8.0 (2025-10-16)
 
 - Added `client` option
