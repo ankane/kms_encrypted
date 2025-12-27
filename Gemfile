@@ -12,13 +12,7 @@ gem "nokogiri"
 # gem "google-apis-cloudkms_v1"
 gem "vault"
 gem "carrierwave"
-
-platform :ruby do
-  gem "sqlite3"
-  gem "pg"
-  gem "google-cloud-kms"
-end
-
-platform :jruby do
-  gem "sqlite3-ffi"
-end
+gem "sqlite3", platform: :ruby
+gem "pg", platform: :ruby
+gem "google-cloud-kms", platform: :ruby
+gem "sqlite3-ffi", platform: :jruby
