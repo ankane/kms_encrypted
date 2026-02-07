@@ -1,4 +1,4 @@
-## 1.8.1 (unreleased)
+## 1.8.1 (2026-02-07)
 
 - Added support for encryption-only test key
 
